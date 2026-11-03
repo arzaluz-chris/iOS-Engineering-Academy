@@ -31,12 +31,25 @@ struct LessonSnippetsTests {
     private func check(_ snippet: Snippet) throws {
         let result = try SwiftRunner.run(snippet.code)
         switch snippet.expectation {
-        case .runs(let expected):
+        case .runs(let expected, let warning):
             try #require(result.compiled, "No compila:\n\(result.diagnostics)")
             #expect(result.exitCode == 0, "Terminó con código \(result.exitCode):\n\(result.diagnostics)")
             if let expected {
                 #expect(result.stdout == expected)
             }
+            if let warning {
+                #expect(result.diagnostics.contains("warning: \(warning)"), "Falta la advertencia «\(warning)»:\n\(result.diagnostics)")
+            }
+        case .crashes(let message, let expected):
+            try #require(result.compiled, "No compila:\n\(result.diagnostics)")
+            #expect(result.exitCode != 0, "Se esperaba un error en ejecución")
+            #expect(result.diagnostics.contains(message), "La ejecución no informó «\(message)»:\n\(result.diagnostics)")
+            if let expected {
+                #expect(result.stdout == expected)
+            }
+        case .prints(let expected):
+            try #require(result.compiled, "No compila:\n\(result.diagnostics)")
+            #expect(result.stdout == expected)
         case .failsToCompile(let message):
             #expect(!result.compiled, "Se esperaba un error de compilación")
             #expect(result.diagnostics.contains(message), "El diagnóstico no contiene «\(message)»:\n\(result.diagnostics)")

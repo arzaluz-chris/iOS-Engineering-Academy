@@ -9,6 +9,18 @@ enum SwiftRunner {
         let stdout: String
     }
 
+    /// Salida por líneas, como en una terminal o en la consola de Xcode. Sin esto, con la salida
+    /// conectada a un pipe, lo impreso antes de un error en ejecución se queda en el búfer y se pierde.
+    static let prelude = """
+        #if canImport(Darwin)
+        @preconcurrency import Darwin
+        #elseif canImport(Glibc)
+        @preconcurrency import Glibc
+        #endif
+        setvbuf(stdout, nil, _IOLBF, 0)
+
+        """
+
     static func run(_ code: String) throws -> Result {
         let dir = FileManager.default.temporaryDirectory
             .appendingPathComponent("lesson-snippet-\(UUID().uuidString)")
@@ -17,7 +29,7 @@ enum SwiftRunner {
 
         let source = dir.appendingPathComponent("main.swift")
         let binary = dir.appendingPathComponent("snippet")
-        try code.write(to: source, atomically: true, encoding: .utf8)
+        try (prelude + code).write(to: source, atomically: true, encoding: .utf8)
 
         let compile = try exec("/usr/bin/env", ["swiftc", "-swift-version", "6", source.path, "-o", binary.path])
         guard compile.status == 0 else {

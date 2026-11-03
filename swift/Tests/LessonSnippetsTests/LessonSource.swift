@@ -10,12 +10,20 @@ import Foundation
 ///   - ```swift                    → debe compilar y ejecutarse sin fallar. Si el siguiente bloque
 ///                                   cercado es ```output, la salida debe coincidir exactamente.
 ///   - ```swift no-compila <texto> → debe fallar al compilar y el diagnóstico debe contener <texto>.
+///   - ```swift advertencia <texto> → debe compilar con una advertencia que contenga <texto> y
+///                                    ejecutarse sin fallar (con ```output, se compara la salida).
+///   - ```swift falla-en-ejecucion <texto> → debe compilar, terminar con error en ejecución y
+///                                    escribir <texto> en stderr (con ```output, se compara stdout).
 ///   - ```swift ilustrativo        → no se ejecuta (fragmentos que dependen de otro contexto,
 ///                                   código de Apple que no compila fuera de Xcode, etc.).
 struct Snippet: Sendable, CustomStringConvertible {
     enum Expectation: Sendable, Equatable {
-        case runs(output: String?)
+        case runs(output: String?, warning: String? = nil)
         case failsToCompile(containing: String)
+        case crashes(containing: String, output: String?)
+        /// Ejercicio de predicción: debe compilar y su salida estándar debe ser exactamente esta.
+        /// Puede terminar con un error en ejecución si el ejercicio trata de eso.
+        case prints(String)
     }
 
     let lesson: String
@@ -84,9 +92,9 @@ enum LessonSource {
                     guard let swift = fences(in: ex.blocks["solution"] ?? "").first(where: { $0.info == "swift" }) else {
                         throw SnippetError.format("\(lesson.path) \(ex.id): falta la traducción a Swift en la solución")
                     }
-                    return Snippet(lesson: lesson.id, location: "\(ex.id) (predicción, traducción a Swift)", code: swift.content, expectation: .runs(output: output))
+                    return Snippet(lesson: lesson.id, location: "\(ex.id) (predicción, traducción a Swift)", code: swift.content, expectation: .prints(output))
                 }
-                return Snippet(lesson: lesson.id, location: "\(ex.id) (predicción)", code: code, expectation: .runs(output: output))
+                return Snippet(lesson: lesson.id, location: "\(ex.id) (predicción)", code: code, expectation: .prints(output))
             }
         }
     }
@@ -130,7 +138,21 @@ enum LessonSource {
             }
             let next = i + 1 < fs.count ? fs[i + 1] : nil
             let output = next?.info == "output" ? next?.content : nil
-            result.append(Snippet(lesson: lesson, location: location, code: f.content, expectation: .runs(output: output)))
+            func rest(_ prefix: String) -> String {
+                modifier.dropFirst(prefix.count).trimmingCharacters(in: .whitespaces)
+            }
+            let expectation: Snippet.Expectation
+            if modifier.hasPrefix("advertencia") {
+                expectation = .runs(output: output, warning: rest("advertencia"))
+            } else if modifier.hasPrefix("falla-en-ejecucion") {
+                expectation = .crashes(containing: rest("falla-en-ejecucion"), output: output)
+            } else if modifier.isEmpty {
+                expectation = .runs(output: output)
+            } else {
+                // Un modificador desconocido es un error de escritura en la lección: que la prueba lo diga.
+                expectation = .failsToCompile(containing: "modificador desconocido «\(modifier)»")
+            }
+            result.append(Snippet(lesson: lesson, location: location, code: f.content, expectation: expectation))
         }
         return result
     }

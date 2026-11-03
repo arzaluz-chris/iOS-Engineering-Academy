@@ -201,3 +201,66 @@ resources:
     why: Muestra cómo un procedimiento con entrada y salida se convierte en una función de Swift con parámetros y valor de retorno.
     status: no-verificado
     verifiedAt: null
+  - id: xcode-components
+    title: Downloading and installing additional Xcode components
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components
+    kind: oficial
+    topic: Simuladores y plataformas de Xcode
+    why: Explica cómo instalar runtimes de simulador y soporte de plataformas desde Xcode › Settings › Components o con xcodebuild.
+    status: no-verificado
+    verifiedAt: null
+  - id: xcode-create-project
+    title: Creating an Xcode project for an app
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/xcode/creating-an-xcode-project-for-an-app
+    kind: oficial
+    topic: Proyectos de Xcode
+    why: Paso a paso oficial para crear un proyecto desde plantilla, con el identificador de organización y la ventana principal.
+    status: no-verificado
+    verifiedAt: null
+  - id: xcode-breakpoints
+    title: Setting breakpoints to pause your running app
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/xcode/setting-breakpoints-to-pause-your-running-app
+    kind: oficial
+    topic: Breakpoints
+    why: Cómo poner, mover, condicionar y administrar breakpoints en Xcode.
+    status: no-verificado
+    verifiedAt: null
+  - id: xcode-stepping
+    title: Stepping through code and inspecting variables to isolate bugs
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/xcode/stepping-through-code-and-inspecting-variables-to-isolate-bugs
+    kind: oficial
+    topic: Depuración paso a paso
+    why: Describe Step Over, Step Into, Step Out, el visor de variables y los comandos v, p y po de la consola de LLDB.
+    status: no-verificado
+    verifiedAt: null
+  - id: swiftpm-docs
+    title: Swift Package Manager
+    source: Swift.org
+    url: https://docs.swift.org/latest/documentation/packagemanagerdocs/
+    kind: oficial
+    topic: Paquetes de Swift
+    why: Qué es un paquete, qué contiene Package.swift y cómo se compila y prueba con swift build, swift run y swift test.
+    status: no-verificado
+    verifiedAt: null
+  - id: swift-cli-getting-started
+    title: Build a Command-line Tool
+    source: Swift.org
+    url: https://www.swift.org/getting-started/cli-swiftpm/
+    kind: tutorial
+    topic: Swift desde la terminal
+    why: Guía oficial para crear un ejecutable con swift package init y ejecutarlo con swift run.
+    status: no-verificado
+    verifiedAt: null
+  - id: lldb-tutorial
+    title: LLDB Tutorial
+    source: LLVM
+    url: https://lldb.llvm.org/use/tutorial.html
+    kind: referencia
+    topic: Depurador LLDB
+    why: Referencia de los comandos del depurador que usa Xcode por debajo, como breakpoint, frame variable y expression.
+    status: no-verificado
+    verifiedAt: null

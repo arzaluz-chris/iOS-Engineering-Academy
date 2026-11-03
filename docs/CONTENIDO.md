@@ -47,12 +47,14 @@ Avisos disponibles dentro del texto:
 
 ### Fragmentos ejecutados por las pruebas
 
-El target `swift/Tests/LessonSnippetsTests` lee `content/lessons/` y compila cada fragmento como programa independiente (`swiftc -swift-version 6`), lo ejecuta y compara su salida:
+El target `swift/Tests/LessonSnippetsTests` lee `content/lessons/` y compila cada fragmento como programa independiente (`swiftc -swift-version 6`, con la salida por líneas como en una terminal), lo ejecuta y compara su salida:
 
-- **Todo ejercicio `prediccion`**, en cualquier lección: `code` debe compilar y su salida debe ser exactamente `output`. Escribe `code` y `output` como bloques literales `|` (o `|-` si la salida no termina en salto de línea). Si la solución repite la salida en un bloque ```` ```output ````, debe coincidir con `output`. Con `lang: pseudo`, `code` es pseudocódigo y la solución debe incluir su traducción en un bloque ```` ```swift ````: las pruebas ejecutan esa traducción (el validador exige que exista).
+- **Todo ejercicio `prediccion`**, en cualquier lección: `code` debe compilar y su salida estándar debe ser exactamente `output` (si el programa se detiene con un error en ejecución, cuenta lo que imprimió antes). Escribe `code` y `output` como bloques literales `|` (o `|-` si la salida no termina en salto de línea). Si la solución repite la salida en un bloque ```` ```output ````, debe coincidir con `output`. Con `lang: pseudo`, `code` es pseudocódigo y la solución debe incluir su traducción en un bloque ```` ```swift ````: las pruebas ejecutan esa traducción (el validador exige que exista).
 - **En lecciones con `codeStatus: probado`**, cada bloque ```` ```swift ```` del texto y de las soluciones de ejercicios:
   - ```` ```swift ```` debe compilar y ejecutarse sin fallar. Si el siguiente bloque cercado es ```` ```output ````, la salida debe coincidir exactamente.
   - ```` ```swift no-compila <texto del diagnóstico> ```` debe fallar al compilar con un diagnóstico que contenga ese texto. Úsalo para los ejemplos de errores del compilador.
+  - ```` ```swift advertencia <texto> ```` debe compilar con una advertencia que contenga `warning: <texto>` y ejecutarse sin fallar.
+  - ```` ```swift falla-en-ejecucion <texto> ```` debe compilar, terminar con un error en ejecución y escribir `<texto>` en la salida de errores (por ejemplo `Index out of range`). Con un ```` ```output ```` a continuación, se compara lo impreso antes del error.
   - ```` ```swift ilustrativo ```` no se ejecuta: fragmentos que dependen de otro bloque o código de frameworks de Apple que no compila fuera de Xcode.
 
 La web solo usa la primera palabra del bloque para el resaltado, así que estos modificadores no se ven. Ejecuta las pruebas con `cd swift && swift test --filter LessonSnippetsTests` (en Linux, por ejemplo, con `docker run --rm -v "$PWD":/w -w /w/swift swift:6.3 swift test`). El workflow «Swift · pruebas de los retos» las corre en macOS en cada push que toque `content/lessons/`.
