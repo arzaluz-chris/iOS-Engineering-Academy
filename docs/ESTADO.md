@@ -17,7 +17,7 @@
 | Retos de código | 5, con solución y pruebas Swift | al menos 100 |
 | Preguntas de entrevista | 17 en 9 categorías, incluida seguridad | banco amplio |
 | Proyectos | 8 especificados con hitos | 8 |
-| Recursos | 20, ninguno verificado todavía | — |
+| Recursos | 20, todos responden (verificación del 3 de nov de 2026) | — |
 
 **Pruebas ejecutadas en el entorno de construcción:** `npm run validate` (sin errores), `tsc --noEmit` (sin errores), `npm test` (32 pruebas, todas pasan), `vite build` (correcto), revisión visual en Chrome sin errores de consola en escritorio, móvil, claro y oscuro.
 
@@ -25,12 +25,11 @@
 
 **Publicado:** https://arzaluz-chris.github.io/iOS-Engineering-Academy/
 
-**No ejecutado:** `check-links` (el entorno de construcción no tenía red hacia Apple ni swift.org); corre con el workflow semanal `links.yml` o a mano desde Actions.
+**Enlaces:** el workflow `links.yml` verificó los 20 recursos (20/20 responden). Para la documentación de Apple se consulta su JSON de datos, que da 404 si la página no existe. Comprueba existencia, no que el contenido corresponda al tema; eso se revisó al escribir cada recurso.
 
 ## Criterios de aceptación que todavía no se cumplen
 
 - Más de 100 lecciones, 100 ejercicios y 100 retos: falta la producción de contenido de los módulos 2, 3 y 5 a 49.
-- Enlaces revisados: falta correr la verificación y actualizar `status` y `verifiedAt` en `resources.yaml`.
 - Swift se enseña con profundidad, UIKit y SwiftUI tienen etapas completas: hoy solo existe su plan.
 - Pruebas de accesibilidad automatizadas: no implementadas; se revisó manualmente estructura, foco y contraste.
 

@@ -10,8 +10,8 @@ resources:
     kind: oficial
     topic: Lenguaje Swift
     why: Es la referencia oficial del lenguaje. Cada capítulo del curso de Swift remite a la sección correspondiente.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: swift-book-basics
     title: The Basics (The Swift Programming Language)
     source: Swift.org
@@ -19,8 +19,8 @@ resources:
     kind: oficial
     topic: Constantes, variables, tipos e interpolación
     why: Describe con precisión let, var, anotaciones de tipo, comentarios y print, que son el tema de tus primeros programas.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: swift-book-basic-operators
     title: Basic Operators (The Swift Programming Language)
     source: Swift.org
@@ -28,8 +28,8 @@ resources:
     kind: oficial
     topic: Operadores
     why: Lista oficial de operadores aritméticos, de comparación y lógicos, con las reglas que el compilador aplica.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: swift-book-tour
     title: A Swift Tour
     source: Swift.org
@@ -37,8 +37,8 @@ resources:
     kind: oficial
     topic: Panorama del lenguaje
     why: Un recorrido corto por todo el lenguaje. Úsalo como mapa, no como lección; el curso desarrolla cada tema por separado.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: swift-install
     title: Install Swift
     source: Swift.org
@@ -46,8 +46,8 @@ resources:
     kind: oficial
     topic: Instalación de la toolchain
     why: Indica la versión estable actual y cómo instalar Swift fuera de Xcode, por ejemplo para usar `swift` desde la terminal en Linux.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: swift-org
     title: Swift.org
     source: Swift.org
@@ -55,8 +55,8 @@ resources:
     kind: oficial
     topic: Proyecto Swift
     why: Sitio del proyecto de código abierto; publica las versiones del lenguaje y su evolución.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: swift-evolution
     title: Swift Evolution
     source: GitHub · swiftlang
@@ -64,8 +64,8 @@ resources:
     kind: referencia
     topic: Evolución del lenguaje
     why: Cada cambio del lenguaje se discute como una propuesta numerada (SE-xxxx). Sirve para saber en qué versión llegó una característica.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: xcode-overview
     title: Xcode
     source: Apple Developer
@@ -73,8 +73,8 @@ resources:
     kind: oficial
     topic: IDE
     why: Página oficial de Xcode con sus componentes y enlace de descarga.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: xcode-requirements
     title: Xcode system requirements
     source: Apple Developer
@@ -82,8 +82,8 @@ resources:
     kind: oficial
     topic: Versiones de Xcode, macOS, SDK y deployment targets
     why: Tabla oficial de qué macOS necesita cada Xcode, qué versión de Swift incluye y qué deployment targets admite.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: apple-documentation
     title: Apple Developer Documentation
     source: Apple Developer
@@ -91,8 +91,8 @@ resources:
     kind: oficial
     topic: Documentación de frameworks
     why: Punto de entrada a la documentación de todos los frameworks. Aprende a navegarla desde el principio.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: develop-in-swift
     title: Develop in Swift Tutorials
     source: Apple Developer
@@ -100,8 +100,8 @@ resources:
     kind: tutorial
     topic: Primeras apps con SwiftUI
     why: Ruta introductoria de Apple. Complementa la etapa de SwiftUI con ejercicios guiados en Xcode.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: swift-print
     title: print(_:separator:terminator:)
     source: Apple Developer
@@ -109,8 +109,8 @@ resources:
     kind: oficial
     topic: print
     why: Documenta los parámetros separator y terminator, que explican por qué cada print termina en un salto de línea.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: tn3187-scenes
     title: "TN3187: Migrating to the UIKit scene-based life cycle"
     source: Apple Developer
@@ -118,8 +118,8 @@ resources:
     kind: oficial
     topic: Ciclo de vida por escenas
     why: Desde el SDK de iOS 27 las apps UIKit deben adoptar escenas; esta nota técnica explica la migración.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: hig
     title: Human Interface Guidelines
     source: Apple Developer
@@ -127,8 +127,8 @@ resources:
     kind: oficial
     topic: Diseño de interfaces
     why: Criterios de diseño de Apple para cualquier plataforma; se citan en las etapas de UIKit y SwiftUI.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: swift-testing-docs
     title: Swift Testing
     source: Apple Developer
@@ -136,8 +136,8 @@ resources:
     kind: oficial
     topic: Pruebas con @Test y #expect
     why: Documentación del framework de pruebas que usan los retos de este curso.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: owasp-masvs
     title: OWASP MASVS
     source: OWASP
@@ -145,8 +145,8 @@ resources:
     kind: referencia
     topic: Estándar de seguridad de apps móviles
     why: Estándar de requisitos de seguridad móvil que muchos bancos usan como base para auditorías.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: owasp-mastg
     title: OWASP MASTG
     source: OWASP
@@ -154,8 +154,8 @@ resources:
     kind: referencia
     topic: Pruebas de seguridad de apps móviles
     why: Guía técnica que explica cómo se prueba cada control del MASVS en iOS.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: apple-platform-security
     title: Apple Platform Security
     source: Apple Support
@@ -163,8 +163,8 @@ resources:
     kind: oficial
     topic: Seguridad de la plataforma
     why: Explica Secure Enclave, Data Protection y Keychain desde el diseño del sistema.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: keychain-services
     title: Keychain services
     source: Apple Developer
@@ -172,8 +172,8 @@ resources:
     kind: oficial
     topic: Almacenamiento seguro de secretos
     why: API oficial para guardar credenciales y llaves; base del módulo de desarrollo seguro.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
   - id: app-review-guidelines
     title: App Review Guidelines
     source: Apple Developer
@@ -181,5 +181,5 @@ resources:
     kind: oficial
     topic: Revisión de App Store
     why: Reglas con las que Apple revisa cada app; necesarias en la etapa de distribución.
-    status: no-verificado
-    verifiedAt: null
+    status: verificado
+    verifiedAt: 2026-11-03
