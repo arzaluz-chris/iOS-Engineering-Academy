@@ -462,3 +462,48 @@ resources:
     why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
     status: unverified
     verifiedAt: null
+  - id: swift-book-error-handling
+    title: Error Handling (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/errorhandling/
+    kind: official
+    topic: throws, try, do-catch, typed throws and defer
+    why: The language reference for throwing, propagating and handling errors, including typed throws. Read it after the error-handling lessons.
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-arc
+    title: Automatic Reference Counting (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/automaticreferencecounting/
+    kind: official
+    topic: ARC, strong reference cycles, weak and unowned
+    why: Explains strong reference cycles between instances and with closures, and how capture lists with weak or unowned break them.
+    status: unverified
+    verifiedAt: null
+  - id: swift-result
+    title: Result
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/swift/result
+    kind: official
+    topic: Result type
+    why: The Result API, including init(catching:), get() and map/flatMap over success and failure.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-localizederror
+    title: LocalizedError
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/foundation/localizederror
+    kind: official
+    topic: User-facing error messages
+    why: The protocol behind errorDescription and recoverySuggestion, which SwiftUI's alert(isPresented:error:actions:) reads.
+    status: unverified
+    verifiedAt: null
+  - id: swift-precondition
+    title: precondition(_:_:file:line:)
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/swift/precondition(_:_:file:line:)
+    kind: official
+    topic: Checking conditions that must hold
+    why: How precondition differs from assert and fatalError, including what happens in optimized builds.
+    status: unverified
+    verifiedAt: null
