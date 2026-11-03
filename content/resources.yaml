@@ -507,3 +507,21 @@ resources:
     why: How precondition differs from assert and fatalError, including what happens in optimized builds.
     status: unverified
     verifiedAt: null
+  - id: xcode-memory-use
+    title: Gathering information about memory use
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/xcode/gathering-information-about-memory-use
+    kind: official
+    topic: Memory Graph Debugger, memory report and Allocations
+    why: Apple's walkthrough of the memory gauge, the Debug Memory Graph and the Allocations instrument, which is the workflow the leaks lesson follows.
+    status: unverified
+    verifiedAt: null
+  - id: xcode-reduce-memory
+    title: Making changes to reduce memory use
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/xcode/making-changes-to-reduce-memory-use
+    kind: official
+    topic: Leaks instrument and abandoned memory
+    why: Explains what the Leaks instrument finds, what it can't (abandoned memory), and how to fix the usual causes.
+    status: unverified
+    verifiedAt: null
