@@ -4,7 +4,7 @@ Academia personal de iOS para Christian. Sitio estático en GitHub Pages; sin ba
 
 ## Antes de trabajar
 
-1. Lee `docs/ESTADO.md` (qué está hecho y qué sigue) y `docs/CONTENIDO.md` (formato del contenido).
+1. Lee `docs/ESTADO.md` (qué está hecho y qué sigue), `docs/CONTENIDO.md` (formato del contenido) y, si necesitas contexto, `docs/ESPECIFICACION.md` y `docs/fases/`.
 2. Contenido en `content/`, soluciones Swift en `swift/`, aplicación en `src/`.
 
 ## Reglas

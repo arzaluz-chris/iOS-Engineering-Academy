@@ -56,3 +56,5 @@ GitHub Pages debe tener **Settings → Pages → Source: GitHub Actions**.
 - [`docs/CURRICULO.md`](docs/CURRICULO.md): mapa, secuencia de prerrequisitos y criterios de evaluación.
 - [`docs/INVESTIGACION.md`](docs/INVESTIGACION.md): fuentes, versiones vigentes y decisiones técnicas investigadas.
 - [`docs/ESTADO.md`](docs/ESTADO.md): progreso de producción, criterios de aceptación pendientes y siguiente paso.
+- [`docs/fases/`](docs/fases/README.md): informes de cada fase (auditoría, investigación completa, diseño, construcción, contenido, pruebas, auditoría).
+- [`docs/ESPECIFICACION.md`](docs/ESPECIFICACION.md): especificación original del proyecto.
