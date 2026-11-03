@@ -336,3 +336,30 @@ resources:
     why: The initializer behind the grouping examples in the collections module.
     status: unverified
     verifiedAt: null
+  - id: swift-optional
+    title: Optional
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/swift/optional
+    kind: official
+    topic: Optional API
+    why: The reference for Optional itself, including the enum cases, nil-coalescing and optional chaining as the standard library defines them.
+    status: unverified
+    verifiedAt: null
+  - id: swift-optional-map
+    title: Optional.map(_:)
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/swift/optional/map(_:)
+    kind: official
+    topic: Transforming optionals
+    why: How map transforms the wrapped value only when there is one, which is what the nested-optionals lesson builds on.
+    status: unverified
+    verifiedAt: null
+  - id: swift-fatalerror
+    title: fatalError(_:file:line:)
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/swift/fatalerror(_:file:line:)
+    kind: official
+    topic: Stopping on programmer errors
+    why: The function to reach for when a nil really means a bug, instead of a bare force unwrap.
+    status: unverified
+    verifiedAt: null
