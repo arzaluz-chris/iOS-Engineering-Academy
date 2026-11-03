@@ -778,6 +778,12 @@ id: m19-l02-e6
 type: explain
 prompt: |
   A teammate built a "recent searches" feature that inserts each search timestamp into a hand-written BST and reports that it gets slower as the user searches more. Explain what's happening and what you'd use instead.
+code: |
+  var recentSearches: TreeNode? = nil
+
+  func recordSearch(at timestamp: Int) {
+      recentSearches = insert(recentSearches, timestamp)
+  }
 rubric:
   - Notices that timestamps arrive in increasing order.
   - Explains that sorted insertion makes the BST a chain of height n − 1, so each insert and search is O(n) and building is O(n²).

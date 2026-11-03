@@ -747,6 +747,14 @@ id: m19-l04-e5
 type: explain
 prompt: |
   A teammate says: "Building a heap from n elements is n sift-downs, and each sift-down is O(log n), so heapify is O(n log n). The O(n) claim must be wrong." Explain where the reasoning goes wrong and give the real bound with the argument.
+code: |
+  func heapify(_ a: inout [Int]) {
+      var index = a.count / 2 - 1
+      while index >= 0 {
+          siftDown(&a, from: index)
+          index -= 1
+      }
+  }
 rubric:
   - Agrees that each sift-down is O(log n) in the worst case, so O(n log n) is a valid upper bound but not tight.
   - Explains that a sift-down costs at most the node's height, not the tree's height.

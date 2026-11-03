@@ -73,7 +73,7 @@ Store "car", "card", "care", "cart", "cat" and "dog":
 - `*` marks a **terminal** node, the end of a stored word. "car" is a word and a prefix of "card", so its node is terminal and also has children. That's why a trie needs a flag; "is a leaf" isn't the same as "is a word".
 - Five words starting with "ca" share the c and a nodes. That sharing is what makes prefix queries cheap, and it's also the only place the trie saves memory.
 
-The name comes from re**trie**val. Most people pronounce it "try" to tell it apart from "tree".
+The name comes from re**trie**val. Many people pronounce it "try" to tell it apart from "tree".
 
 ## The node and insert
 

@@ -83,7 +83,7 @@ Draw a tree upside down, root at the top:
 - The **height** of a node is the number of edges on the longest path from it down to a leaf. A leaf has height 0; 3 has height 2 (3 → 6 → 4); the whole tree has height 3.
 - In a **binary tree** each node has at most two children, called **left** and **right**. The distinction matters: a node with only a right child is a different tree from a node with only a left child.
 
-Trees are everywhere in iOS work even when nobody calls them that: the view hierarchy (each view has subviews), the file system, a JSON document, the navigation stack of a split view, and SwiftUI's view graph. Those are general trees, with any number of children. Binary trees are the version algorithms are usually written for, and everything here carries over.
+Trees are everywhere in iOS work even when nobody calls them that: the view hierarchy (each view has subviews), the file system, a JSON document and SwiftUI's view graph. Those are general trees, with any number of children. Binary trees are the version algorithms are usually written for, and everything here carries over.
 
 ## A node as a class
 

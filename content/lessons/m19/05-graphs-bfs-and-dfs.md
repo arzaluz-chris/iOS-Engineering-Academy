@@ -105,12 +105,9 @@ print(matrix[3].map { $0 ? "1" : "0" }.joined())
 2 [0, 3]
 3 [1, 2, 4]
 4 [3]
-1
 true false
 01101
 ```
-
-Wait for the output check below; the important part is the structure:
 
 1. The graph is undirected, so each edge is stored twice: v in u's list and u in v's list. For a directed graph you'd store only `adjacency[u].append(v)`.
 2. The matrix row for 3 has a 1 in columns 1, 2 and 4.
@@ -219,7 +216,7 @@ print(shortestPath(from: "ben", to: "zed", in: follows) ?? ["no path"])
 1. This graph is **directed**: "ana follows ben" doesn't mean ben follows ana. The adjacency list only has the forward edges, and BFS follows them.
 2. `parent` stores the BFS tree. The start has no parent, which is what ends the walk back.
 3. The `break` stops as soon as the target is dequeued. Everything needed is already in `parent`.
-4. There are two shortest paths from ana to fay (via ben and dee, or via cy and dee or eli). BFS returns one of them, which one depends on the neighbor order.
+4. There are three shortest paths from ana to fay: through ben and dee, through cy and dee, and through cy and eli. BFS returns one of them, and which one depends on the order of the neighbor lists.
 
 ## Depth-first search
 
@@ -308,7 +305,7 @@ components: 3
 
 The label array is the visited set and the answer at once. Here the traversal marks on push, since only reachability matters, not the order. Every vertex and edge is handled once across **all** the traversals together, so the whole thing is still O(V + E), not O(V · (V + E)). Uses: "how many separate friend groups", "which photos belong to the same cluster", "can these two devices reach each other at all".
 
-The next lesson but one, union-find, answers the same question when edges arrive one at a time.
+Union-find, two lessons from now, answers the same question when edges arrive one at a time.
 
 ## Grids are graphs
 
@@ -434,16 +431,16 @@ code: |
   }
   print(queue)
 
-  var seen = Set<Int>()
-  var order: [Int] = []
-  func dfs(_ vertex: Int) {
+  func dfs(_ vertex: Int, _ seen: inout Set<Int>, _ order: inout [Int]) {
       seen.insert(vertex)
       order.append(vertex)
       for neighbor in adjacency[vertex] where !seen.contains(neighbor) {
-          dfs(neighbor)
+          dfs(neighbor, &seen, &order)
       }
   }
-  dfs(0)
+  var seen = Set<Int>()
+  var order: [Int] = []
+  dfs(0, &seen, &order)
   print(order)
 output: |
   [0, 1, 4, 2, 3, 5]
@@ -459,7 +456,7 @@ solution: |
 
   BFS processes by distance: 0 (distance 0), then 1 and 4 (distance 1), then 2 and 3 (discovered from 1, distance 2), then 5 (discovered from 2, distance 3). When 3 is processed, 5 is already marked, so it isn't added again.
 
-  DFS from 0 goes to its first neighbor 1, then 1's first unvisited neighbor 2, then 2's unvisited neighbor 5, then 5's unvisited neighbor 3. From 3, every neighbor is seen, so it backtracks all the way to 0, whose second neighbor 4 is still unvisited. DFS reached 3 through a path of length 4 (0, 1, 2, 5, 3) even though 3 is two steps from 0. The functions can use `seen` and `order` here because top-level code and these calls all run on the main actor in a script.
+  DFS from 0 goes to its first neighbor 1, then 1's first unvisited neighbor 2, then 2's unvisited neighbor 5, then 5's unvisited neighbor 3. From 3, every neighbor is seen, so it backtracks all the way to 0, whose second neighbor 4 is still unvisited. DFS reached 3 through a path of length 4 (0, 1, 2, 5, 3) even though 3 is two steps from 0.
 ````
 
 ````exercise
@@ -492,7 +489,7 @@ choices:
     why: Duplicates are wasteful, but the first time the target is dequeued is still at its smallest distance, because the queue stays in non-decreasing distance order.
   - text: It loops forever on a graph with a cycle.
     correct: false
-    why: Dequeued vertices are marked, so each vertex's neighbors are scanned at most once per copy and the duplicates are finite. It terminates, just slowly.
+    why: Once a copy of a vertex is dequeued, the vertex is marked and no new copies of it are made, so the queue eventually empties. It can hold a lot of duplicates first.
 rubric:
   - I found the late marking and explained the duplicate enqueues.
   - I found the O(n) removeFirst.
@@ -534,7 +531,7 @@ solution: |
 ````exercise
 id: m19-l05-e4
 type: fill-in
-prompt: Complete the grid traversal so it counts the cells reachable from the top-left corner, moving up, down, left and right through `.` cells. The program should print `7`.
+prompt: Complete the grid traversal so it counts the cells reachable from the top-left corner, moving up, down, left and right through `.` cells. The program should print `9`.
 code: |
   let grid = [
       Array("..#."),
@@ -592,10 +589,10 @@ solution: |
   ```
 
   ```output
-  7
+  9
   ```
 
-  Rows are bounded by `height` and columns by `width`; the bounds check comes before any indexing. `seen` marks cells when they're pushed, so each cell is counted once. From (0, 0) the walk reaches (0, 1), (1, 0), and the whole third row, which connects up to (1, 3), but not (0, 3) through the wall... check the grid again: (0, 3) is `.` and sits above (1, 3), so it's reachable too. That's 2 + 1 + 4 = 7 cells: (0,0), (0,1), (1,0), (2,0)...(2,3), and (1,3) and (0,3) would make 9. The output says 7, which the next paragraph reconciles.
+  Rows are bounded by `height` and columns by `width`, and the bounds check comes before any indexing. `seen` marks cells when they're pushed, so each cell is counted once. From (0, 0) the walk reaches (0, 1) and (1, 0), goes down to the third row and along all four of its cells, then up the right column through (1, 3) to (0, 3). That's 2 + 1 + 4 + 2 = 9 cells. The bottom row is all wall, and the walls at (0, 2), (1, 1) and (1, 2) are never counted. The rows are built two ways, `Array("..#.")` and `"....".map { $0 }`; both give `[Character]`.
 ````
 
 ````exercise
@@ -686,7 +683,7 @@ prompt: |
   ```output
   3 4
   0 0
-  1 6
+  1 5
   ```
 starter: |
   func islands(_ rows: [String]) -> (count: Int, largest: Int) {
