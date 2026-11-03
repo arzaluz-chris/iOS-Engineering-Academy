@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: November 3, 2026 (after Module 15; Module 14 is being written).
+Last updated: November 3, 2026 (after Module 16; Module 14 is being written).
 
 ## Done
 
@@ -17,16 +17,16 @@ Last updated: November 3, 2026 (after Module 15; Module 14 is being written).
 | Type | Written | Planning target |
 | --- | --- | --- |
 | Stages | 15 (full map) | 12–16 |
-| Modules | 49 on the map; 14 with lessons (M1 to M13, M15) | — |
-| Lessons | 79 (M1: 3, M2: 5, M3: 5, M4–M13 and M15: 6 each); 77 `tested`, 2 `no-code` | more than 100 |
-| Lesson exercises | 454 (comprehension 89, prediction 83, solve 79, find-errors 57, fill-in 56, explain 40, refactor 27, design 23) | at least 100 |
-| Review cards | 348 | — |
+| Modules | 49 on the map; 15 with lessons (M1 to M13, M15, M16) | — |
+| Lessons | 85 (M1: 3, M2: 5, M3: 5, M4–M13, M15 and M16: 6 each); 83 `tested`, 2 `no-code` | more than 100 |
+| Lesson exercises | 490 (comprehension 95, prediction 89, solve 85, find-errors 63, fill-in 62, explain 41, refactor 28, design 27) | at least 100 |
+| Review cards | 378 | — |
 | Coding challenges | 5, with Swift solutions and tests | at least 100 |
 | Interview questions | 210 across 14 categories (swift 35, uikit 22, concurrency 20, swiftui 19, architecture 17, system-design 15, security 13, testing 12, networking 11, platform 10, memory 9, performance 9, persistence 9, tooling 9) | a broad bank |
 | Projects | 8 specified with milestones | 8 |
 | Resources | 58; 21 verified, 37 with `status: unverified` (each returned 200 when added) | — |
 
-Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP and protocols, generics and functional programming, error handling, memory management), and Module 15 (Algorithmic Complexity) opens the algorithms stage. The snippet tests run 83 predictions and 881 Swift blocks; all pass on Swift 6.3.3 (Linux container) and in CI on macOS.
+Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP and protocols, generics and functional programming, error handling, memory management), and the algorithms stage has M15 (Algorithmic Complexity) and M16 (Arrays, Hashing and Windows). The snippet tests run 89 predictions and 944 Swift blocks; all pass on Swift 6.3.3 (Linux container) and in CI on macOS.
 
 **Interview bank (3 Nov 2026):** questions were chosen from what real iOS interviews ask (interview write-ups, prep guides, articles) and cover every topic in the table of contents of a popular interview-prep book the owner provided. Nothing was copied from any source: every answer was written for this course and checked against primary sources (Swift Evolution, The Swift Programming Language, Apple documentation); Swift code in answers was compiled and run in the container. A private fact-check of that book (errors, outdated claims, broken code) was given to the owner and is not in the repository.
 
@@ -54,7 +54,7 @@ Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP
 
 ## Next step
 
-1. Module 14 (Professional Tools) is being written; then Module 16 (Arrays, Hashing and Windows) and the rest in curriculum order.
+1. Module 14 (Professional Tools) is being written; then Module 17 (Stacks, Queues and Linked Lists) and the rest in curriculum order.
 2. Coding challenges for the array and hashing patterns, now that M7 is in place.
 3. Check Module 3's Xcode UI instructions in Xcode 27 and, if they match, note it here.
 4. When the links workflow confirms the 37 unverified resources, change their `status` to `verified` with a date.
