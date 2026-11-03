@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: November 3, 2026 (after Modules 14 and 16; Module 17 is being written).
+Last updated: November 3, 2026 (after Module 17; Module 18 is being written).
 
 ## Done
 
@@ -17,16 +17,16 @@ Last updated: November 3, 2026 (after Modules 14 and 16; Module 17 is being writ
 | Type | Written | Planning target |
 | --- | --- | --- |
 | Stages | 15 (full map) | 12–16 |
-| Modules | 49 on the map; 16 with lessons (M1 to M16) | — |
-| Lessons | 91 (M1: 3, M2: 5, M3: 5, M4–M16: 6 each); 89 `tested`, 2 `no-code` | more than 100 |
-| Lesson exercises | 529 (comprehension 102, prediction 95, solve 91, find-errors 69, fill-in 67, explain 45, refactor 31, design 29) | at least 100 |
-| Review cards | 408 | — |
+| Modules | 49 on the map; 17 with lessons (M1 to M17) | — |
+| Lessons | 97 (M1: 3, M2: 5, M3: 5, M4–M17: 6 each); 95 `tested`, 2 `no-code` | more than 100 |
+| Lesson exercises | 565 (comprehension 108, prediction 101, solve 97, find-errors 75, fill-in 73, explain 48, design 32, refactor 31) | at least 100 |
+| Review cards | 438 | — |
 | Coding challenges | 5, with Swift solutions and tests | at least 100 |
 | Interview questions | 210 across 14 categories (swift 35, uikit 22, concurrency 20, swiftui 19, architecture 17, system-design 15, security 13, testing 12, networking 11, platform 10, memory 9, performance 9, persistence 9, tooling 9) | a broad bank |
 | Projects | 8 specified with milestones | 8 |
-| Resources | 62; 21 verified, 41 with `status: unverified` (each returned 200 when added) | — |
+| Resources | 63; 21 verified, 42 with `status: unverified` (each returned 200 when added) | — |
 
-Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP and protocols, generics and functional programming, error handling, memory management), M14 (Professional Tools: packages, Git, pull requests, naming and SOLID; its Git output comes from real runs of Git 2.43 against throwaway repositories, and its Xcode steps are from Apple's docs, not checked in Xcode), and the algorithms stage has M15 (Algorithmic Complexity) and M16 (Arrays, Hashing and Windows). The snippet tests run 95 predictions and 973 Swift blocks; all pass on Swift 6.3.3 (Linux container) and in CI on macOS.
+Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP and protocols, generics and functional programming, error handling, memory management), M14 (Professional Tools: packages, Git, pull requests, naming and SOLID; its Git output comes from real runs of Git 2.43 against throwaway repositories, and its Xcode steps are from Apple's docs, not checked in Xcode), and the algorithms stage has M15 (Algorithmic Complexity), M16 (Arrays, Hashing and Windows) and M17 (Stacks, Queues and Linked Lists; what it says about deep linked-list teardown was measured on Linux only and is labeled that way). The snippet tests run 101 predictions and 1022 Swift blocks; all pass on Swift 6.3.3 (Linux container) and in CI on macOS.
 
 **Interview bank (3 Nov 2026):** questions were chosen from what real iOS interviews ask (interview write-ups, prep guides, articles) and cover every topic in the table of contents of a popular interview-prep book the owner provided. Nothing was copied from any source: every answer was written for this course and checked against primary sources (Swift Evolution, The Swift Programming Language, Apple documentation); Swift code in answers was compiled and run in the container. A private fact-check of that book (errors, outdated claims, broken code) was given to the owner and is not in the repository.
 
@@ -54,10 +54,10 @@ Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP
 
 ## Next step
 
-1. Module 17 (Stacks, Queues and Linked Lists) is being written; then Module 18 (Recursion, Backtracking and Sorting) and the rest in curriculum order.
+1. Module 18 (Recursion, Backtracking and Sorting) is being written; then Module 19 and the rest in curriculum order.
 2. Coding challenges for the array and hashing patterns, now that M7 is in place.
 3. Check Module 3's Xcode UI instructions in Xcode 27 and, if they match, note it here.
-4. When the links workflow confirms the 41 unverified resources, change their `status` to `verified` with a date.
+4. When the links workflow confirms the 42 unverified resources, change their `status` to `verified` with a date.
 5. `docs/RESEARCH.md` lists UIKit's automatic observation tracking as unverified; Apple's docs now document it (opt-in on iOS 18 via `UIObservationTrackingEnabled`, on by default from iOS 26, `updateProperties()` from iOS 26). Update that note.
 
 How a module is produced: one agent per module with a fixed list of lesson ids and titles, following `docs/CONTENT.md`; every code block and prediction must pass `LessonSnippetsTests` before the module is accepted. Each module is then verified on a clean checkout of `main` containing only that module (`npm run validate`, `tsc`, `vitest`, `vite build`, `swift test`) and committed on its own.
