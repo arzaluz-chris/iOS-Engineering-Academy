@@ -38,7 +38,7 @@ mastery:
   - Find a commit in git log and show what it changed with git show.
   - Write a .gitignore that keeps .build/, DerivedData/, xcuserdata/ and .DS_Store out of the repository.
   - Stop tracking an already committed file with git rm --cached without deleting it from disk.
-resources: [swift-cli-getting-started, swiftpm-docs]
+resources: [git-commit-reference, swift-cli-getting-started, swiftpm-docs]
 cards:
   - id: m14-l02-c1
     front: What are the three places a change passes through in Git?

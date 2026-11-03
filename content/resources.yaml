@@ -525,3 +525,39 @@ resources:
     why: Explains what the Leaks instrument finds, what it can't (abandoned memory), and how to fix the usual causes.
     status: unverified
     verifiedAt: null
+  - id: git-commit-reference
+    title: git-commit
+    source: Git documentation
+    url: https://git-scm.com/docs/git-commit
+    kind: reference
+    topic: Git commits
+    why: The exact behavior of git commit and its options, including amending a commit and writing the message.
+    status: unverified
+    verifiedAt: null
+  - id: git-merge-reference
+    title: git-merge
+    source: Git documentation
+    url: https://git-scm.com/docs/git-merge
+    kind: reference
+    topic: Git merging
+    why: How merges work, fast-forward versus merge commits, and how Git presents conflicts.
+    status: unverified
+    verifiedAt: null
+  - id: pro-git-rebasing
+    title: Git Branching - Rebasing
+    source: Pro Git book
+    url: https://git-scm.com/book/en/v2/Git-Branching-Rebasing
+    kind: tutorial
+    topic: Git rebase
+    why: What rebase does to your commits, how it compares with merge, and the rule about not rebasing shared history.
+    status: unverified
+    verifiedAt: null
+  - id: github-pull-request-reviews
+    title: Pull request reviews
+    source: GitHub Docs
+    url: https://docs.github.com/en/pull-requests/reference/pull-request-reviews
+    kind: official
+    topic: Code review
+    why: The review states on GitHub (comment, approve, request changes) and how reviews relate to merging.
+    status: unverified
+    verifiedAt: null

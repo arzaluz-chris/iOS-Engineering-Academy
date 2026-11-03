@@ -35,7 +35,7 @@ mastery:
   - Review a 20-line diff and leave at least one correctness comment, one clarity comment and one comment about tests.
   - Rewrite a vague or harsh review comment into a specific, kind and actionable one.
   - Explain what a required status check prevents.
-resources: [swift-cli-getting-started]
+resources: [github-pull-request-reviews, swift-cli-getting-started]
 cards:
   - id: m14-l04-c1
     front: What does git push -u origin feature do?

@@ -451,7 +451,7 @@ struct ExpensesCommand: ParsableCommand {
 }
 ```
 
-`@Argument` and `@Flag` are property wrappers from the library (you'll write your own in a later module). They tell the parser that `amounts` comes from the positional arguments and `verbose` from `--verbose`. A file that uses `@main` can't be called `main.swift`, which is why the file was renamed.
+`@Argument` and `@Flag` are property wrappers from the library: attributes that add behavior to a property. You'll use many of them in the SwiftUI modules (`@State`, `@Binding`). Here they tell the parser that `amounts` comes from the positional arguments and `verbose` from `--verbose`. The program now starts at the `@main` type instead of at top-level statements, and the file is named after that type.
 
 The first build fetches the package:
 
@@ -844,6 +844,11 @@ solution: |
 id: m14-l01-e7
 type: explain
 prompt: "A teammate asks why `Package.resolved` is in the repository. \"It's generated, so shouldn't it be ignored like `.build`?\" Answer them."
+code: |
+  # .gitignore proposed in the pull request
+  .DS_Store
+  /.build
+  Package.resolved
 rubric:
   - I said Package.resolved records the exact version and commit of every dependency.
   - I explained that swift build uses those pins instead of the newest allowed version.

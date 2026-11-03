@@ -36,7 +36,7 @@ mastery:
   - Resolve a conflict in a Swift file, prove the result builds and passes its tests, and conclude the merge.
   - Abort a merge you don't want to finish with git merge --abort.
   - Say when rebasing your own branch is fine and when it would hurt your team.
-resources: [swift-cli-getting-started]
+resources: [git-merge-reference, pro-git-rebasing, swift-cli-getting-started]
 cards:
   - id: m14-l03-c1
     front: What is a Git branch, physically?
@@ -695,6 +695,10 @@ solution: |
 id: m14-l03-e6
 type: explain
 prompt: "Your branch `csv-line` exists only on your machine. A teammate's branch `payments` was pushed yesterday and two people have pulled it. Explain whether it's OK to rebase each one onto the latest `main`, and why."
+code: |
+  main       moved on since both branches started
+  csv-line   1 commit, never pushed, only on your machine
+  payments   2 commits, pushed yesterday, pulled by two teammates
 rubric:
   - I explained that rebase creates new commits with new hashes.
   - I said rebasing csv-line is fine because nobody else has its commits.
