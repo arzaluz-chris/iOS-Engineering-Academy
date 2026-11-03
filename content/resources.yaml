@@ -183,3 +183,21 @@ resources:
     why: Reglas con las que Apple revisa cada app; necesarias en la etapa de distribución.
     status: verificado
     verifiedAt: 2026-11-03
+  - id: swift-book-control-flow
+    title: Control Flow (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/controlflow/
+    kind: oficial
+    topic: if, for-in, while y switch
+    why: Describe las estructuras de decisión y repetición de Swift a las que se traduce el pseudocódigo del curso.
+    status: no-verificado
+    verifiedAt: null
+  - id: swift-book-functions
+    title: Functions (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/functions/
+    kind: oficial
+    topic: Funciones
+    why: Muestra cómo un procedimiento con entrada y salida se convierte en una función de Swift con parámetros y valor de retorno.
+    status: no-verificado
+    verifiedAt: null

@@ -93,6 +93,8 @@ export function validateCatalog(c: Catalog): Report {
         if (!e.multiple && correct !== 1) err(where, 'Selección única con más de una respuesta correcta')
       }
       if (e.type === 'errores' && !e.choices.some((ch) => ch.correct)) err(where, 'Ninguna opción identifica un error real')
+      if (e.type === 'prediccion' && e.lang === 'pseudo' && !/^```swift[^\S\n]*$/m.test(e.solution))
+        err(where, 'Predicción en pseudocódigo sin traducción a Swift en la solución (bloque ```swift) para verificar la salida')
       if (e.type === 'completar') {
         const holes = [...e.code.matchAll(/\[\[(\w+)\]\]/g)].map((m) => m[1])
         const declared = e.blanks.map((b) => b.id)

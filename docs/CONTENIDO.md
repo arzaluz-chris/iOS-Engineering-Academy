@@ -49,7 +49,7 @@ Avisos disponibles dentro del texto:
 
 El target `swift/Tests/LessonSnippetsTests` lee `content/lessons/` y compila cada fragmento como programa independiente (`swiftc -swift-version 6`), lo ejecuta y compara su salida:
 
-- **Todo ejercicio `prediccion`**, en cualquier lección: `code` debe compilar y su salida debe ser exactamente `output`. Escribe `code` y `output` como bloques literales `|` (o `|-` si la salida no termina en salto de línea). Si la solución repite la salida en un bloque ```` ```output ````, debe coincidir con `output`.
+- **Todo ejercicio `prediccion`**, en cualquier lección: `code` debe compilar y su salida debe ser exactamente `output`. Escribe `code` y `output` como bloques literales `|` (o `|-` si la salida no termina en salto de línea). Si la solución repite la salida en un bloque ```` ```output ````, debe coincidir con `output`. Con `lang: pseudo`, `code` es pseudocódigo y la solución debe incluir su traducción en un bloque ```` ```swift ````: las pruebas ejecutan esa traducción (el validador exige que exista).
 - **En lecciones con `codeStatus: probado`**, cada bloque ```` ```swift ```` del texto y de las soluciones de ejercicios:
   - ```` ```swift ```` debe compilar y ejecutarse sin fallar. Si el siguiente bloque cercado es ```` ```output ````, la salida debe coincidir exactamente.
   - ```` ```swift no-compila <texto del diagnóstico> ```` debe fallar al compilar con un diagnóstico que contenga ese texto. Úsalo para los ejemplos de errores del compilador.
@@ -75,7 +75,7 @@ solution: |           # obligatoria, explicada
   …
 # campos por tipo:
 # comprension: choices [{text, correct, why}], multiple (bool)
-# prediccion:  code, output (exacta), accept (alternativas)
+# prediccion:  code, output (exacta), accept (alternativas), lang (swift | pseudo; por defecto swift)
 # completar:   code con huecos [[1]], blanks [{id: "1", answers: [...]}]
 # errores:     code, choices (problemas reales y distractores), rubric
 # resolver:    starter, rubric, tests (opcional, Swift Testing)

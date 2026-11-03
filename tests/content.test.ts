@@ -80,6 +80,22 @@ describe('validador', () => {
     expect(validateCatalog(catalog).errors.some((e) => e.message.includes('más de una respuesta correcta'))).toBe(true)
   })
 
+  it('exige la traducción a Swift en una predicción en pseudocódigo', () => {
+    const md = (solution: string) =>
+      `---\nid: a\ntitle: T\ndescription: D\nmodule: m01\norder: 1\nlevel: inicial\nminutes: 10\nobjectives: [o]\nmastery: [m]\ncodeStatus: sin-codigo\n---\n\`\`\`\`exercise\nid: e1\ntype: prediccion\nlang: pseudo\nprompt: P\ncode: |\n  Muestra 1\noutput: |\n  1\nsolution: |\n${solution}\n\`\`\`\`\n`
+    const sin = buildCatalog({ ...base, lessons: { 'a.md': md('  Muestra 1 imprime 1.') } })
+    expect(sin.issues).toEqual([])
+    expect(sin.catalog.lessons[0]?.exercises[0]).toMatchObject({ type: 'prediccion', lang: 'pseudo' })
+    expect(validateCatalog(sin.catalog).errors.some((e) => e.message.includes('sin traducción a Swift'))).toBe(true)
+    const con = buildCatalog({ ...base, lessons: { 'a.md': md('  Explicación.\n\n  ```swift\n  print(1)\n  ```') } })
+    expect(validateCatalog(con.catalog).errors.some((e) => e.message.includes('sin traducción a Swift'))).toBe(false)
+  })
+
+  it('una predicción sin lang se considera Swift', () => {
+    const md = `---\nid: a\ntitle: T\ndescription: D\nmodule: m01\norder: 1\nlevel: inicial\nminutes: 10\nobjectives: [o]\nmastery: [m]\ncodeStatus: sin-codigo\n---\n\`\`\`\`exercise\nid: e1\ntype: prediccion\nprompt: P\ncode: print(1)\noutput: "1"\nsolution: S\n\`\`\`\`\n`
+    expect(buildCatalog({ ...base, lessons: { 'a.md': md } }).catalog.lessons[0]?.exercises[0]).toMatchObject({ lang: 'swift' })
+  })
+
   it('reporta frontmatter inválido sin detenerse', () => {
     const { issues } = buildCatalog({ ...base, lessons: { 'x.md': '---\nid: X Mal\n---\nhola' } })
     expect(issues.length).toBeGreaterThan(0)

@@ -85,6 +85,11 @@ export const exerciseSchema = z.discriminatedUnion('type', [
     ...exerciseBase,
     type: z.literal('prediccion'),
     code: md,
+    /**
+     * Lenguaje de `code`. Con `pseudo`, la solución debe incluir la traducción a Swift en un bloque
+     * ```swift: las pruebas de swift/ ejecutan esa traducción y comparan su salida con `output`.
+     */
+    lang: z.enum(['swift', 'pseudo']).default('swift'),
     /** Salida esperada exacta. Se compara línea por línea, ignorando espacios al final. */
     output: z.string(),
     accept: z.array(z.string()).default([]),

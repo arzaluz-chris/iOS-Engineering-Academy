@@ -79,7 +79,7 @@ function Body({ exercise: e, record, attempted }: { exercise: Exercise; record: 
     case 'comprension':
       return <Choices choices={e.choices} multiple={e.multiple} record={record} />
     case 'prediccion':
-      return <Prediction code={e.code} output={e.output} accept={e.accept} record={record} />
+      return <Prediction code={e.code} lang={e.lang} output={e.output} accept={e.accept} record={record} />
     case 'completar':
       return <Blanks code={e.code} blanks={e.blanks} record={record} />
     case 'errores':
@@ -174,14 +174,18 @@ function Verdict({ ok }: { ok: boolean }) {
   )
 }
 
-function Prediction({ code, output, accept, record }: { code: string; output: string; accept: string[]; record: RecordFn }) {
+function Prediction({ code, lang, output, accept, record }: { code: string; lang: 'swift' | 'pseudo'; output: string; accept: string[]; record: RecordFn }) {
   const [answer, setAnswer] = useState('')
   const [checked, setChecked] = useState<boolean | null>(null)
   return (
     <div className="prediction">
-      <CodeView code={code} />
+      <CodeView code={code} lang={lang} />
       <label className="field">
-        <span>¿Qué imprime este programa? Escribe la salida exacta, una línea por cada print.</span>
+        <span>
+          {lang === 'pseudo'
+            ? '¿Qué muestra este algoritmo? Escribe la salida exacta, una línea por cada «Muestra».'
+            : '¿Qué imprime este programa? Escribe la salida exacta, una línea por cada print.'}
+        </span>
         <textarea className="mono" rows={Math.max(3, output.split('\n').length + 1)} value={answer} onChange={(e) => { setAnswer(e.target.value); setChecked(null) }} spellCheck={false} />
       </label>
       <div className="row">

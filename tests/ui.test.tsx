@@ -33,6 +33,17 @@ describe('interfaz', () => {
     expect(screen.getByRole('button', { name: 'Mostrar solución explicada' })).toBeDefined()
   })
 
+  it('una predicción en pseudocódigo se etiqueta como pseudocódigo y se califica igual', async () => {
+    const ref = getExercise('m02-l02-e2')!
+    expect(ref.exercise).toMatchObject({ type: 'prediccion', lang: 'pseudo' })
+    render(<ExerciseBlock exercise={ref.exercise} label="prueba" />)
+    expect(screen.getByText('Pseudocódigo')).toBeDefined()
+    expect(screen.getByText(/¿Qué muestra este algoritmo\?/)).toBeDefined()
+    fireEvent.change(screen.getByRole('textbox', { name: /¿Qué muestra este algoritmo/ }), { target: { value: '16\n10\n20\n1\n3\n9' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Comprobar salida' }))
+    await waitFor(async () => expect((await db.attempts.toArray())[0]?.result).toBe('correcto'))
+  })
+
   it('el dashboard sin progreso invita a empezar y no inventa métricas', async () => {
     render(<Dashboard />)
     expect(await screen.findByRole('heading', { name: 'Empieza desde cero' })).toBeDefined()

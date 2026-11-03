@@ -79,6 +79,13 @@ enum LessonSource {
                 guard let code = ex.blocks["code"], let output = ex.blocks["output"] else {
                     throw SnippetError.format("\(lesson.path) \(ex.id): code y output deben ser bloques `|`")
                 }
+                if ex.fields["lang"] == "pseudo" {
+                    // El pseudocódigo no se ejecuta: se ejecuta su traducción a Swift de la solución.
+                    guard let swift = fences(in: ex.blocks["solution"] ?? "").first(where: { $0.info == "swift" }) else {
+                        throw SnippetError.format("\(lesson.path) \(ex.id): falta la traducción a Swift en la solución")
+                    }
+                    return Snippet(lesson: lesson.id, location: "\(ex.id) (predicción, traducción a Swift)", code: swift.content, expectation: .runs(output: output))
+                }
                 return Snippet(lesson: lesson.id, location: "\(ex.id) (predicción)", code: code, expectation: .runs(output: output))
             }
         }
@@ -199,12 +206,15 @@ enum LessonSource {
                   let colon = line.firstIndex(of: ":") else { continue }
             let key = String(line[..<colon])
             let value = line[line.index(after: colon)...].trimmingCharacters(in: .whitespaces)
-            guard value == "|" || value == "|-" else {
+            // Bloque literal: `|`, `|-` y, con indicador de sangría, `|2`, `|2-` o `|-2`.
+            guard value.first == "|", value.count <= 3,
+                  value.dropFirst().allSatisfy({ $0 == "-" || $0.isNumber }) else {
                 ex.fields[key] = value.trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))
                 continue
             }
+            let strip = value.contains("-")
             var body: [String] = []
-            var indent: Int?
+            var indent: Int? = value.first(where: \.isNumber).flatMap { Int(String($0)) }
             while i < lines.count {
                 let l = lines[i]
                 let leading = l.prefix { $0 == " " }.count
@@ -219,7 +229,7 @@ enum LessonSource {
             }
             while body.last == "" { body.removeLast() }
             let text = body.joined(separator: "\n")
-            ex.blocks[key] = value == "|" && !body.isEmpty ? text + "\n" : text
+            ex.blocks[key] = !strip && !body.isEmpty ? text + "\n" : text
         }
         return ex
     }
