@@ -570,3 +570,30 @@ resources:
     why: When a class instance's deinitializer runs, what it can access, and how superclass deinitializers are called.
     status: unverified
     verifiedAt: null
+  - id: swift-array-sort
+    title: sort()
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/array/sort()
+    kind: reference
+    topic: Sorting in place
+    why: What Swift's sort guarantees (stability and O(n log n)) and what it requires of the element type.
+    status: unverified
+    verifiedAt: null
+  - id: swift-array-sorted-by
+    title: sorted(by:)
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/array/sorted(by:)
+    kind: reference
+    topic: Sorting with a comparator
+    why: The strict weak ordering a custom comparator must follow, and what sorted(by:) returns.
+    status: unverified
+    verifiedAt: null
+  - id: swift-comparable
+    title: Comparable
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/comparable
+    kind: reference
+    topic: Ordering values
+    why: How to conform a type to Comparable and the rules its < operator must follow.
+    status: unverified
+    verifiedAt: null
