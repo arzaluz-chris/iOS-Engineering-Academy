@@ -225,7 +225,7 @@ modules:
       - Design domain error types.
       - Choose between try, try? and try! and justify the choice.
       - Keep domain errors separate from infrastructure errors.
-    topics: [Error, Error enums, throw, throws, try, try?, try!, do-catch, Propagation, Typed throws, Recoverable errors, Validation, Domain and infrastructure errors]
+    topics: [Error, Error enums, throw, throws, try, "try?", "try!", do-catch, Propagation, Typed throws, Recoverable errors, Validation, Domain and infrastructure errors]
   - id: m13
     stage: s03
     number: 13
