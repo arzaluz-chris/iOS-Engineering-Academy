@@ -64,14 +64,23 @@
   --content: 1080px;
   --measure: 44rem;
 
+  /* swift.org code palette (light) */
+  --syn-plain: #000000;
+  --syn-punct: rgb(45, 100, 105);
   --syn-keyword: rgb(173, 61, 164);
+  --syn-decl: rgb(45, 100, 105);
+  --syn-ident: #b181ec;
   --syn-string: rgb(209, 47, 27);
   --syn-number: rgb(39, 42, 216);
-  --syn-comment: rgb(93, 108, 121);
-  --syn-type: rgb(112, 61, 170);
-  --syn-func: rgb(50, 109, 116);
+  --syn-comment: rgb(112, 127, 140);
   --syn-meta: rgb(120, 73, 42);
   --syn-attr: rgb(148, 113, 0);
+  --code-fill: #f2f2f2;
+  --code-plain-bg: #ffffff;
+  --code-plain-border: #d5d5d5;
+  --copy-bg: rgb(223, 223, 247);
+  --copy-bg-hover: rgb(216, 216, 242);
+  --copy-ok: rgb(12, 156, 12);
 
   color-scheme: light;
 }
@@ -112,14 +121,22 @@
     --footer-bg: #1e162e;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.35);
     --focus: #1ec1fd;
+    --syn-plain: #ffffff;
+    --syn-punct: #ffffff;
     --syn-keyword: rgb(255, 121, 179);
+    --syn-decl: rgb(120, 194, 179);
+    --syn-ident: #b181ec;
     --syn-string: rgb(255, 129, 112);
     --syn-number: rgb(217, 201, 124);
     --syn-comment: rgb(127, 140, 152);
-    --syn-type: rgb(218, 186, 255);
-    --syn-func: rgb(120, 194, 179);
     --syn-meta: rgb(255, 161, 79);
     --syn-attr: rgb(204, 151, 104);
+    --code-fill: #111727;
+    --code-plain-bg: #111727;
+    --code-plain-border: #575757;
+    --copy-bg: rgb(71, 79, 110);
+    --copy-bg-hover: rgb(80, 89, 124);
+    --copy-ok: rgb(11, 242, 11);
     color-scheme: dark;
   }
 }
@@ -158,14 +175,22 @@
   --code-line: #263049;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 30px rgba(0, 0, 0, 0.35);
   --focus: #1ec1fd;
+  --syn-plain: #ffffff;
+  --syn-punct: #ffffff;
   --syn-keyword: rgb(255, 121, 179);
+  --syn-decl: rgb(120, 194, 179);
+  --syn-ident: #b181ec;
   --syn-string: rgb(255, 129, 112);
   --syn-number: rgb(217, 201, 124);
   --syn-comment: rgb(127, 140, 152);
-  --syn-type: rgb(218, 186, 255);
-  --syn-func: rgb(120, 194, 179);
   --syn-meta: rgb(255, 161, 79);
   --syn-attr: rgb(204, 151, 104);
+  --code-fill: #111727;
+  --code-plain-bg: #111727;
+  --code-plain-border: #575757;
+  --copy-bg: rgb(71, 79, 110);
+  --copy-bg-hover: rgb(80, 89, 124);
+  --copy-ok: rgb(11, 242, 11);
   color-scheme: dark;
 }
 
@@ -242,10 +267,11 @@ pre {
   font-family: var(--mono);
 }
 :not(pre) > code {
-  font-size: 0.88em;
-  background: var(--card);
-  border-radius: 6px;
-  padding: 0.1em 0.38em;
+  font-size: 0.85em;
+  background: var(--code-fill);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.08em 0.35em;
   color: var(--ink);
   overflow-wrap: anywhere;
 }
@@ -1589,55 +1615,113 @@ h3:hover .anchor,
   margin-left: auto;
 }
 
-/* ---------- Code ---------- */
+/* ---------- Code (swift.org style) ---------- */
 
-.code {
+.code-block {
   margin: 1.5rem 0;
-  background: var(--code-bg);
-  border: 1px solid var(--code-line);
-  border-radius: var(--r-md);
-  overflow: hidden;
 }
-.code figcaption {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: var(--sans);
-  font-size: 0.78rem;
+.code-caption {
+  font-size: 0.8rem;
   font-weight: 500;
   color: var(--muted);
-  padding: 0.5rem 0.6rem 0.5rem 1.1rem;
-  border-bottom: 1px solid var(--code-line);
+  margin: 0 0 0.4rem;
 }
-.code pre {
-  margin: 0;
-  padding: 1rem 1.15rem;
+.code-block .highlight {
+  position: relative;
+  background: var(--code-fill);
+  border-radius: 10px;
   overflow-x: auto;
-  font-size: 0.86rem;
-  line-height: 1.6;
-  color: var(--code-ink);
 }
-.copy {
-  font: inherit;
-  font-size: 0.76rem;
-  color: var(--muted);
-  background: transparent;
+.code-plain .highlight {
+  background: var(--code-plain-bg);
+  border: 1px solid var(--code-plain-border);
+}
+.code-block pre {
+  margin: 0;
+  padding: 20px;
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--syn-punct);
+  tab-size: 4;
+}
+.code-plain pre {
+  color: var(--syn-plain);
+}
+.code-block code {
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+  padding: 0;
   border: 0;
-  border-radius: var(--r-pill);
-  padding: 0.2rem 0.65rem;
-  cursor: pointer;
 }
-.copy:hover {
-  background: var(--card-hover);
-  color: var(--ink);
+
+.copy-button {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 6px;
+  border: 0;
+  border-radius: 6px;
+  background-color: var(--copy-bg);
+  color: var(--syn-plain);
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+.copy-button svg {
+  width: 20px;
+  height: 20px;
+  opacity: 0.8;
+}
+.copy-button:hover {
+  background-color: var(--copy-bg-hover);
+}
+.copy-button:hover svg {
+  opacity: 1;
+}
+.copy-button.copied svg {
+  color: var(--copy-ok);
+  opacity: 1;
+}
+.highlight:hover .copy-button,
+.highlight:focus-within .copy-button,
+.copy-button.copied {
+  display: flex;
+}
+@media (hover: none) {
+  .copy-button {
+    display: flex;
+  }
 }
 
 .hljs-keyword,
-.hljs-literal {
+.hljs-type,
+.hljs-built_in {
   color: var(--syn-keyword);
-  font-weight: 500;
 }
-.hljs-string {
+.hljs-literal {
+  color: var(--syn-plain);
+}
+.hljs-title,
+.hljs-title.function_,
+.hljs-title.class_,
+.hljs-params,
+.hljs-variable,
+.hljs-decl {
+  color: var(--syn-decl);
+}
+.hljs-ident {
+  color: var(--syn-ident);
+}
+.hljs-operator,
+.hljs-punctuation {
+  color: var(--syn-punct);
+}
+.hljs-string,
+.hljs-subst {
   color: var(--syn-string);
 }
 .hljs-number {
@@ -1645,52 +1729,43 @@ h3:hover .anchor,
 }
 .hljs-comment {
   color: var(--syn-comment);
-  font-style: italic;
-}
-.hljs-type,
-.hljs-built_in,
-.hljs-title.class_ {
-  color: var(--syn-type);
-}
-.hljs-title.function_,
-.hljs-title {
-  color: var(--syn-func);
 }
 .hljs-meta {
   color: var(--syn-meta);
 }
 .hljs-attr,
-.hljs-params,
-.hljs-variable {
+.hljs-attribute {
   color: var(--syn-attr);
 }
 
 .editor {
-  border: 1px solid var(--code-line);
-  border-radius: var(--r-md);
+  border-radius: 10px;
   overflow: hidden;
-  background: var(--code-bg);
-  font-size: 0.88rem;
+  background: var(--code-fill);
+  font-size: 14px;
 }
 .editor .cm-editor {
-  background: var(--code-bg);
-  color: var(--code-ink);
+  background: var(--code-fill);
+  color: var(--syn-punct);
 }
 .editor .cm-scroller {
   font-family: var(--mono);
-  line-height: 1.6;
+  line-height: 1.5;
+}
+.editor .cm-content {
+  padding: 14px 0;
 }
 .editor .cm-gutters {
-  background: var(--code-bg);
-  color: var(--muted);
-  border-right: 1px solid var(--code-line);
+  background: var(--code-fill);
+  color: var(--syn-comment);
+  border-right: 0;
 }
 .editor .cm-activeLine,
 .editor .cm-activeLineGutter {
-  background: color-mix(in srgb, var(--orange-1) 7%, transparent);
+  background: color-mix(in srgb, var(--syn-ident) 9%, transparent);
 }
 .editor .cm-cursor {
-  border-left-color: var(--orange-2);
+  border-left-color: var(--syn-plain);
 }
 .editor .cm-focused {
   outline: none;
@@ -1701,7 +1776,7 @@ h3:hover .anchor,
 }
 .editor .cm-selectionBackground,
 .editor .cm-focused .cm-selectionBackground {
-  background: color-mix(in srgb, var(--orange-1) 22%, transparent) !important;
+  background: color-mix(in srgb, var(--syn-ident) 28%, transparent) !important;
 }
 
 /* ---------- Callouts ---------- */
@@ -1816,7 +1891,7 @@ h3:hover .anchor,
   color: transparent;
   font-weight: 700;
 }
-.exercise .code {
+.exercise .code-block {
   margin: 1rem 0;
 }
 
@@ -1867,16 +1942,17 @@ h3:hover .anchor,
 .self-graded textarea {
   font-family: var(--mono);
   font-size: 0.88rem;
-  background: var(--code-bg);
+  background: var(--code-fill);
 }
 
 .code-blanks {
-  background: var(--code-bg);
-  border: 1px solid var(--code-line);
-  border-radius: var(--r-md);
-  padding: 1rem 1.15rem;
-  font-size: 0.88rem;
+  background: var(--code-fill);
+  border: 0;
+  border-radius: 10px;
+  padding: 20px;
+  font-size: 14px;
   line-height: 2.2;
+  color: var(--syn-punct);
   overflow-x: auto;
   white-space: pre;
   margin: 1rem 0;
@@ -2048,7 +2124,7 @@ details summary {
 }
 .answer-echo {
   white-space: pre-wrap;
-  background: var(--code-bg);
+  background: var(--code-fill);
   border-radius: var(--r-md);
   padding: 1rem;
   font-size: 0.88rem;

@@ -1,10 +1,23 @@
 import { indentWithTab } from '@codemirror/commands'
-import { StreamLanguage } from '@codemirror/language'
+import { HighlightStyle, StreamLanguage, syntaxHighlighting } from '@codemirror/language'
 import { swift } from '@codemirror/legacy-modes/mode/swift'
 import { EditorState } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
+import { tags as t } from '@lezer/highlight'
 import { basicSetup } from 'codemirror'
 import { useEffect, useRef } from 'react'
+
+/** Same palette as the read-only code blocks, which follow swift.org. */
+const swiftOrgStyle = HighlightStyle.define([
+  { tag: [t.keyword, t.modifier, t.controlKeyword, t.definitionKeyword, t.typeName, t.className], color: 'var(--syn-keyword)' },
+  { tag: [t.string, t.special(t.string)], color: 'var(--syn-string)' },
+  { tag: [t.number, t.integer, t.float], color: 'var(--syn-number)' },
+  { tag: [t.comment, t.lineComment, t.blockComment], color: 'var(--syn-comment)' },
+  { tag: [t.definition(t.variableName), t.function(t.variableName), t.propertyName], color: 'var(--syn-decl)' },
+  { tag: [t.variableName, t.name], color: 'var(--syn-ident)' },
+  { tag: [t.meta, t.processingInstruction], color: 'var(--syn-meta)' },
+  { tag: [t.atom, t.bool], color: 'var(--syn-plain)' },
+])
 
 interface Props {
   value: string
@@ -34,7 +47,7 @@ export default function CodeEditor({ value, onChange, language = 'swift', label,
         extensions: [
           basicSetup,
           keymap.of([indentWithTab]),
-          ...(language === 'swift' ? [StreamLanguage.define(swift)] : [EditorView.lineWrapping]),
+          ...(language === 'swift' ? [StreamLanguage.define(swift), syntaxHighlighting(swiftOrgStyle)] : [EditorView.lineWrapping]),
           EditorState.tabSize.of(4),
           EditorView.contentAttributes.of({ 'aria-label': label, spellcheck: language === 'text' ? 'true' : 'false' }),
           EditorView.theme({ '.cm-content': { minHeight: `${minLines * 1.5}em` }, '.cm-scroller': { fontFamily: 'var(--mono)' } }),
