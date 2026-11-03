@@ -349,7 +349,7 @@ while head < queue.count {
 2. `taps` doubles as the "already seen" record: a screen gets its distance the moment it's discovered, and never again.
 3. Everything one tap from Home is enqueued before anything two taps away, because those are only discovered while processing the one-tap screens. FIFO keeps that order, so screens come out **level by level**, and the first time you discover a screen is along a shortest route.
 
-This is **breadth-first search**, and you'll study it properly in the graph modules. Swap the queue for a stack and the same loop goes deep before it goes wide: it would follow Home → Profile → Friends → Detail before looking at Search's branch, and the "taps" it records wouldn't be the shortest. The structure you choose **is** the algorithm.
+This is **breadth-first search**, and you'll study it properly with graphs in Module 19. Swap the queue for a stack (take from the end instead of at `head`) and the same loop goes deep before it goes wide: it follows Home → Profile → Friends → Detail before it looks at Search's branch. In this small graph the tap counts happen to come out the same, but in general a stack can discover a screen along a longer route first, and then the number it records isn't the shortest. The structure you choose **is** the algorithm.
 
 ## Common mistakes
 

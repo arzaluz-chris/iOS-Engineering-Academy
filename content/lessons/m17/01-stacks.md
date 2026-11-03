@@ -117,7 +117,7 @@ Line by line:
 2. `items` is `private`. Code outside the type can't insert in the middle or read the bottom element, so the LIFO rule can't be broken by accident.
 3. `top` is the **peek** operation. It returns `items.last`, which is `nil` for an empty stack.
 4. `push` appends. `pop` calls `popLast()`, which returns the removed element, or `nil` if the array is empty.
-5. `@discardableResult` lets you call `pop()` just to drop the top, as the third-from-last line does, without a warning about an unused result.
+5. `@discardableResult` lets you call `pop()` just to drop the top, as the second-to-last line does, without a warning about an unused result.
 6. `mutating` is needed because `Stack` is a struct: pushing and popping change its stored array.
 
 Because `Stack` is a struct holding an Array, it has **value semantics**. Assigning it to another variable gives you an independent stack (copy-on-write makes that copy lazy, as you saw in Module 15).
@@ -146,7 +146,7 @@ The signal is **nesting** or **going back**: the thing you need next is the most
 - **Matching**: a closing tag must close the most recently opened tag that's still open.
 - **Evaluation**: an operator applies to the most recent values computed.
 - **Navigation**: the Back button returns to the screen you came from. A navigation stack in UIKit or SwiftUI is named after this.
-- **Depth-first exploration**: go as deep as possible, then back up to the most recent branch point. That's what recursion does with the call stack, and you'll replace recursion with an explicit stack in the graph modules.
+- **Depth-first exploration**: go as deep as possible, then back up to the most recent branch point. That's what recursion does with the call stack, and you'll replace recursion with an explicit stack in Module 19.
 
 The [Valid Parentheses](#/challenge/valid-parentheses) challenge is a stack problem too. The examples below are different, so that one is still yours to solve.
 
