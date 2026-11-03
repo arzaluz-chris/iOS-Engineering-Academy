@@ -283,7 +283,7 @@ print(current)
 
 ### Why recording an array is safe
 
-`results.append(current)` stores the array **as it is right now**. Later `append` and `removeLast` calls on `current` don't reach into `results`, because arrays are values (Module 10): appending stores a copy, and copy-on-write only makes that copy when `current` is next modified. If the partial answer is a **class**, the same line stores a reference to one shared object:
+`results.append(current)` stores the array **as it is right now**. Later `append` and `removeLast` calls on `current` don't reach into `results`, because arrays are values (Module 7): appending stores a copy, and copy-on-write only makes that copy when `current` is next modified. If the partial answer is a **class**, the same line stores a reference to one shared object:
 
 ```swift
 final class Path {
@@ -485,8 +485,10 @@ id: m18-l02-e3
 type: fill-in
 prompt: Complete the combinations function so it returns every selection of k elements, in index order.
 code: |
-  func combinations(of items: [Int], size k: Int) -> [[Int]] {
-      var results: [[Int]] = []
+  typealias Combination = [Int]
+
+  func combinations(of items: [Int], size k: Int) -> [Combination] {
+      var results: [Combination] = []
       var current: [Int] = []
 
       func explore(from start: Int) {
@@ -700,7 +702,28 @@ solution: |
 id: m18-l02-e6
 type: explain
 prompt: |
-  A teammate converts the subsets generator to use a `final class Selection { var items: [Int] = [] }` as the partial answer "to avoid copying arrays", and appends the `Selection` object to `results`. Every result comes out empty. Explain what happened, and give two ways to fix it that keep the mutate-and-undo style.
+  A teammate converts the subsets generator to use a class as the partial answer "to avoid copying arrays". Every result comes out empty. Explain what happened, and give two ways to fix it that keep the mutate-and-undo style.
+code: |
+  final class Selection {
+      var items: [Int] = []
+  }
+
+  func subsets(_ values: [Int]) -> [Selection] {
+      var results: [Selection] = []
+      let selection = Selection()
+
+      func explore(from start: Int) {
+          results.append(selection)
+          for i in start..<values.count {
+              selection.items.append(values[i])
+              explore(from: i + 1)
+              selection.items.removeLast()
+          }
+      }
+
+      explore(from: 0)
+      return results
+  }
 rubric:
   - I explained that results holds many references to one object, which ends up empty after every choice is undone.
   - I explained that an array partial answer avoided this because appending a value stores a snapshot.

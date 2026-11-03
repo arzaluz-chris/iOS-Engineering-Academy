@@ -149,7 +149,7 @@ struct Folder {
 
 func printTree(_ folder: Folder, depth: Int) {
     let indent = String(repeating: "  ", count: depth)
-    print("\(indent)\(folder.name) (\(folder.fileSizes.count) files)")
+    print("\(indent)\(folder.name) \(folder.fileSizes)")
     for subfolder in folder.subfolders {
         printTree(subfolder, depth: depth + 1)
     }
@@ -165,10 +165,10 @@ printTree(photos, depth: 0)
 ```
 
 ```output
-Photos (2 files)
-  2025 (1 files)
-  2026 (2 files)
-    Trip (1 files)
+Photos [300, 450]
+  2025 [120]
+  2026 [80, 95]
+    Trip [500]
 ```
 
 The parent prints itself **before** its children, so the output reads top-down. Move the `print` after the loop and every folder would print after everything inside it. Exercise 2 is about that order.
