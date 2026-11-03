@@ -1,0 +1,275 @@
+questions:
+  - id: q-plat-core-location
+    category: platform
+    difficulty: medium
+    question: What is Core Location for, what authorization levels exist, and how do you balance accuracy against battery?
+    answer: |
+      Core Location gives you the device's position, heading and altitude, plus region monitoring and beacon ranging. It combines GPS, Wi-Fi, cell towers and other sensors, and it costs battery in proportion to how precise and how frequent you ask it to be.
+
+      **Authorization** has two axes:
+      - **When:** *When In Use* (`requestWhenInUseAuthorization()`) or *Always* (`requestAlwaysAuthorization()`). The user can also pick **Allow Once**, a temporary When In Use grant that reverts to not determined afterward. To get Always, you ask for When In Use first and then for Always; Core Location only shows the Always prompt once. Each request needs its usage-description key in Info.plist.
+      - **How precise** (iOS 14+): the user can grant only **approximate** location. `accuracyAuthorization` tells you which, and `requestTemporaryFullAccuracyAuthorization(withPurposeKey:)` asks for precise location temporarily, for example during a navigation session.
+
+      **Battery:** ask for what the feature needs.
+      - Set `desiredAccuracy` to the coarsest value that works, such as `kCLLocationAccuracyKilometer` for a weather app. More accuracy means more power and more time to get a fix.
+      - Use a `distanceFilter` so you aren't woken for tiny moves.
+      - For "notice when the user moves a lot", use significant-change monitoring instead of continuous updates; it fires roughly every 500 meters at most and can relaunch a terminated app.
+      - For "when the user arrives somewhere", use region monitoring (`CLMonitor` on iOS 17+).
+      - Stop updates as soon as you have what you need.
+
+      On iOS 17+, `CLLocationUpdate.liveUpdates()` gives you updates as an async sequence, and iOS 18 adds `CLServiceSession` to declare the authorization a feature needs.
+    keyPoints:
+      - When In Use vs Always, plus Allow Once.
+      - Precise vs approximate location (iOS 14+).
+      - Usage description keys and the When In Use then Always flow.
+      - desiredAccuracy, distanceFilter, significant-change and region monitoring for battery.
+      - Knows the newer async APIs and their versions.
+    followUps:
+      - question: Why might an app ask for Always and still only get When In Use?
+        answer: |
+          The user chose not to upgrade, or the app asked at the wrong moment and Core Location ignored the request, since it only shows the Always prompt once (and ignores it if the user picked Allow Once). Design the feature to degrade gracefully with When In Use and explain the benefit before asking, instead of asking for Always at first launch.
+    related: [m45]
+
+  - id: q-plat-app-clips
+    category: platform
+    difficulty: easy
+    question: What is an App Clip, and what limits does it have?
+    answer: |
+      An App Clip (iOS 14+) is a small part of your app that people can use **without installing the full app**. It's launched from an App Clip Code, NFC tag, QR code, a link on a website, Maps or Messages, does one task fast (rent a scooter, pay for parking, order coffee), and offers the full app afterward. It's a separate target inside the same project, shipped with the full app on App Store Connect.
+
+      Limits, by design:
+      - **Size:** small, to launch instantly. On iOS 17+, the uncompressed binary can be up to 100 MB if the clip only supports digital invocations (website, Spotlight) and doesn't support iOS 16 or earlier. Clips that support iOS 16 and earlier have a 15 MB limit.
+      - **No background activity:** no background URLSession, no background modes.
+      - **Privacy:** no App Tracking Transparency, no continuous location (When In Use only, which resets the next day), no access to Contacts, Photos, Health and similar data.
+      - **Notifications:** only for up to 8 hours after each launch, if you opt in with the ephemeral notification key.
+      - Some frameworks (for example HealthKit, CallKit, App Intents) compile but don't work at runtime.
+      - It can only share data with its own full app, through an App Group, so the full app can pick up where the clip left off.
+    keyPoints:
+      - Lightweight part of the app used without installing it.
+      - Invocation methods such as codes, NFC, QR and links.
+      - Size limits and their conditions.
+      - No background work, limited privacy-sensitive APIs.
+      - Ephemeral notifications and shared data with the full app.
+    followUps:
+      - question: How do you hand the user's progress to the full app when they install it?
+        answer: |
+          Write it to the shared App Group container (or a shared `UserDefaults` suite) from the clip; the full app reads it on first launch. Sign in with Apple also makes it easy to carry the account over without asking the user to create a password in the clip.
+    related: [m44, m45]
+
+  - id: q-plat-push-flow
+    category: platform
+    difficulty: medium
+    question: Walk me through how a push notification gets from your server to the user's device.
+    answer: |
+      1. **Registration:** the app calls `UIApplication.shared.registerForRemoteNotifications()`. APNs returns a **device token** in `application(_:didRegisterForRemoteNotificationsWithDeviceToken:)`. The token is specific to your app on that device, and it can change, so you register on every launch and send it to your server.
+      2. **Permission** is separate: `UNUserNotificationCenter.requestAuthorization(options:)` asks the user for alerts, sounds and badges. You get a token even without it; without permission, notifications are just delivered silently.
+      3. **Your server (the provider)** stores tokens per user. To send, it makes an HTTP/2 POST to APNs (`api.push.apple.com`, or `api.sandbox.push.apple.com` for development builds) with the token in the path, a JSON payload, and headers like `apns-push-type`, `apns-topic` (your bundle ID) and `apns-priority`.
+      4. **Authentication** with APNs is either a **token** (a JWT signed with a `.p8` key; one key can serve all your apps, and a JWT older than an hour gets rejected) or a per-app TLS certificate. Token-based auth is simpler because keys don't expire every year.
+      5. **APNs delivers** to the device when it's reachable, storing it for a while if it isn't, and the system shows it or hands it to your app.
+
+      The payload's `aps` dictionary holds the system keys (`alert`, `badge`, `sound`, `content-available`, `mutable-content`), and your custom keys go next to it. The maximum payload is 4 KB (5 KB for VoIP).
+
+      When APNs answers that a token is no longer valid, the server deletes it.
+    keyPoints:
+      - Registration returns a per-app, per-device token that can change.
+      - Notification permission is separate from getting a token.
+      - Provider sends HTTP/2 requests to APNs with token and headers.
+      - Token-based (.p8/JWT) vs certificate authentication.
+      - Payload structure and the 4 KB limit; cleaning up invalid tokens.
+    followUps:
+      - question: Is delivery guaranteed?
+        answer: |
+          No. APNs is best-effort: it can reorder notifications, and if the device is offline it keeps only a limited backlog for a limited time (up to what `apns-expiration` allows). Anything that must arrive, like a message, should also be fetched from your server when the app opens. The push is a nudge, not the data channel.
+    related: [m45]
+
+  - id: q-plat-silent-push-nse
+    category: platform
+    difficulty: hard
+    question: What's the difference between a silent push and a push handled by a notification service extension? When do you use each?
+    answer: |
+      **Silent (background) push:** the `aps` dictionary has only `"content-available": 1`, sent with `apns-push-type: background` and `apns-priority: 5`. Nothing is shown. The system **may** wake your app in the background and call `application(_:didReceiveRemoteNotification:fetchCompletionHandler:)`, giving it about 30 seconds to fetch new content. Requires the Remote notifications background mode.
+
+      The catch: they're low priority. The system can delay or coalesce them (it keeps only the newest), throttle them if you send too many (Apple says not more than two or three per hour), and discard a held one if the app is force-quit. Use them to **refresh data opportunistically**, never for something that must happen.
+
+      **Notification service extension** (`UNNotificationServiceExtension`, iOS 10+): a separate extension that runs **before a visible notification is shown**, when the payload contains an alert and `"mutable-content": 1`. In `didReceive(_:withContentHandler:)` you can change the title and body, decrypt an end-to-end encrypted message, or download an image and attach it. You have limited time; if you run out, `serviceExtensionTimeWillExpire()` is your last chance to deliver what you have, otherwise the original content is shown.
+
+      So: a chat app with encrypted messages uses an **NSE** to decrypt each message, since it must show reliably. A news app that wants fresh articles ready on launch can use **silent pushes** plus `BGAppRefreshTask`, accepting that some updates won't arrive.
+    keyPoints:
+      - Silent push uses content-available, background push type and priority 5.
+      - Silent pushes are throttled, coalesced and not guaranteed.
+      - NSE runs for visible notifications with mutable-content.
+      - NSE can modify, decrypt or attach media within a time limit.
+      - Matches each to a fitting use case.
+    followUps:
+      - question: Can the NSE share code and data with the app?
+        answer: |
+          Code through a shared framework or package. Data through an App Group container or a shared Keychain access group, for example for the decryption keys. The extension is a separate process with tighter memory limits, so keep it small and avoid loading the app's whole data layer.
+    related: [m44, m45]
+
+  - id: q-plat-background-tasks
+    category: platform
+    difficulty: hard
+    question: How can an iOS app do work in the background? Explain background modes and BGTaskScheduler.
+    answer: |
+      iOS suspends apps shortly after they leave the foreground, so background work happens only through specific mechanisms:
+
+      - **Finish what you started:** `beginBackgroundTask(withName:expirationHandler:)` buys a short extra time to finish, say, a save or an upload when the user leaves. Always end it.
+      - **Background modes** (Info.plist `UIBackgroundModes`) for continuous features: audio, location updates, VoIP, Bluetooth LE accessories, remote notifications. App Review expects the feature to really need them.
+      - **Background URLSession** for large downloads and uploads that run in a system process.
+      - **`BGTaskScheduler`** (BackgroundTasks framework, iOS 13+) for deferrable work the system schedules:
+        - `BGAppRefreshTask`: short refreshes, like fetching the latest content before the user opens the app. Needs the `fetch` mode. It replaces `setMinimumBackgroundFetchInterval`, deprecated in iOS 13.
+        - `BGProcessingTask`: minutes of work such as database cleanup or ML training, run when the device is idle, optionally only when charging or on network. Needs the `processing` mode.
+        - `BGContinuedProcessingTask` (iOS 26+): work the user started in the foreground, like an export, that continues in the background with progress shown in a Live Activity.
+
+      The flow for `BGTaskScheduler`:
+      1. List identifiers in `BGTaskSchedulerPermittedIdentifiers`.
+      2. **Register** a handler for each before the app finishes launching (registering the same identifier twice crashes the app).
+      3. **Submit** a request with `earliestBeginDate` as a lower bound, not a promise.
+      4. In the handler, set `expirationHandler` to cancel your work, call `setTaskCompleted(success:)`, and schedule the next request.
+
+      The system decides when, based on battery, usage patterns and how the app behaved before. Tasks that run long or never complete make the app less likely to get time later.
+    keyPoints:
+      - beginBackgroundTask for finishing short work.
+      - Background modes for continuous features.
+      - Background URLSession for transfers.
+      - App refresh vs processing tasks, and the iOS 26 continued processing task.
+      - Permitted identifiers, early registration, expiration handler and setTaskCompleted.
+      - System-controlled scheduling, not exact timing.
+    followUps:
+      - question: Your refresh task never seems to run. What do you check?
+        answer: |
+          That the identifier is in `BGTaskSchedulerPermittedIdentifiers` and registration returns `true`, that registration happens before launch finishes, that the `fetch` mode is enabled, that a request was actually submitted (and re-submitted after each run), and that Background App Refresh is on for the app. Then accept that the system may still wait: it favors apps the user opens often, and Low Power Mode reduces background work.
+    related: [m45, m21]
+
+  - id: q-plat-state-restoration
+    category: platform
+    difficulty: medium
+    question: How do you restore the user's place in the app after the system terminates it in the background?
+    answer: |
+      The goal: when the user returns after the system killed the app to free memory, they should see the same screen, not the home screen.
+
+      **UIKit with scenes (iOS 13+):** restoration is per scene and based on `NSUserActivity`.
+      - As the user navigates, keep the scene's current state in an activity (its `userInfo` holds identifiers like the open document's id, not the document itself).
+      - Return it from the scene delegate's `stateRestorationActivity(for:)`. UIKit archives it when the scene goes to the background.
+      - On the next connection, the activity comes back in `session.stateRestorationActivity` in `scene(_:willConnectTo:options:)`, and you rebuild the navigation stack from it.
+
+      **SwiftUI:** `@SceneStorage("key")` stores small values per scene (a selected tab, the id of the open item, a draft) and restores them automatically. Store identifiers and look up the data again; don't store models or sensitive data, which Apple's docs warn against.
+
+      The older view-controller-based restoration (restoration identifiers and `encodeRestorableState(with:)`) is for apps without scenes. The insecure `application(_:shouldSaveApplicationState:)` variant was replaced by the secure-coding versions in iOS 13.2.
+
+      Two practical rules: restore only what still makes sense (if the item was deleted on another device, fall back gracefully), and test it by sending the app to the background and stopping it from Xcode, since force-quitting from the app switcher deletes the saved state.
+    keyPoints:
+      - Scene-based restoration with NSUserActivity and stateRestorationActivity(for:).
+      - Restored activity read back when the scene connects.
+      - "@SceneStorage in SwiftUI for small per-scene values."
+      - Stores identifiers, not models or secrets.
+      - Handles stale state and knows force-quit discards it.
+    followUps:
+      - question: Why not just save the current screen in UserDefaults?
+        answer: |
+          Because state is per scene. On iPad, two windows of the same app can show different things, and a single UserDefaults key would make them overwrite each other. Scene-based restoration also discards the state when the user closes that window, which is the behavior people expect.
+    related: [m21, m45]
+
+  - id: q-plat-universal-links
+    category: platform
+    difficulty: medium
+    question: What's the difference between a custom URL scheme and a universal link? Which would you use for links in marketing emails?
+    answer: |
+      A **custom URL scheme** (`myshop://product/42`) is declared in Info.plist. It's simple and works offline, but:
+      - **Any app can claim the same scheme**, and there's no way to prove the link is yours. Never pass tokens or sensitive data through one.
+      - If the app isn't installed, the link fails instead of falling back to anything useful.
+
+      A **universal link** is a normal `https://shop.example.com/product/42` URL:
+      - Your app declares `applinks:shop.example.com` in the **Associated Domains** entitlement, and your site serves an `apple-app-site-association` JSON file over HTTPS (no redirects) listing your app ID and the paths it handles. The two-way check proves the domain and app belong together.
+      - If the app is installed, tapping the link opens it directly with no prompt; if not, the same URL opens the website.
+      - Since iOS 14, devices fetch the association file from an Apple CDN rather than your server.
+
+      For marketing emails, **universal links**: they're secure, fall back to the web, and the same URL works on desktop. One caveat: email services often wrap links in click-tracking redirects on another domain, which can stop them from opening the app, so check with the marketing tool's settings.
+
+      Handling them: UIKit delivers them as an `NSUserActivity` of type `NSUserActivityTypeBrowsingWeb` to the scene delegate; SwiftUI's `onOpenURL` receives them as a URL. Validate and parse the URL like any untrusted input.
+    keyPoints:
+      - Schemes can be claimed by any app and don't fall back.
+      - Universal links use HTTPS URLs plus a two-way domain association.
+      - Associated Domains entitlement and the apple-app-site-association file.
+      - Opens the app directly or falls back to the website.
+      - Handles them through NSUserActivity or onOpenURL and validates the input.
+    followUps:
+      - question: The universal link opens Safari instead of the app. What do you check?
+        answer: |
+          That the entitlement matches the domain exactly (subdomains need their own entry), that the association file is valid JSON served over HTTPS without redirects at the right path, that the app ID (team prefix plus bundle ID) and paths in it are correct, and that the device has fetched the latest file, since the CDN and devices cache it. Also, the user can switch a domain to open in Safari by long-pressing a link, and that choice sticks.
+    related: [m45, m42]
+
+  - id: q-plat-main-attribute
+    category: platform
+    difficulty: easy
+    question: What does @main do in an iOS app, and what does UIApplicationMain do?
+    answer: |
+      **`@main`** (SE-0281, Swift 5.3) marks the type that is the program's entry point. The compiler calls that type's static `main()` method instead of running top-level code from a `main.swift` file. UIKit provides `main()` for types conforming to `UIApplicationDelegate`, and SwiftUI provides it for types conforming to `App`. So `@main` on your app delegate or your `App` struct is all it takes.
+
+      For UIKit, that `main()` ends up in **`UIApplicationMain`**, which:
+      - creates the `UIApplication` singleton (or your subclass) and your app delegate,
+      - sets up the main run loop and starts processing events,
+      - and never returns. From then on, the app runs inside the run loop, and UIKit calls your delegate, scene delegates and view controllers as events arrive.
+
+      The old `@UIApplicationMain` attribute did the same thing but only for UIKit. SE-0383 deprecated it in Swift 5.10, and it's an error in the Swift 6 language mode, so new code uses `@main`.
+
+      You'd write your own `main.swift` calling `UIApplicationMain(_:_:_:_:)` only when you need a custom `UIApplication` subclass or must run something before UIKit starts, which is rare.
+    keyPoints:
+      - "@main designates the entry point type with a static main()."
+      - UIKit and SwiftUI supply main() through protocols.
+      - UIApplicationMain creates the app object and delegate and runs the event loop.
+      - It never returns.
+      - "@UIApplicationMain deprecated in Swift 5.10, error in Swift 6 mode."
+    followUps:
+      - question: Can you use @main and a main.swift file in the same target?
+        answer: |
+          No. A module can have only one entry point. A `main.swift` file always counts as one, so adding `@main` elsewhere is a compile error.
+    related: [m21]
+
+  - id: q-plat-widgets-live-activities
+    category: platform
+    difficulty: medium
+    question: At a high level, how do widgets and Live Activities work, and how are they different?
+    answer: |
+      Both are built with **WidgetKit** and SwiftUI and live in a widget extension, but they update in different ways.
+
+      **Widgets** (iOS 14+) show glanceable content on the Home Screen, Lock Screen and elsewhere. The extension doesn't run continuously. A `TimelineProvider` returns a **timeline**: a list of entries with dates, and the system renders a snapshot of the SwiftUI view for each entry at its time. To refresh, the app calls `WidgetCenter.shared.reloadTimelines(ofKind:)` when data changes, or the timeline's reload policy asks for a new one. Reloads come from a **daily budget**; Apple's docs say a frequently viewed widget typically gets 40 to 70 refreshes a day. Since iOS 17, widgets can be interactive with buttons and toggles that run App Intents.
+
+      **Live Activities** (ActivityKit, iOS 16.1+) show a single ongoing event, like a delivery or a game score, on the Lock Screen and in the Dynamic Island. The app starts one with `Activity.request` (from the foreground), then updates it from the app or through **ActivityKit push notifications** from your server. They have no network access of their own, the data is limited to 4 KB, and one can stay active for up to 8 hours before the system ends it.
+
+      So: widgets are for **state that changes now and then**, Live Activities for **an event with a beginning and an end** that the user wants to follow in real time.
+    keyPoints:
+      - Both use WidgetKit and SwiftUI in a widget extension.
+      - Widgets render timeline entries and reload within a budget.
+      - Interactive widgets through App Intents (iOS 17+).
+      - Live Activities are started by the app and updated locally or by push.
+      - Limits such as 4 KB data and 8 hours.
+    followUps:
+      - question: How does the widget get data from the app?
+        answer: |
+          Through an App Group: the app writes what the widget needs to the shared container (a small file, a shared `UserDefaults` suite, or a shared SwiftData store), then asks WidgetKit to reload. The widget extension can also make network requests in its timeline provider, but it has little time and memory, so precomputing in the app is more reliable.
+    related: [m44, m45]
+
+  - id: q-plat-app-intents
+    category: platform
+    difficulty: easy
+    question: What is the App Intents framework, and why would an app adopt it?
+    answer: |
+      App Intents (iOS 16+) is how an app describes its **actions and data to the system** in Swift code. You define:
+      - **App intents:** structs conforming to `AppIntent`, with parameters and a `perform()` method, such as "Start a workout" or "Add item to list".
+      - **App entities and app enums:** the app's key data types (a playlist, a note) so the system can refer to them.
+      - **App shortcuts:** intents with phrases that are available as soon as the app is installed, without the user setting anything up.
+
+      The compiler extracts metadata from that code at build time, and the system uses it across many surfaces: **Siri**, **Spotlight**, the **Shortcuts** app, the Action button, Focus filters, and **interactive widgets and controls**, where buttons run intents. Apple also positions it as the way to make app actions available to Apple Intelligence.
+
+      Why adopt it: one implementation of an action powers many entry points, it replaces the older SiriKit custom intents with plain Swift instead of intent definition files, and it's required for features like interactive widgets.
+    keyPoints:
+      - Intents, entities and app shortcuts defined in Swift.
+      - Metadata extracted at build time.
+      - Used by Siri, Spotlight, Shortcuts, widgets and controls.
+      - One action implementation reused across system surfaces.
+    followUps:
+      - question: Where does perform() run?
+        answer: |
+          By default, in your app's process, possibly launched in the background just to run the intent. You can set the intent to open the app when it needs the UI. Keep `perform()` independent of view controllers or views, so it works whether or not the UI exists.
+    related: [m44, m45]

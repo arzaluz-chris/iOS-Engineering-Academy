@@ -1,0 +1,243 @@
+questions:
+  - id: q-tool-static-vs-dynamic
+    category: tooling
+    difficulty: medium
+    question: What's the difference between a static and a dynamic library, and what's a framework?
+    answer: |
+      - **Static library** (`.a`): object code copied into your binary at **link time**. Nothing to load at runtime, and the linker can strip unused code. Each binary that links it gets its own copy.
+      - **Dynamic library** (`.dylib`): a separate binary that `dyld` loads and binds at **launch** (or later). Multiple binaries in the same app, like the app and its extensions, can share one copy instead of each embedding it.
+      - **Framework:** a bundle (`.framework`) that packages a library, static or dynamic, together with headers, Swift module files and resources. On iOS, "framework" usually means a dynamic one, embedded in the app's `Frameworks` folder.
+
+      Tradeoffs on iOS:
+      - **Launch time:** every dynamic framework adds work for `dyld` before `main()`. Apple's launch-time guidance is to limit the number of third-party dynamic frameworks. Static linking avoids that cost.
+      - **App size:** a static library linked into the app and two extensions is copied three times. A dynamic framework is shipped once and shared.
+      - **Resources:** a static library has no bundle of its own, so images and storyboards need a separate resource bundle. A framework can carry them.
+      - **Build times:** changing a dynamic dependency doesn't require relinking everything that uses it, which helps large modular projects in Debug.
+
+      A typical modular app links most internal modules statically, and only uses dynamic frameworks where the code is shared between the app and its extensions.
+    keyPoints:
+      - Link-time copy vs load-time binding.
+      - Frameworks package code, headers, modules and resources.
+      - Dynamic frameworks cost launch time.
+      - Static libraries get duplicated across app and extensions.
+      - Resources and build-time considerations.
+    followUps:
+      - question: Can a static library be linked into both the app and a framework it uses?
+        answer: |
+          It can, but then both binaries contain a copy, and you can end up with duplicate symbols or, worse, two copies of global state (two singletons). The fix is to link it in exactly one place, usually the dynamic framework, and have everything else depend on that.
+    related: [m14, m43]
+
+  - id: q-tool-xcframework-mergeable
+    category: tooling
+    difficulty: hard
+    question: What's an XCFramework, and what problem do mergeable libraries solve?
+    answer: |
+      An **XCFramework** (introduced in Xcode 11) is a bundle that contains several variants of a framework or library, one per platform and environment: iOS device, iOS Simulator, Mac Catalyst, macOS and so on, each with its own architectures. Each variant can be static or dynamic. It replaced the old trick of gluing device and simulator binaries into one "fat" framework with `lipo`, which broke once Apple silicon Macs needed `arm64` for the simulator too, the same architecture as devices.
+
+      To build one: archive the framework for each platform with `xcodebuild archive` (with **Build Libraries for Distribution** on, which enables library evolution and emits a `.swiftinterface` so the binary works with newer compilers), then combine the archives with `xcodebuild -create-xcframework`. A Swift package can ship it as a `binaryTarget`.
+
+      **Mergeable libraries** (Xcode 15+) address the static vs dynamic tradeoff. In Debug, a mergeable library behaves like a normal dynamic library, so incremental builds stay fast. In Release, Xcode merges it into the app binary, similar to static linking, so launch doesn't pay for loading separate dylibs. You turn it on with the `MERGED_BINARY_TYPE` build setting (set to `automatic` for direct dependencies built in your project), and the merged binary is slightly larger.
+    keyPoints:
+      - XCFramework bundles per-platform and per-environment variants.
+      - Replaces lipo fat frameworks that couldn't represent arm64 simulator and device.
+      - Build Libraries for Distribution and module interfaces.
+      - Distribution as a Swift package binaryTarget.
+      - Mergeable libraries are dynamic in Debug and merged in Release.
+    followUps:
+      - question: What does "Build Libraries for Distribution" actually change?
+        answer: |
+          It turns on library evolution, so the compiler emits a textual `.swiftinterface` instead of relying only on the binary `.swiftmodule`, which is tied to one compiler version. Clients built with a newer Swift compiler can then still import the framework. The cost is some optimization limits across the module boundary, which is why you don't turn it on for code compiled together with the app.
+    related: [m14, m41]
+
+  - id: q-tool-dependency-managers
+    category: tooling
+    difficulty: medium
+    question: Compare Swift Package Manager, CocoaPods and Carthage. Which would you choose today?
+    answer: |
+      - **Swift Package Manager:** Apple's dependency manager, part of the Swift toolchain and integrated into Xcode since Xcode 11. Packages are described in `Package.swift`, versions are pinned in `Package.resolved`, and it supports binary targets, resources and build plugins. No extra tool to install and no generated workspace.
+      - **CocoaPods:** a Ruby tool that reads a `Podfile`, downloads pods from its central specs repo (trunk), and generates an `.xcworkspace` with a Pods project. It has historically had the largest catalog and handles complex Objective-C setups. It changes your project structure, and you need Ruby tooling on every machine and CI runner.
+      - **Carthage:** decentralized. You list dependencies with version requirements in a `Cartfile`, it pins exact versions in `Cartfile.resolved`, checks them out and builds them into frameworks (XCFrameworks with `--use-xcframeworks`). It **doesn't modify your project**; you add the built products yourself. Clean, but more manual.
+
+      **Today I'd pick SPM** for a new project. Part of the reason is CocoaPods' own plan: the CocoaPods blog post "CocoaPods Trunk Read-only Plan" (November 2024) says trunk will stop accepting new podspecs permanently on **December 2, 2026**. Existing pods keep installing, but no new pods or new versions get published there, so dependencies stop receiving updates through CocoaPods.
+
+      For an existing app on CocoaPods, I'd migrate gradually: move dependencies that already ship a `Package.swift` first, then deal with the stragglers (fork, vendor, or replace).
+    keyPoints:
+      - SPM is built into the toolchain and Xcode.
+      - CocoaPods generates a workspace and depends on a central trunk.
+      - Carthage builds frameworks without touching the project.
+      - Knows trunk goes read-only on December 2, 2026, and what that means.
+      - A migration plan for existing CocoaPods projects.
+    followUps:
+      - question: Should Package.resolved be committed?
+        answer: |
+          For an app, yes. It pins the exact versions so every developer and CI build resolves the same code, and updates happen deliberately in a reviewable diff. For a library package, the resolved file isn't used by clients, so it matters less.
+    related: [m14]
+
+  - id: q-tool-version-vs-build
+    category: tooling
+    difficulty: easy
+    question: What's the difference between CFBundleShortVersionString and CFBundleVersion?
+    answer: |
+      - **`CFBundleShortVersionString`** is the **version**, the user-facing release number shown on the App Store, like `2.4.0`. In Xcode it's the `MARKETING_VERSION` build setting. Apple's documented format is three period-separated integers.
+      - **`CFBundleVersion`** is the **build** number, which identifies one specific build of that version, like `2.4.0` build `318`. In Xcode it's `CURRENT_PROJECT_VERSION`. It's one to three period-separated integers.
+
+      In practice, you can upload many builds of the same version to App Store Connect (each to TestFlight, for example), and each needs a build number that hasn't been used for that version. Most teams let CI set the build number from a counter or the pipeline run number, so it always increases, and only bump the version for an actual release.
+
+      In code you read them from `Bundle.main.infoDictionary`, typically for a "Version 2.4.0 (318)" line in settings and in bug reports.
+    keyPoints:
+      - Short version string is the user-visible release version.
+      - Bundle version is the build number for one build.
+      - Maps them to MARKETING_VERSION and CURRENT_PROJECT_VERSION.
+      - Build numbers must be unique per version on upload; CI usually sets them.
+    followUps:
+      - question: Why include the build number in crash and bug reports?
+        answer: |
+          Because several builds share the same version during testing. Without the build number you can't tell whether a report came from the build that contains the fix or from the one before it.
+    related: [m41]
+
+  - id: q-tool-configs-schemes
+    category: tooling
+    difficulty: easy
+    question: What's the difference between a build configuration and a scheme in Xcode?
+    answer: |
+      A **build configuration** is a named set of build settings. Every project starts with **Debug** (no optimization, debug symbols, `DEBUG` compilation condition, assertions on) and **Release** (optimized). You can add more, like `Staging`, and every target gets settings for each configuration.
+
+      A **scheme** describes **what to build and how to run it** for each action: Build, Run, Test, Profile, Analyze and Archive. For each action it picks a configuration (by default Run and Test use Debug; Profile and Archive use Release), plus things like launch arguments, environment variables, which test plans run, and diagnostics such as Address Sanitizer.
+
+      So configurations answer "how is the code compiled", schemes answer "what happens when I press Run, Test or Archive". A common setup has one scheme per environment, for example `MyApp (Staging)` and `MyApp (Production)`, each pointing its actions at the matching configurations.
+
+      Share the schemes you rely on (the "Shared" checkbox), so they're committed and CI uses the same ones.
+    keyPoints:
+      - Configuration is a set of build settings; Debug and Release by default.
+      - Scheme defines targets and settings per action.
+      - Default configuration per action.
+      - Launch arguments, environment variables and diagnostics live in the scheme.
+      - Shared schemes for CI.
+    followUps:
+      - question: Where would you turn on the Thread Sanitizer?
+        answer: |
+          In the scheme, under the Run or Test action's Diagnostics. It's a runtime tool tied to how you run the app, not a build setting you'd want in Release builds.
+    related: [m14]
+
+  - id: q-tool-xcconfig
+    category: tooling
+    difficulty: medium
+    question: What are xcconfig files and why would a team use them?
+    answer: |
+      An `.xcconfig` file is a plain-text **build configuration file**: one `SETTING_NAME = value` per line. You assign it to a project or target for a given configuration in the project's Info tab, and Xcode layers it: an xcconfig applies just before the settings of the level it's attached to, so the order is the project's xcconfig, project settings, the target's xcconfig, then target settings edited in the Build Settings tab, with later layers winning.
+
+      ```
+      // Staging.xcconfig
+      #include "Base.xcconfig"
+      PRODUCT_BUNDLE_IDENTIFIER = com.example.shop.staging
+      API_HOST = staging-api.example.com
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) STAGING
+      ```
+
+      Why teams use them:
+      - **Reviewable diffs.** Build settings live in `project.pbxproj`, which is hard to read and a merge-conflict magnet. A text file per environment is easy to review.
+      - **Reuse** with `#include` and `$(inherited)`, so shared settings live once.
+      - **Per-environment values** like bundle IDs, app icons and API hosts. A custom setting such as `API_HOST` can be passed into Info.plist as `$(API_HOST)` and read at runtime.
+
+      Two cautions: a value set directly in the target's Build Settings overrides the xcconfig, which surprises people (the setting shows in bold). And xcconfig values end up in the app bundle if you route them through Info.plist, so they're not a place for secrets.
+    keyPoints:
+      - Plain-text build settings assigned per configuration.
+      - Layering order and target settings overriding the file.
+      - "#include and $(inherited) for reuse."
+      - Per-environment values passed through Info.plist.
+      - Not a place for secrets.
+    followUps:
+      - question: How do you write a URL in an xcconfig file?
+        answer: |
+          Carefully: `//` starts a comment in xcconfig files, so `https://api.example.com` gets cut at the slashes. Common workarounds are storing only the host and building the URL in code, or splitting the slashes with an empty variable, like `https:/$()/api.example.com`.
+    related: [m14, m41]
+
+  - id: q-tool-code-signing
+    category: tooling
+    difficulty: medium
+    question: Explain iOS code signing. What are certificates, provisioning profiles and entitlements?
+    answer: |
+      iOS only runs code Apple has authorized. Code signing is how that works:
+      - **Certificate:** proves who signed the code. You hold the private key (in your keychain), and Apple issues the certificate for its public key. There are development certificates and distribution certificates.
+      - **App ID:** your team prefix plus a bundle ID (or a wildcard), with the capabilities enabled for it.
+      - **Entitlements:** key-value pairs embedded in the code signature that grant capabilities, such as push notifications, App Groups, associated domains or iCloud. Xcode writes them to an `.entitlements` file when you add a capability.
+      - **Provisioning profile:** a file signed by Apple that ties it together: which certificates may sign, which App ID, which devices (for development and ad hoc), until when, and which entitlements are allowed.
+
+      When the app launches on a device, the system checks that the signature is valid, that the profile is signed by Apple and current, and that the app's entitlements are a subset of what the profile allows. Most "works on my machine" signing failures are a mismatch there: a capability added in Xcode but not on the App ID, a device missing from the profile, or an expired certificate.
+
+      For App Store builds, Apple re-signs the app after checking it, so the installed app has no provisioning profile.
+
+      Day to day, **automatic signing** handles this for development. For CI, teams use manual signing or tools that fetch the distribution certificate and profile from a secure store, so no laptop is the only place the keys live.
+    keyPoints:
+      - Certificate proves identity; private key stays with the developer.
+      - Provisioning profile ties who, which app, which devices, when and which entitlements.
+      - Entitlements are embedded in the signature.
+      - The device checks signature, profile and entitlements at launch.
+      - Common failures and how CI handles signing.
+    followUps:
+      - question: What happens to installed apps when a distribution certificate expires?
+        answer: |
+          Apps already on the App Store keep working, because Apple re-signed them. You just need a new certificate to sign new builds. Ad hoc and enterprise builds are different: they depend on the profile and certificate, so expiry or revocation can stop them from launching.
+    related: [m41, m14]
+
+  - id: q-tool-environments
+    category: tooling
+    difficulty: hard
+    question: How would you set up Development, Staging and Production builds of the same app so they can be installed side by side?
+    answer: |
+      Combine **configurations, xcconfig files and schemes**:
+
+      1. Add build configurations, for example `Debug-Staging`, `Release-Staging`, `Debug-Production`, `Release-Production` (or fewer, depending on what you test).
+      2. Give each one an xcconfig with the per-environment values:
+         - a distinct `PRODUCT_BUNDLE_IDENTIFIER` (`com.example.shop.staging`), which is what lets them install side by side;
+         - a display name and app icon set (`ASSETCATALOG_COMPILER_APPICON_NAME`) so testers can tell them apart;
+         - the API host and other non-secret settings, passed into Info.plist;
+         - a compilation condition like `STAGING` for the few places code must differ.
+      3. Create one shared **scheme** per environment that uses the matching configurations for Run, Test and Archive.
+      4. Register each bundle ID with its capabilities, and give each its own push and associated-domain setup. APNs tokens and universal links are tied to the App ID, so staging won't receive production pushes.
+
+      At runtime, read the values from `Bundle.main` into a small typed `AppEnvironment` instead of scattering `#if STAGING` everywhere.
+
+      Secrets (API keys for third-party services) don't go in the xcconfig or Info.plist, since both end up readable in the bundle. They're injected by CI or, better, fetched from your backend after login.
+    keyPoints:
+      - Separate configurations with xcconfig files per environment.
+      - Distinct bundle IDs, names and icons to install side by side.
+      - One shared scheme per environment.
+      - Capabilities, push and universal links per App ID.
+      - Typed runtime configuration; secrets kept out of the bundle.
+    followUps:
+      - question: Why not use one build and a runtime switch to change environments?
+        answer: |
+          It's handy for internal QA, and some teams add a hidden environment picker in debug builds. But a production App Store build shouldn't contain staging endpoints or debug menus, and you can't have production and staging installed at the same time with one bundle ID. Separate builds keep production clean.
+    related: [m14, m41]
+
+  - id: q-tool-ci
+    category: tooling
+    difficulty: medium
+    question: What would a CI pipeline for an iOS app look like?
+    answer: |
+      On every pull request:
+      1. Check out on a macOS runner with a **pinned Xcode version**, so builds don't change under you when the runner image updates.
+      2. Resolve dependencies from the committed `Package.resolved`, with a cache.
+      3. Lint and format checks (SwiftLint, swift-format), fast and first.
+      4. Build and run unit tests with `xcodebuild test` (or `swift test` for packages) on a fixed simulator, collecting results and code coverage from the `.xcresult` bundle.
+      5. Run UI tests on a smaller set, or nightly, since they're slow and more fragile.
+
+      On the main branch or a release tag:
+      6. Set the build number from the pipeline, archive with `xcodebuild archive` using the Release configuration, export the `.ipa` with an export options plist, and sign with credentials from the CI secret store.
+      7. Upload to TestFlight (App Store Connect API key, not a personal Apple ID password), and keep the dSYMs for crash symbolication.
+
+      Tooling: **Xcode Cloud** is Apple's hosted CI integrated with App Store Connect and handles signing for you. GitHub Actions, Bitrise or others work too, often with **fastlane** to script signing, builds and uploads.
+
+      What makes it useful in practice: keep PR checks under about 10–15 minutes, fail on flaky tests instead of retrying them silently, and make the release pipeline the only way builds reach testers.
+    keyPoints:
+      - Pinned Xcode and cached dependencies.
+      - Lint, build and unit tests on PRs; UI tests selectively.
+      - Archive, export, sign and upload on main or tags.
+      - Build number from CI, App Store Connect API key, dSYMs kept.
+      - Knows Xcode Cloud and fastlane-style tooling.
+    followUps:
+      - question: How do you keep signing secrets safe in CI?
+        answer: |
+          Store the certificate (as an encrypted `.p12`) and profiles in the CI secret store or an encrypted repository, import them into a temporary keychain during the job, and delete it afterward. Use an App Store Connect API key scoped to the role it needs, and rotate it if someone leaves.
+    related: [m41, m33]

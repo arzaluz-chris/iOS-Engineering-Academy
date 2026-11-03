@@ -50,3 +50,610 @@ questions:
       - question: What's the problem with using a singleton like `NetworkManager.shared` inside a ViewModel?
         answer: It couples the ViewModel to one global concrete implementation, makes it impossible to swap out in tests, and hides the dependency (it doesn't show up in the initializer). On top of that, shared global state makes concurrency harder.
     related: [m32, m33]
+
+  - id: q-arch-pattern-comparison
+    category: architecture
+    difficulty: medium
+    question: Compare MVC, MVVM, VIPER and TCA. How would you choose between them for a team?
+    answer: |
+      They differ mainly in **where presentation logic and navigation live** and **how strictly state flows**.
+
+      - **MVC (UIKit's flavor)**: the view controller coordinates views and models. Minimal ceremony, and fine for small screens, but logic piles up in the controller and is hard to test without UIKit.
+      - **MVVM**: presentation logic moves to a view model with no UIKit or SwiftUI dependency; the view binds to it. Easy to test, little boilerplate. Navigation isn't defined by the pattern, so teams add coordinators or a router.
+      - **VIPER**: View, Interactor (business logic), Presenter (formatting), Entity, Router (navigation). Each role is small and testable, but one screen means five or more types and protocols. It pays off in very large teams that need strict boundaries; for most apps it's overhead.
+      - **TCA (The Composable Architecture, a Point-Free library)**: unidirectional. State is a value, actions describe events, a reducer changes state and returns effects, and a store runs it. You get predictable state and very thorough tests, at the cost of a third-party dependency, a learning curve and its own idioms.
+
+      **How I'd choose**: by the team's size and experience, how much logic the screens have, and how long the app will live. The default I'd propose is MVVM with injected dependencies and a navigation layer, because most iOS engineers can work in it on day one. Consistency across the codebase matters more than which pattern wins.
+    keyPoints:
+      - Where presentation logic and navigation live in each pattern.
+      - MVC's massive view controller versus MVVM's testable view model.
+      - VIPER's boilerplate and when it pays off.
+      - TCA's unidirectional flow and testing, versus dependency and learning curve.
+      - Choosing by team, app complexity and lifetime; consistency.
+    followUps:
+      - question: What's the main risk of adopting TCA or any third-party architecture framework?
+        answer: Your whole app's structure depends on a library you don't control. Major-version migrations touch every feature, new hires need ramp-up time, and if the library stalls you're stuck with it. It can still be the right call, but it should be a deliberate decision recorded with its tradeoffs, not a default.
+    related: [m32]
+
+  - id: q-arch-coordinator
+    category: architecture
+    difficulty: medium
+    question: What is the coordinator pattern, and how would you implement it in UIKit?
+    writesCode: true
+    answer: |
+      A coordinator is an object that **owns navigation for a flow**. View controllers don't push or present other screens; they report events ("the user picked a transfer"), and the coordinator decides what comes next. Controllers stop knowing about each other, so they're reusable and the flow is in one place.
+
+      ```swift
+      @MainActor
+      protocol Coordinator: AnyObject {
+          func start()
+      }
+
+      @MainActor
+      final class TransfersCoordinator: Coordinator {
+          private let navigationController: UINavigationController
+          private var childCoordinators: [any Coordinator] = []
+
+          init(navigationController: UINavigationController) {
+              self.navigationController = navigationController
+          }
+
+          func start() {
+              let list = TransferListViewController()
+              list.onSelectTransfer = { [weak self] transfer in
+                  self?.showDetail(for: transfer)
+              }
+              navigationController.pushViewController(list, animated: false)
+          }
+
+          private func showDetail(for transfer: Transfer) {
+              let detail = TransferDetailViewController(transfer: transfer)
+              navigationController.pushViewController(detail, animated: true)
+          }
+      }
+      ```
+
+      A parent coordinator (the app coordinator) creates child coordinators for sub-flows like onboarding or a new transfer, keeps them in `childCoordinators` so they stay alive, and removes them when the flow finishes. Coordinators are also the natural place to handle deep links: parse the link, then build the stack.
+
+      In SwiftUI the same idea becomes a router object that owns the `NavigationStack` path.
+    keyPoints:
+      - Navigation moves out of view controllers into a flow object.
+      - Controllers report events through closures or delegates.
+      - Child coordinators for sub-flows, retained by the parent and removed when done.
+      - Weak captures to avoid cycles.
+      - Deep links and the SwiftUI router equivalent.
+    followUps:
+      - question: What's the classic bug with child coordinators?
+        answer: |
+          The child never gets removed because the flow ended in a way the coordinator didn't see: the user tapped Back or swiped a sheet down. Fixes are to listen for `navigationController(_:didShow:animated:)` in `UINavigationControllerDelegate` and check which controller was popped, and to handle `presentationControllerDidDismiss(_:)` for swipe-dismissed sheets, which UIKit doesn't call for programmatic dismissal.
+    related: [m25, m32]
+
+  - id: q-arch-di-containers
+    category: architecture
+    difficulty: hard
+    question: Would you use a dependency injection container in an iOS app? Compare manual injection, containers and service locators.
+    answer: |
+      **Manual injection with a composition root** is my default. One object at the app's entry point builds the concrete implementations and creates screens with factories:
+
+      ```swift
+      @MainActor
+      final class AppContainer {
+          private let httpClient: any HTTPClient = URLSessionHTTPClient()
+          private lazy var accountsRepository: any AccountsRepository =
+              RemoteAccountsRepository(client: httpClient)
+
+          func makeBalanceViewModel() -> BalanceViewModel {
+              BalanceViewModel(repository: accountsRepository)
+          }
+      }
+      ```
+
+      Everything is checked at compile time. A missing dependency is a build error, and the initializer of each type documents what it needs. The cost is wiring code that grows with the app; per-feature containers keep it manageable.
+
+      **Containers** (register types, resolve them later) cut the wiring and help with scopes and lifetimes. The tradeoff is that many resolve at runtime: a forgotten registration crashes when that screen opens instead of failing the build.
+
+      **Service locator** means a type pulls its dependencies from a global (`Container.shared.resolve(...)`) inside its own code. That hides dependencies, makes tests depend on global setup, and is the version I push back on.
+
+      So: manual injection until the wiring is genuinely painful; then a container used only at the composition root, so the rest of the code still receives dependencies through initializers.
+    keyPoints:
+      - Composition root with factories as the default.
+      - Compile-time safety and explicit initializers.
+      - Containers reduce wiring but may fail at runtime.
+      - Service locator hides dependencies; avoid it inside types.
+      - Keep resolution at the edges if a container is used.
+    followUps:
+      - question: When would you use property injection, and does it require optionals?
+        answer: |
+          When you don't control the initializer, like a view controller created from a storyboard, or for an optional collaborator. It doesn't require an optional: `var now: () -> Date = Date.init` or `var analytics: any Analytics = NoOpAnalytics()` gives a working default that tests or the composition root replace. The risk is forgetting to set it, which is why initializer injection stays the default.
+      - question: How do you handle dependencies with different lifetimes, like a user session?
+        answer: With nested scopes. The app container holds app-lifetime objects; when the user logs in, it creates a session container that holds the token store, the authenticated client and user-specific repositories, and logout throws the whole session container away. That guarantees no session data survives logout by accident.
+    related: [m32]
+
+  - id: q-arch-modularization
+    category: architecture
+    difficulty: hard
+    question: How would you modularize a large iOS app with Swift packages, and what do you gain?
+    answer: |
+      I split by **feature** and by **shared layer**, and enforce that dependencies only point one way:
+
+      - **Core modules**: networking, persistence, design system, analytics. No knowledge of features.
+      - **Domain modules**: models and business rules, without UIKit or SwiftUI.
+      - **Feature modules**: one per area (transfers, cards, profile), depending on core and domain, **never on each other**. When two features need to talk, they do it through a small interface module or closures injected by the app target.
+      - **The app target** is the composition root: it wires the concrete implementations and the navigation between features.
+
+      ```swift
+      // swift-tools-version: 6.0
+      import PackageDescription
+
+      let package = Package(
+          name: "BankingFeatures",
+          platforms: [.iOS(.v17), .macOS(.v14)],
+          products: [
+              .library(name: "TransfersFeature", targets: ["TransfersFeature"]),
+          ],
+          targets: [
+              .target(name: "DesignSystem"),
+              .target(name: "Networking"),
+              .target(name: "TransfersDomain"),
+              .target(
+                  name: "TransfersFeature",
+                  dependencies: ["TransfersDomain", "DesignSystem", "Networking"]
+              ),
+              .testTarget(name: "TransfersFeatureTests", dependencies: ["TransfersFeature"]),
+          ]
+      )
+      ```
+
+      **What you gain**: access control becomes real boundaries (`internal` hides implementation details; `package`, since Swift 5.9, shares within the package without making things `public`); incremental builds touch fewer modules; each module can be tested and previewed alone; SwiftPM rejects dependency cycles; and teams own modules.
+
+      **The cost**: more `public` API to maintain, more manifest work, and splitting too early creates modules that change together anyway. I'd extract modules where the boundaries are already clear.
+    keyPoints:
+      - Core, domain and feature modules with one-way dependencies.
+      - Features don't depend on each other; the app target wires them.
+      - Access control as enforced boundaries, including package.
+      - Faster incremental builds, isolated tests and ownership.
+      - Costs of too many modules or splitting too early.
+    followUps:
+      - question: How does feature A open a screen from feature B if they can't depend on each other?
+        answer: |
+          Feature A declares what it needs, like a closure `showCardDetails: (CardID) -> Void` or a small protocol in a shared interface module. The app target, which knows both features, provides the implementation that builds B's screen. A never imports B.
+      - question: Can you set default main actor isolation per module?
+        answer: |
+          Yes. Since Swift 6.2 (SE-0466), a package target can use `swiftSettings: [.defaultIsolation(MainActor.self)]` (with `swift-tools-version: 6.2` or later), and a module can use the `-default-isolation MainActor` compiler flag. It suits UI modules; core modules that do background work usually stay `nonisolated`.
+    related: [m14, m32]
+
+  - id: q-arch-repository
+    category: architecture
+    difficulty: easy
+    question: What is the repository pattern, and what would a repository for transactions look like?
+    writesCode: true
+    answer: |
+      A repository is the **single entry point to a kind of data**. The rest of the app asks it for domain objects and doesn't know whether they come from the network, a database or a cache. That keeps storage decisions out of view models, and gives tests one protocol to fake.
+
+      ```swift
+      protocol TransactionsRepository: Sendable {
+          func recent(limit: Int) async throws -> [Transaction]
+      }
+
+      struct CachedTransactionsRepository: TransactionsRepository {
+          let api: any TransactionsAPI
+          let cache: any TransactionsCache
+
+          func recent(limit: Int) async throws -> [Transaction] {
+              do {
+                  let fresh = try await api.fetchRecent(limit: limit)
+                  await cache.save(fresh)
+                  return fresh
+              } catch {
+                  let cached = await cache.load()
+                  guard !cached.isEmpty else { throw error }
+                  return Array(cached.prefix(limit))
+              }
+          }
+      }
+      ```
+
+      The policy here, network first with a cache fallback, lives in one place. If the product later wants cache first with a background refresh, you change the repository, not every screen.
+
+      A repository returns **domain types**, not API DTOs or Core Data objects; the mapping happens inside it. One that just forwards calls to an API client without any policy or mapping may not be worth a layer.
+    keyPoints:
+      - One entry point per kind of data; callers don't know the source.
+      - Hides caching and sync policy.
+      - Returns domain types; maps DTOs inside.
+      - A protocol that tests can fake.
+      - Not worth it as a pure pass-through.
+    followUps:
+      - question: How would you test CachedTransactionsRepository?
+        answer: With fakes for the API and the cache. One test where the API fails and the cache has data (it returns the cached prefix), one where both fail (it rethrows the error), and one where the API succeeds (it returns fresh data and saves it to the cache).
+    related: [m30, m32]
+
+  - id: q-arch-domain-separation
+    category: architecture
+    difficulty: medium
+    question: How do you keep the domain logic of an app separate from the UI and from frameworks?
+    answer: |
+      By making the **dependencies point inward**: the UI depends on the domain, the domain depends on nothing app-specific.
+
+      In practice:
+
+      - **Domain types are plain Swift**: `Account`, `Money`, `TransferLimit`, rules like "a transfer can't exceed the daily limit". They don't import UIKit, SwiftUI, Core Data or the networking layer. If they live in their own module, the compiler enforces it.
+      - **The domain defines the protocols it needs** (`AccountsRepository`, `Clock`), and the infrastructure layer implements them. That's dependency inversion: storage is a detail plugged in from outside.
+      - **Data is mapped at the boundaries.** API responses (DTOs) and persistence models are converted to domain types at the edge, so an API change doesn't ripple through screens.
+      - **Presentation logic stays in the presentation layer**: formatting money for display, picking a color for a negative balance. The domain says the balance is negative; the view model decides how that looks.
+
+      What you get: business rules tested in milliseconds without a simulator, and the freedom to change the API client, the database or the UI framework without rewriting the rules.
+
+      I don't add use-case classes for every action, though. When the rule is "fetch and show", the repository is enough.
+    keyPoints:
+      - Dependencies point toward the domain.
+      - Domain types don't import UI or storage frameworks.
+      - Protocols defined by the domain, implemented by infrastructure.
+      - Mapping DTOs and persistence models at the edges.
+      - Fast tests and replaceable infrastructure; no layers for their own sake.
+    followUps:
+      - question: Where does validation like "the amount must be positive and below the daily limit" go?
+        answer: In the domain, as a function or a type that can only be created valid (like a `TransferAmount` with a throwing initializer). The UI can call the same rule to show an error early, but the server still enforces it, since the client can't be trusted.
+    related: [m32]
+
+  - id: q-arch-solid
+    category: architecture
+    difficulty: easy
+    question: Can you explain SOLID with examples from an iOS app?
+    answer: |
+      - **Single responsibility**: a type has one reason to change. A view controller that formats dates, calls the API and saves to disk has three. Move the formatting to the view model and the storage to a repository.
+      - **Open/closed**: add behavior without editing working code. A new payment method is a new type conforming to `PaymentMethod`, not another `case` in a switch spread over five files.
+      - **Liskov substitution**: a subclass must honor its superclass's contract so it can be used anywhere the superclass is expected, and the same goes for types conforming to a protocol. A `ReadOnlyCache` subclass of `Cache` that throws in `save` breaks every caller written for `Cache`. A test fake of `TransactionsRepository` that never throws, when the real one can, lets bugs through.
+      - **Interface segregation**: small protocols. A screen that only reads the balance shouldn't depend on a `BankingService` with forty methods; give it `BalanceProviding`.
+      - **Dependency inversion**: depend on abstractions you define. The view model takes `any AccountsRepository` in its initializer instead of creating `URLSessionAccountsRepository`.
+
+      I treat them as heuristics for spotting coupling, not rules to apply everywhere. A protocol with one implementation and no tests using it is often just indirection.
+    keyPoints:
+      - Each principle with a concrete iOS example.
+      - SRP and the massive view controller.
+      - Liskov and honest test doubles.
+      - Small protocols and dependency inversion through initializers.
+      - Heuristics, not mandatory layers.
+    followUps:
+      - question: How do you notice a Liskov violation in code review?
+        answer: Callers start checking the concrete type (`if let cache = cache as? ReadOnlyCache`), overrides throw "not supported" or do nothing, or a subclass strengthens preconditions (accepts fewer inputs) or weakens what it promises. The fix is usually a different abstraction, like splitting `Cache` into a read protocol and a write protocol, rather than inheritance.
+      - question: Which principle do you see violated most in iOS codebases?
+        answer: Single responsibility, in view controllers and in "manager" singletons that grew over years. The second is dependency inversion, with types reaching for `.shared` instances, which is also what makes them hard to test.
+    related: [m14, m32]
+
+  - id: q-arch-testability
+    category: architecture
+    difficulty: medium
+    question: What makes code testable, as an architectural property? Give an example of making something testable that wasn't.
+    writesCode: true
+    answer: |
+      Code is testable when you can **control its inputs and observe its outputs** without the real world: no network, no real clock, no global state, no UI.
+
+      That comes from architecture, not from the testing framework:
+
+      - **Dependencies are injected**, so tests can pass fakes.
+      - **Hidden inputs become explicit**: the current date, random numbers, UUIDs, the locale, feature flags.
+      - **Logic lives in types that don't need UIKit**, like view models and domain types.
+      - **Side effects are at the edges**, and the core is functions that take values and return values.
+
+      Example: a session that expires after five minutes of inactivity. Calling `Date()` inside makes the test either slow or flaky. Injecting the clock fixes it:
+
+      ```swift
+      struct SessionPolicy {
+          let timeout: TimeInterval
+          let now: () -> Date
+
+          init(timeout: TimeInterval, now: @escaping () -> Date = Date.init) {
+              self.timeout = timeout
+              self.now = now
+          }
+
+          func isExpired(lastActivity: Date) -> Bool {
+              now().timeIntervalSince(lastActivity) > timeout
+          }
+      }
+      ```
+
+      Production code uses the default; tests pass `{ start.addingTimeInterval(301) }` and check the boundary at exactly 300 seconds without waiting.
+    keyPoints:
+      - Control inputs and observe outputs without real dependencies.
+      - Injection of dependencies and hidden inputs like time.
+      - Logic outside UI types.
+      - Side effects at the edges.
+      - A concrete before/after example.
+    followUps:
+      - question: Isn't injecting a closure for the date over-engineering?
+        answer: Not when the behavior depends on time. It's one parameter with a default value, so production call sites don't change, and it turns a test that would need `sleep` into one that runs instantly and tests the exact boundary.
+    related: [m33]
+
+  - id: q-arch-feature-flags
+    category: architecture
+    difficulty: easy
+    question: How would you add feature flags to an iOS app?
+    writesCode: true
+    answer: |
+      I'd make the flags **typed**, give each a **safe default** shipped in the app, and put lookups behind a protocol:
+
+      ```swift
+      enum FeatureFlag: String, CaseIterable, Sendable {
+          case newTransferFlow = "new_transfer_flow"
+          case cardFreeze = "card_freeze"
+
+          var defaultValue: Bool {
+              switch self {
+              case .newTransferFlow: false
+              case .cardFreeze: true
+              }
+          }
+      }
+
+      protocol FeatureFlags: Sendable {
+          func isEnabled(_ flag: FeatureFlag) -> Bool
+      }
+
+      struct LayeredFeatureFlags: FeatureFlags {
+          var localOverrides: [FeatureFlag: Bool] = [:]
+          var remoteValues: [String: Bool] = [:]
+
+          func isEnabled(_ flag: FeatureFlag) -> Bool {
+              localOverrides[flag] ?? remoteValues[flag.rawValue] ?? flag.defaultValue
+          }
+      }
+      ```
+
+      The order is local override (debug menu, UI tests), then the last value fetched from remote config, then the default. The app never blocks launch waiting for remote config, and works offline.
+
+      The rules around it matter as much as the code: inject `FeatureFlags` so tests can turn flags on and off; read a flag at the entry point of a feature, not deep inside it; and **delete flags** once a feature is fully rolled out, because every flag doubles the paths to test.
+
+      A flag only hides UI. It isn't a security control: anything the server must forbid, the server checks.
+    keyPoints:
+      - Typed flags with local defaults.
+      - Layered resolution (override, then remote, then default).
+      - Injected for tests; read at feature entry points.
+      - Removing stale flags.
+      - Flags aren't security; the server enforces access.
+    followUps:
+      - question: What happens if a flag changes while the user is in the middle of the flow it controls?
+        answer: I'd read flags at the start of a flow or a session and keep that value until the flow ends, so a screen doesn't switch implementation halfway. New values apply the next time the flow starts.
+    related: [m32, m41]
+
+  - id: q-arch-unidirectional
+    category: architecture
+    difficulty: medium
+    question: What is unidirectional data flow, and how would you model a login screen with it?
+    writesCode: true
+    answer: |
+      State lives in one value, the UI renders it, and the only way to change it is to **send an action** through a single function. Data goes one way: action, then new state, then UI. Every change is visible in one place, and the logic is a pure function you can test without a UI.
+
+      ```swift
+      struct LoginState: Equatable {
+          var email = ""
+          var password = ""
+          var isSubmitting = false
+          var errorMessage: String?
+
+          var canSubmit: Bool { email.contains("@") && password.count >= 8 && !isSubmitting }
+      }
+
+      enum LoginAction {
+          case emailChanged(String)
+          case passwordChanged(String)
+          case submitTapped
+          case loginFailed(String)
+      }
+
+      func reduce(_ state: inout LoginState, _ action: LoginAction) {
+          switch action {
+          case .emailChanged(let email):
+              state.email = email
+              state.errorMessage = nil
+          case .passwordChanged(let password):
+              state.password = password
+              state.errorMessage = nil
+          case .submitTapped:
+              guard state.canSubmit else { return }
+              state.isSubmitting = true
+          case .loginFailed(let message):
+              state.isSubmitting = false
+              state.errorMessage = message
+          }
+      }
+      ```
+
+      The network call is a side effect: a store or view model runs it after `submitTapped` and sends `loginFailed` or a success action with the result. Libraries like TCA formalize that part. Tests are a sequence of actions and an expected state.
+
+      The cost is ceremony for simple screens; I use it where state has many interacting fields.
+    keyPoints:
+      - Single state value, actions, and one function that changes state.
+      - Pure reducer, testable without UI.
+      - Side effects run outside and come back as actions.
+      - Derived values like canSubmit come from state.
+      - Ceremony versus benefit for simple screens.
+    followUps:
+      - question: How is this different from an MVVM view model with several published properties?
+        answer: In a typical view model, any method can change any property in any order, so the possible states are implicit. Here, state changes only happen in `reduce`, which makes invalid combinations easier to spot and every transition testable. You can also apply the idea inside a view model by keeping one state struct and one method that mutates it.
+    related: [m32, m37]
+
+  - id: q-arch-new-app
+    category: architecture
+    difficulty: hard
+    question: You're starting a new iOS app from scratch with a team of four. How would you structure it?
+    answer: |
+      I'd start with what's known about the product and the team, and keep the first version **simple but with boundaries in the right places**, so it can grow without a rewrite.
+
+      - **UI**: SwiftUI with an iOS 17 minimum, so Observation and `NavigationStack` are available, and UIKit through representables where needed.
+      - **Structure**: an app target as composition root, plus a local Swift package with core modules (networking, persistence, design system) and one module per main feature. Features don't import each other.
+      - **Per feature**: views, an `@Observable` view model where there's real presentation logic, and repositories behind protocols. Domain types are plain Swift.
+      - **Navigation**: a router per tab that owns the path, so deep links and tests can drive it.
+      - **Concurrency**: Swift 6 language mode from day one; it's much cheaper than migrating later.
+      - **Dependencies**: manual injection from the composition root; third-party libraries only where they clearly earn it.
+      - **Quality**: Swift Testing for domain and view models, a few UI tests for critical flows, CI running tests and the linter on every PR, feature flags for incomplete work.
+      - **Decisions written down**: short architecture decision records, so the next person knows why.
+
+      What I'd avoid at the start: VIPER-level layering, a dozen modules before there are features, and building for scale we don't have.
+    keyPoints:
+      - Start from product and team constraints.
+      - Composition root, core and feature modules, one-way dependencies.
+      - Navigation as data; Swift 6 mode from the start.
+      - Testing and CI from day one.
+      - Avoid premature layering; record decisions.
+    followUps:
+      - question: What would make you choose UIKit as the main UI framework for a new app today?
+        answer: A team that's much stronger in UIKit with a tight deadline, heavy reuse of existing UIKit components, or requirements that need UIKit-level control in most of the app. Even then I'd use SwiftUI for simpler screens and settings.
+    related: [m32, m37, m41]
+
+  - id: q-arch-legacy
+    category: architecture
+    difficulty: hard
+    question: You join a team with a large legacy codebase, massive view controllers and few tests. How do you improve it without stopping feature work?
+    answer: |
+      **Incrementally, guided by where the team actually works.** A rewrite stops delivery for months and usually reproduces old bugs, so I'd avoid it.
+
+      1. **Understand first.** Read the critical flows, look at crash reports and which files change most often. The files that change a lot and break a lot are where refactoring pays off.
+      2. **Add characterization tests before changing behavior.** Tests that record what the code does today, even if it's odd, so a refactor can't change it by accident.
+      3. **Create seams.** Replace a `.shared` singleton inside a controller with an initializer parameter that defaults to the singleton. Nothing else changes, but the type becomes testable.
+      4. **Extract in small steps**: move logic from the view controller into a view model or a plain type, one feature at a time, in reviewable PRs. Child view controllers can split a screen without changing its architecture.
+      5. **New code follows the target architecture**, and old code moves to it when someone touches it (the "boy scout" rule), behind feature flags for risky changes.
+      6. **Make progress visible**: crash rate, test coverage on critical modules, build times.
+
+      I'd agree on the target architecture with the team before starting, so two people don't refactor in different directions.
+    keyPoints:
+      - No big rewrite; incremental change alongside features.
+      - Prioritize by change frequency and bug history.
+      - Characterization tests before refactoring.
+      - Seams with default parameters; small extractions.
+      - A shared target architecture and visible progress.
+    followUps:
+      - question: How do you convince a product manager to give time to refactoring?
+        answer: Tie it to what they care about. "This screen's crashes cost us X support tickets", "each change here takes three days instead of one". Then propose small slices attached to features that touch that code, rather than a separate project with no visible output.
+    related: [m43, m49]
+
+  - id: q-arch-singleton
+    category: architecture
+    difficulty: medium
+    question: What are the drawbacks of singletons, and how do you write a thread-safe one in Swift 6?
+    writesCode: true
+    answer: |
+      First a distinction: `URLSession.shared`, `FileManager.default` and `UserDefaults.standard` are **shared instances**, not strict singletons. You can still create your own `URLSession`. A strict singleton has a private initializer, so there's only ever one.
+
+      **Drawbacks** of using them directly inside your types:
+
+      - **Hidden dependencies**: nothing in the initializer says the type uses the network or the disk.
+      - **Hard to test**: you can't swap the instance for a fake, and state leaks between tests.
+      - **Shared mutable state**: any code anywhere can change it, from any thread.
+
+      **Thread safety**: a `static let` is initialized lazily and exactly once, in a thread-safe way, so creating the instance isn't the problem. The problem is mutable state inside it. Swift 6 language mode catches that: a `static let` of a non-`Sendable` class is a compile error. So the type has to be `Sendable`, which means protecting its state with an actor, the main actor, or a lock:
+
+      ```swift
+      import Synchronization
+
+      final class Analytics: Sendable {
+          static let shared = Analytics()
+          private let events = Mutex<[String]>([])
+
+          private init() {}
+
+          func track(_ name: String) {
+              events.withLock { $0.append(name) }
+          }
+      }
+      ```
+
+      `Mutex` needs iOS 18; an `actor` works on any version, at the cost of making calls `async`.
+
+      What I do in practice: one shared instance is fine, but types receive it through their initializer (`init(analytics: any AnalyticsTracking = Analytics.shared)`), so tests can pass something else.
+    keyPoints:
+      - Shared instances versus strict singletons.
+      - Hidden dependencies, testability and global mutable state.
+      - static let is lazy and initialized once, thread-safely.
+      - Swift 6 rejects a non-Sendable static let; protect state with an actor or lock.
+      - Inject the shared instance instead of reaching for it.
+    followUps:
+      - question: Is a singleton ever the right choice?
+        answer: For something that really is one per process and stateless or internally synchronized, like a logger or the app's analytics pipeline, a single instance is reasonable. The problem isn't having one instance; it's every type reaching for it directly.
+    related: [m29, m32]
+
+  - id: q-arch-factory
+    category: architecture
+    difficulty: easy
+    question: What is the factory pattern, and where does it show up in an iOS app?
+    writesCode: true
+    answer: |
+      A factory is an object or function whose job is **creating other objects**, so callers ask for what they need without knowing the concrete type or how to build it.
+
+      Two forms show up most in iOS code:
+
+      - **Choosing an implementation** based on input:
+
+        ```swift
+        enum ReceiptExporterFactory {
+            static func make(for format: ExportFormat) -> any ReceiptExporter {
+                switch format {
+                case .csv: CSVReceiptExporter()
+                case .json: JSONReceiptExporter()
+                }
+            }
+        }
+        ```
+
+        Callers work with `any ReceiptExporter`; adding a PDF format changes the factory, not every screen that exports.
+
+      - **Building screens with their dependencies**: a composition root or coordinator has methods like `makeTransferDetail(for: id)` that create the view model with the right repository and return the view controller. A screen that needs to create another screen later gets a closure, `makeDetail: (Transfer.ID) -> UIViewController`, instead of the dependencies of that other screen.
+
+      The benefit is that construction details live in one place and the rest of the code depends on abstractions. The cost is one more indirection; a type with a simple initializer and one implementation doesn't need a factory.
+    keyPoints:
+      - Centralizes object creation behind an abstraction.
+      - Choosing implementations based on input.
+      - Screen and view model factories in a composition root or coordinator.
+      - Closures as lightweight factories.
+      - Not needed for simple types with one implementation.
+    followUps:
+      - question: How do factories help with dependency injection?
+        answer: A screen often needs to create objects later, like a detail screen when a row is tapped. Injecting a factory (a closure or a small protocol) gives it that ability without handing it the repository, the API client and everything else the detail screen needs.
+    related: [m32]
+
+  - id: q-arch-clean-codebase
+    category: architecture
+    difficulty: medium
+    question: How do you keep a codebase clean as it grows?
+    writesCode: true
+    answer: |
+      With habits the whole team applies on every PR, most of them checked by tools, not with a cleanup sprint once a year.
+
+      - **Names follow the Swift API Design Guidelines.** Clarity at the point of use: `transfers.remove(at: index)`, not `transfers.removeTransferAtIndex(index)`. Booleans read as assertions (`isExpired`), mutating and non-mutating pairs match (`sort()`/`sorted()`), factories start with `make`. If I can't name a type without "Manager" or "Helper", it probably does too many things.
+      - **Small types with one job, explicit dependencies, values where possible.** A rule pulled out of a view controller into a struct that takes everything it needs:
+
+        ```swift
+        enum TransferError: Error, Equatable {
+            case nonPositiveAmount
+            case exceedsDailyLimit(remaining: Decimal)
+        }
+
+        struct TransferLimitPolicy {
+            let dailyLimit: Decimal
+
+            func validate(amount: Decimal, sentToday: Decimal) throws(TransferError) {
+                guard amount > 0 else { throw .nonPositiveAmount }
+                let remaining = dailyLimit - sentToday
+                guard amount <= remaining else { throw .exceedsDailyLimit(remaining: remaining) }
+            }
+        }
+        ```
+
+        No singletons, no `Date()` inside, no UIKit. It's a value type, so nothing else can mutate it behind your back.
+      - **Tests as design pressure.** If a test needs ten fakes, the type has too many dependencies. That signal is worth more than the coverage number.
+      - **Formatting is automated.** `swift format` ships with the Swift 6 toolchain. A checked-in `.swift-format` config, `swift format lint --strict --recursive Sources` in CI, and nobody argues about spaces in review.
+      - **Review norms.** Small PRs, a description of why, and comments labeled as blocking or nit. Reviewers look at naming, boundaries and tests, because the linter already did the rest.
+      - **No premature abstraction.** A protocol with one implementation and no test using it is indirection. I wait for the second or third case before generalizing.
+      - **Delete dead code**, stale feature flags and commented-out blocks. Git remembers them.
+    keyPoints:
+      - Naming per the API Design Guidelines, with concrete examples.
+      - Small, focused types with injected dependencies and value semantics.
+      - Tests as feedback on design, not only coverage.
+      - Automated formatting and linting in CI.
+      - Review norms, no premature abstraction, and deleting dead code.
+    followUps:
+      - question: How do you stop the codebase from drifting back after a cleanup?
+        answer: Put the rules where they run automatically. Lint and format in CI, module boundaries enforced by the package graph (a feature module that doesn't depend on another can't import it), and a short written guide for the things tools can't check. Then each PR leaves the code it touches a little better.
+      - question: Someone adds a protocol "for testability" with one conforming type and no tests. Do you push back?
+        answer: I'd ask what test it enables. If there's a concrete one coming in the same PR, fine. If not, I'd suggest the concrete type for now; extracting a protocol later is a small, mechanical refactor.
+    related: [m32, m41, m49]

@@ -97,3 +97,1199 @@ questions:
       - question: Does every closure that uses self need [weak self]?
         answer: No. You only need it when there's a risk of a cycle or of keeping an object alive longer than you want, typically **escaping** closures that the object itself holds directly or indirectly. A non-escaping closure, like the one you pass to `map`, finishes before the function returns and can't form a cycle.
     related: [m11, m13]
+
+  - id: q-swift-copy-on-write
+    category: swift
+    difficulty: medium
+    question: How does copy-on-write work, and how would you add it to your own struct that wraps a class?
+    writesCode: true
+    answer: |
+      Copy-on-write means a copy of a value shares its storage until one of the copies mutates. At that moment the mutating copy checks whether it's the only owner of the storage; if it isn't, it duplicates the storage first and then writes. `Array`, `Dictionary`, `Set` and `String` do this, which is why assigning a big array is O(1) and the first mutation of a shared one is O(n).
+
+      Your own structs don't get it for free. If a struct holds a class reference, copying the struct copies the reference, and both copies mutate the same object. You add copy-on-write with `isKnownUniquelyReferenced(_:)`:
+
+      ```swift
+      final class Storage {
+          var values: [Int]
+          init(_ values: [Int]) { self.values = values }
+      }
+
+      struct IntBag {
+          private var storage = Storage([])
+          var values: [Int] { storage.values }
+
+          mutating func append(_ value: Int) {
+              if !isKnownUniquelyReferenced(&storage) {
+                  storage = Storage(storage.values)
+              }
+              storage.values.append(value)
+          }
+      }
+
+      var a = IntBag()
+      a.append(1)
+      var b = a
+      b.append(2)
+      print(a.values, b.values) // [1] [1, 2]
+      ```
+
+      Every mutating path has to go through that check, so keep the storage `private`. In practice I rarely write this by hand: a struct made of standard collections already gets copy-on-write from its properties. I reach for it when the backing storage is a class for performance reasons, like a custom buffer or a tree.
+    keyPoints:
+      - Copies share storage until a write; the writer copies only if the storage is shared.
+      - Standard collections and String do it; custom structs holding a class don't.
+      - "`isKnownUniquelyReferenced(_:)` inside `mutating` methods, with private storage."
+      - "Cost model: assignment O(1), first mutation of shared storage O(n)."
+    followUps:
+      - question: Why does a `mutating` keyword exist at all if the struct is a value?
+        answer: |
+          Methods on a struct get `self` as an immutable value by default. `mutating` makes `self` an `inout` parameter, so the method can change stored properties or even replace `self`. It also lets the compiler reject the call on a `let` constant or on an rvalue, which is how a `let` struct stays fully immutable.
+      - question: Does passing an array to a function copy it?
+        answer: |
+          No copy of the elements happens on the call. The callee gets a value that shares the buffer. Only if the callee (or the caller, while the callee still holds it) mutates does the copy happen. `inout` is defined as copy-in copy-out: the value is copied in, the function mutates its copy, and the result is written back when the function returns (a `didSet` on the argument fires once, at the end). The compiler usually optimizes that into passing the address, so a uniquely referenced buffer isn't copied at all.
+    related: [m09, m10]
+
+  - id: q-swift-enums-associated-values
+    category: swift
+    difficulty: easy
+    question: What are enums with associated values, and when would you use one instead of a struct with optional properties?
+    answer: |
+      An enum case can carry its own payload, and each case can carry a different one. You get the payload back by pattern matching, and `switch` forces you to handle every case.
+
+      ```swift
+      enum LoadState {
+          case idle
+          case loading(progress: Double)
+          case loaded([String])
+          case failed(any Error)
+      }
+
+      func describe(_ state: LoadState) -> String {
+          switch state {
+          case .idle: return "idle"
+          case .loading(let progress) where progress > 0.5: return "almost there"
+          case .loading: return "loading"
+          case .loaded(let items): return "\(items.count) items"
+          case .failed(let error): return "failed: \(error)"
+          }
+      }
+      ```
+
+      I use one when the states are mutually exclusive. The struct version (`isLoading: Bool`, `items: [String]?`, `error: Error?`) allows combinations that make no sense, like loading with an error and items at the same time, and every reader has to guess which combinations are real. The enum makes invalid states unrepresentable, and when you add a case the compiler points to every `switch` you need to update.
+
+      The tradeoff: if two states share a lot of data, an enum makes you repeat it in each case. Then a struct with the shared fields plus an enum for the part that varies works better.
+    keyPoints:
+      - Each case carries its own payload; you extract it with pattern matching.
+      - Exhaustive switch catches every place to update when a case is added.
+      - Mutually exclusive states; invalid combinations can't be built.
+      - Knows the tradeoff with shared data, and the struct-plus-enum split.
+    followUps:
+      - question: What's the difference between raw values and associated values?
+        answer: |
+          A raw value is a fixed constant of one type for each case (`case north = "N"`), known at compile time and the same for every instance; you get `init?(rawValue:)` for free. Associated values are set when you create the value and can differ between instances. An enum can't have both on the same declaration in the synthesized way.
+      - question: What is an `indirect` enum?
+        answer: |
+          A case marked `indirect` (or the whole enum) stores its payload in a heap box, which lets the enum refer to itself, as in a recursive expression tree: `indirect enum Expr { case number(Int); case add(Expr, Expr) }`. Without the box the enum would have infinite size.
+    related: [m09]
+
+  - id: q-swift-protocol-extension-dispatch
+    category: swift
+    difficulty: hard
+    question: A protocol extension adds a method, and a conforming type implements a method with the same name. Which one gets called?
+    answer: |
+      It depends on whether the method is a **requirement** declared in the protocol.
+
+      - If it's a requirement, the call goes through the protocol witness table, so the type's own implementation runs even when you hold the value as `any Protocol` or in generic code. The extension's version is only a default.
+      - If it only exists in the extension, it's statically dispatched based on the static type. Through the concrete type you get the type's method; through the protocol you get the extension's.
+
+      ```swift
+      protocol Greeter { func greet() -> String }
+
+      extension Greeter {
+          func greet() -> String { "Hello from the extension" }
+          func farewell() -> String { "Bye from the extension" }
+      }
+
+      struct Friendly: Greeter {
+          func greet() -> String { "Hi from Friendly" }
+          func farewell() -> String { "Bye from Friendly" }
+      }
+
+      let greeter: any Greeter = Friendly()
+      print(greeter.greet())              // Hi from Friendly
+      print(greeter.farewell())           // Bye from the extension
+      print(Friendly().farewell())        // Bye from Friendly
+      ```
+
+      This bites people who add "overridable" helpers in an extension and are surprised when the custom version is skipped. The fix is to declare the method in the protocol body if conforming types should be able to customize it, and keep extension-only methods for behavior that's the same for everyone.
+    keyPoints:
+      - Requirements dispatch dynamically through the witness table.
+      - Extension-only methods dispatch statically on the declared type.
+      - Same value gives different results through the protocol and the concrete type.
+      - Fix by declaring the method as a requirement.
+    followUps:
+      - question: Does the same thing happen in generic code constrained to the protocol?
+        answer: |
+          Yes. Inside `func f<T: Greeter>(_ value: T)`, the compiler only knows `T: Greeter`, so `value.farewell()` picks the extension's version, the same as with `any Greeter`.
+      - question: What's a subtle case with class inheritance and default implementations?
+        answer: |
+          If a base class conforms by using the protocol extension's default and a subclass later adds its own method with that name, calls through the protocol still use the default: the witness table was filled in for the base class. The base class has to implement the method itself so the subclass can `override` it.
+    related: [m10]
+
+  - id: q-swift-protocol-oriented-design
+    category: swift
+    difficulty: medium
+    question: What does protocol-oriented design mean in Swift, and when is it the wrong tool?
+    answer: |
+      It means modeling shared behavior with protocols, default implementations in extensions and composition, instead of a class hierarchy. A type adopts the capabilities it needs (`Codable`, `Identifiable`, a `Cacheable` of your own) rather than inheriting a base class that tries to cover everyone.
+
+      What you gain:
+      - **Works with value types.** Structs and enums can't inherit, but they can conform.
+      - **Composition.** A type conforms to several small protocols; no diamond of base classes.
+      - **Retroactive modeling.** You can make a type you don't own conform in an extension.
+      - **Testability.** A view model depending on `protocol UserFetching` can get a fake in tests.
+
+      When it's the wrong tool: a protocol with exactly one conformer that exists "for testability" but is never faked is ceremony. Protocols with associated types are harder to use as values, and existentials (`any P`) cost an indirection and dynamic dispatch. Sometimes a struct holding closures, or a plain concrete type, is simpler. I also keep protocols small: a 15-method protocol is a class hierarchy in disguise.
+
+      In practice I start concrete and extract a protocol when a second implementation shows up, or when I need to cut a dependency for tests or modules.
+    keyPoints:
+      - Protocols plus extensions plus composition, instead of inheritance.
+      - Works for value types; retroactive conformance.
+      - Dependency inversion for tests and modules.
+      - Names the costs, like single-conformer protocols, existentials and associated types.
+    followUps:
+      - question: Is retroactive conformance always safe?
+        answer: |
+          Not when both the type and the protocol come from other modules. If the owner later adds the same conformance, you get two conflicting ones. Since Swift 6 the compiler warns about this case, and you mark it with `@retroactive` if you accept the risk.
+      - question: How do you make a protocol requirement optional?
+        answer: |
+          The Swift way is to give the requirement a default implementation in a protocol extension, so conforming types only implement it when they need to. The Objective-C way is an `@objc` protocol with `@objc optional` members, which callers invoke with optional chaining (`delegate?.didScroll?()`). That's how many UIKit delegates work. Such a protocol can only be adopted by classes, and its members must be representable in Objective-C, but the class doesn't have to inherit from `NSObject`.
+    related: [m10, m11]
+
+  - id: q-swift-generics-constraints
+    category: swift
+    difficulty: medium
+    question: Write a generic function that returns the most frequent element of any sequence. What constraints does it need, and why?
+    writesCode: true
+    answer: |
+      The elements have to be `Hashable` so I can count them in a dictionary. I take `some Sequence<Element>` so it works with arrays, sets, ranges or a lazy sequence.
+
+      ```swift
+      func mostFrequent<Element: Hashable>(in items: some Sequence<Element>) -> Element? {
+          var counts: [Element: Int] = [:]
+          for item in items {
+              counts[item, default: 0] += 1
+          }
+          return counts.max { $0.value < $1.value }?.key
+      }
+
+      mostFrequent(in: ["a", "b", "a"]) // "a"
+      mostFrequent(in: [Int]())         // nil
+      ```
+
+      It's O(n) time and O(k) extra space for k distinct elements. It returns an optional because an empty sequence has no answer. With a tie, the result is whichever maximum the dictionary yields first, which isn't stable; if the interviewer cares, I'd track the first index where each element appeared.
+
+      Constraints are what let the body use operations: without `Hashable` the dictionary wouldn't compile. You add them with `<T: Protocol>`, or with a `where` clause when you need relationships, like `where C.Element: Equatable` or `where A.Element == B.Element`. Generics are resolved at compile time, and the optimizer can specialize them for concrete types, so there's no boxing as with `any`.
+    keyPoints:
+      - Picks the minimal constraint (Hashable) and explains why.
+      - Handles the empty case and mentions tie-breaking.
+      - States O(n) time and the extra space.
+      - Knows where clauses and that generics can be specialized, unlike existentials.
+    followUps:
+      - question: What's the difference between a constrained extension and a conditional conformance?
+        answer: |
+          A constrained extension adds members only when the generic parameters meet a condition: `extension Array where Element: Numeric { func total() -> Element { reduce(0, +) } }` adds `total()` to arrays of numbers, but `Array` doesn't gain any new protocol. A conditional conformance makes the type **conform to a protocol** under a condition: `extension Array: Equatable where Element: Equatable`. That's what lets `[[Int]]` be compared with `==` and used wherever `Equatable` is required. Conditional conformances arrived in Swift 4.1 (SE-0143).
+      - question: When would you use `any Sequence<Element>` instead?
+        answer: |
+          When the concrete type really varies at runtime, like storing different sequence types in one property. For a function parameter, the generic version is usually better: no existential box and the compiler can specialize it.
+    related: [m11]
+
+  - id: q-swift-associated-types
+    category: swift
+    difficulty: medium
+    question: What's an associated type, and why couldn't you write `[Collection]` for a long time?
+    answer: |
+      An associated type is a placeholder type inside a protocol that each conforming type fills in. `Collection` has `Element` (and `Index`, among others); `Array<Int>` fills `Element` with `Int`. It's how a protocol stays generic without being generic itself.
+
+      ```swift
+      protocol Container {
+          associatedtype Item
+          var items: [Item] { get }
+      }
+      struct Box<T>: Container { var items: [T] }
+      ```
+
+      Before Swift 5.7, protocols with associated types (or `Self` requirements) could only be used as generic constraints, not as types, because the compiler had no way to express "a collection of something" as a value. SE-0309 lifted that: `any Collection` is legal now, but members that use `Element` come back type-erased to the upper bound (often `Any`).
+
+      Swift 5.7 also added primary associated types (SE-0346), declared as `protocol Collection<Element>`. That lets you write `some Collection<Int>` and `any Collection<Int>`, which keeps the element type known:
+
+      ```swift
+      let collections: [any Collection<Int>] = [[1, 2, 3], Set([4]), 5...7]
+      print(collections.map { $0.count }) // [3, 1, 3]
+      ```
+
+      Before that, people wrote type erasers by hand (`AnyPublisher`, `AnySequence`). You still see those in older code and in APIs that predate 5.7.
+    keyPoints:
+      - Placeholder filled in by each conforming type.
+      - Historically constraint-only; SE-0309 allowed existentials in Swift 5.7.
+      - Primary associated types allow some/any Collection<Int>.
+      - Knows hand-written type erasers and why they existed.
+    followUps:
+      - question: How is an associated type different from a generic parameter on a type?
+        answer: |
+          A generic type's parameter is chosen by the **user** of the type (`Box<Int>`, `Box<String>`), and one type can be instantiated many ways. An associated type is chosen by the **conforming type**, once: `Array<Int>` has exactly one `Element`. That's why a type can't conform to `Container` twice with different `Item`s.
+    related: [m11]
+
+  - id: q-swift-some-any-in-depth
+    category: swift
+    difficulty: hard
+    question: Go deeper on `some` and `any`. What does `some` mean in parameter position, what is existential opening, and why can't you compare two `any Equatable` values?
+    answer: |
+      **`some` in a parameter** (Swift 5.7, SE-0341) is sugar for an anonymous generic parameter: `func describe(_ shape: some Shape)` is the same as `func describe<S: Shape>(_ shape: S)`, so the **caller** picks the concrete type. Only in return position (opaque result types, SE-0244, Swift 5.1) is it reversed: the **callee** picks the type, and the caller only knows it conforms.
+
+      **Existential opening** (SE-0352, also 5.7): when you pass an `any Shape` to a parameter of type `some Shape`, the compiler unboxes it and binds the generic parameter to whatever concrete type is inside. So this works:
+
+      ```swift
+      let shapes: [any Shape] = [Square(side: 2), Circle(radius: 1)]
+      for shape in shapes { print(describe(shape)) }
+      ```
+
+      **`any Equatable == any Equatable` doesn't compile** because `==` requires both sides to be the *same* `Self` type. Two boxes could hold an `Int` and a `String`; the compiler can't prove they match. You have to open one and try to cast the other:
+
+      ```swift
+      func isSame<A: Equatable>(_ a: A, _ b: any Equatable) -> Bool {
+          guard let b = b as? A else { return false }
+          return a == b
+      }
+      isSame(1, 1)   // true
+      isSame(1, "1") // false
+      ```
+
+      On cost: an existential is a container with a small inline buffer plus pointers to the type's metadata and witness table, and larger values go to the heap. Calls go through the witness table. That's usually fine, but in hot loops or large arrays generics are cheaper. Requiring `any` on every existential is still an opt-in upcoming feature (`ExistentialAny`) as of Swift 6.3, even in the Swift 6 language mode; protocols with associated types or `Self` requirements have required it since 5.7.
+    keyPoints:
+      - some in parameter position is a generic parameter chosen by the caller; opaque results are chosen by the callee.
+      - Implicit opening lets any P flow into some P.
+      - Self requirements (==) need both sides to be the same type.
+      - Existential cost (boxing, witness tables) versus specialized generics.
+    followUps:
+      - question: Can you store a `some View` in a property whose type changes over time?
+        answer: |
+          No. An opaque type is fixed per declaration. If the property needs to hold different view types at different times, you need a generic parameter on the containing type, `AnyView` (with its costs), or a `@ViewBuilder` that returns `some View` built from conditionals.
+    related: [m10, m11]
+
+  - id: q-swift-error-handling
+    category: swift
+    difficulty: easy
+    question: How does error handling work in Swift? Explain `throws`, `try`, `try?`, `try!` and `rethrows`.
+    answer: |
+      A function marked `throws` can exit by throwing a value that conforms to `Error`. Callers must mark the call with `try` and either handle it in `do`/`catch` or be throwing themselves. Errors are just values (usually enums), and throwing is a normal return path, not stack-unwinding exceptions like in some languages.
+
+      - `try` inside `do { } catch { }`: handle specific errors with patterns (`catch NetworkError.offline`) and a final `catch` for the rest.
+      - `try?` turns the result into an optional and discards the error. Fine when you really don't care why it failed.
+      - `try!` crashes if it throws. Only for things that can't fail unless there's a bug, like decoding a JSON file bundled with the app.
+      - `rethrows` means "I only throw if the closure you gave me throws." `map` is declared this way, so `[1, 2].map { $0 * 2 }` needs no `try`.
+
+      ```swift
+      func retry<T>(times: Int, _ operation: () throws -> T) rethrows -> T {
+          for _ in 1..<times {
+              if let value = try? operation() { return value }
+          }
+          return try operation()
+      }
+      ```
+
+      Use `defer` for cleanup that must run on both the success and the throwing path.
+
+      Not every failure is an error. `Int("abc")` returns `nil`; it doesn't throw or crash. Crashes come from `try!`, force unwrapping (`!`) and forced casts (`as!`).
+    keyPoints:
+      - Errors are values conforming to Error; try marks every throwing call.
+      - try? discards the error; try! crashes; when each is acceptable.
+      - rethrows propagates only the closure's errors.
+      - defer for cleanup on every exit path.
+    followUps:
+      - question: How do you give users a readable error message?
+        answer: |
+          Conform the error to `LocalizedError` and implement `errorDescription` (and optionally `recoverySuggestion`). `error.localizedDescription` then returns your text. Keep technical details for logs, not for the alert.
+    related: [m12]
+
+  - id: q-swift-typed-throws-result
+    category: swift
+    difficulty: medium
+    question: What are typed throws, and when would you use them or `Result` instead of a plain `throws`?
+    answer: |
+      Typed throws (SE-0413, Swift 6.0) let a function declare the exact error type: `throws(ParseError)`. In a `do` block where every throwing call uses that type, `catch` gets a `ParseError` instead of `any Error`, so you can switch over it exhaustively.
+
+      ```swift
+      enum ParseError: Error { case empty, notANumber(String) }
+
+      func parseAge(_ text: String) throws(ParseError) -> Int {
+          guard !text.isEmpty else { throw .empty }
+          guard let age = Int(text) else { throw .notANumber(text) }
+          return age
+      }
+
+      do {
+          _ = try parseAge("abc")
+      } catch {
+          switch error {          // error is ParseError
+          case .empty: print("empty")
+          case .notANumber(let text): print("not a number: \(text)")
+          }
+      }
+      ```
+
+      The proposal itself says untyped `throws` is better for most code. Typed errors lock you in: adding a failure mode later breaks every exhaustive `catch`, and wrapping lower-level errors gets tedious. I use them inside a module where the errors are an implementation detail and always handled, in generic code that only passes through a caller's error, and in constrained environments like Embedded Swift where you want to avoid `any Error`.
+
+      `Result<Success, Failure>` is the value form of the same idea. With `async`/`await` you rarely need it as a return type, but it's still useful to store an outcome, send it through a completion handler, or bridge with `Result { try … }` and `.get()`.
+    keyPoints:
+      - Syntax throws(E) and the concrete error in catch.
+      - Swift 6.0, SE-0413.
+      - Untyped throws is still the default recommendation, and why.
+      - Result for storing outcomes and bridging callbacks.
+    followUps:
+      - question: Does `throws(Never)` mean anything?
+        answer: |
+          It's the same as a non-throwing function. That's what makes generic code work: a function generic over `E: Error` that takes a closure throwing `E` doesn't throw at all when you pass a non-throwing closure, because `E` becomes `Never`.
+      - question: Does Swift infer the thrown type of a closure?
+        answer: |
+          Not as of Swift 6.3: a closure without an annotation throws `any Error`. So `Result { try parseAge("") }` gives `Result<Int, any Error>`. To get `Result<Int, ParseError>` you write the closure type: `Result { () throws(ParseError) -> Int in try parseAge("") }`. The proposal lists closure inference as a future direction.
+    related: [m12]
+
+  - id: q-swift-escaping-autoclosure
+    category: swift
+    difficulty: medium
+    question: What do `@escaping` and `@autoclosure` mean, and why are closure parameters non-escaping by default?
+    answer: |
+      A closure parameter is **non-escaping** by default: the compiler guarantees it's only called before the function returns. That lets it skip heap allocation for the context, lets you use `self` without writing it explicitly, and rules out retain cycles through that closure.
+
+      You mark it `@escaping` when the closure outlives the call: you store it in a property, put it in an array, or hand it to something asynchronous.
+
+      ```swift
+      final class ImageLoader {
+          private var handlers: [(String) -> Void] = []
+          func load(completion: @escaping (String) -> Void) {
+              handlers.append(completion)
+          }
+      }
+      ```
+
+      Escaping closures are where you think about capture lists, because the object storing the closure may be what the closure captures.
+
+      `@autoclosure` wraps an expression argument in a closure automatically, so it's evaluated lazily, or not at all:
+
+      ```swift
+      func log(_ message: @autoclosure () -> String, enabled: Bool) {
+          if enabled { print(message()) }
+      }
+      log(expensiveDescription(), enabled: false) // never evaluated
+      ```
+
+      The standard library uses it for `&&`, `||`, `??` and `assert`. Use it sparingly: a call site that looks like an eager argument but isn't evaluated surprises readers, especially if the expression has side effects.
+    keyPoints:
+      - Non-escaping is the default; called only during the function.
+      - "@escaping when stored or called asynchronously."
+      - Escaping closures are where retain cycles appear.
+      - "@autoclosure delays evaluation; used by &&, ?? and assert."
+    followUps:
+      - question: What are trailing closures, and multiple trailing closures?
+        answer: |
+          If the last parameter is a closure you can write it after the parentheses: `items.map { $0 * 2 }`. Since Swift 5.3 (SE-0279) you can pass several: the first without a label, the rest with their labels, as in SwiftUI's `Button { save() } label: { Text("Save") }`.
+    related: [m06, m11]
+
+  - id: q-swift-property-wrappers
+    category: swift
+    difficulty: medium
+    question: How do property wrappers work? Write one.
+    writesCode: true
+    answer: |
+      A property wrapper is a type marked `@propertyWrapper` with a `wrappedValue`. When you annotate a property with it, the compiler stores an instance of the wrapper in a hidden `_name` property and routes `name` through `wrappedValue`. An optional `projectedValue` is exposed as `$name`.
+
+      ```swift
+      @propertyWrapper
+      struct Clamped {
+          private var value: Int
+          let range: ClosedRange<Int>
+
+          init(wrappedValue: Int, _ range: ClosedRange<Int>) {
+              self.range = range
+              self.value = min(max(wrappedValue, range.lowerBound), range.upperBound)
+          }
+
+          var wrappedValue: Int {
+              get { value }
+              set { value = min(max(newValue, range.lowerBound), range.upperBound) }
+          }
+
+          var projectedValue: ClosedRange<Int> { range }
+      }
+
+      struct Volume {
+          @Clamped(0...10) var level: Int = 5
+      }
+
+      var volume = Volume()
+      volume.level = 42
+      print(volume.level, volume.$level) // 10 0...10
+      ```
+
+      Common real uses: SwiftUI's `@State` and `@Binding` (where `$value` is the binding), `@AppStorage`, `@Published` in Combine, and in-house ones for UserDefaults or input validation.
+
+      Limits: they hide logic behind an attribute, so a reviewer has to know what the wrapper does. They don't compose cleanly when you stack several. And for observation, Swift 5.9 moved SwiftUI from wrappers like `@Published` to the `@Observable` macro, which can do things a wrapper can't, like tracking access to each property.
+    keyPoints:
+      - wrappedValue is required; projectedValue becomes $name.
+      - Storage lives in a synthesized _name property.
+      - Real examples from SwiftUI and Combine.
+      - Tradeoffs, and how macros replaced some uses.
+    followUps:
+      - question: Can a property wrapper access the enclosing instance?
+        answer: |
+          Not through `wrappedValue`. There's an underscored static subscript (`_enclosingInstance`) that `@Published` relies on, but it's not an official feature and only works for classes. If you need the enclosing type, a macro is usually the cleaner tool now.
+    related: [m11]
+
+  - id: q-swift-key-paths
+    category: swift
+    difficulty: medium
+    question: What are key paths, and where have you used them?
+    answer: |
+      A key path is a reference to a property, as a value: `\Employee.salary`. You can store it, pass it and apply it later with `value[keyPath: path]`. It's type-safe: `\Employee.salary` is a `KeyPath<Employee, Int>`, so the compiler knows the root and value types.
+
+      There's a small hierarchy: `KeyPath` (read-only), `WritableKeyPath` (read-write on a value type through a `var`), and `ReferenceWritableKeyPath` (read-write through a class reference).
+
+      Since Swift 5.2 (SE-0249) a key path can be used where a function from root to value is expected, which is why `staff.map(\.name)` works. A generic helper becomes short:
+
+      ```swift
+      extension Sequence {
+          func sorted<Value: Comparable>(by keyPath: KeyPath<Element, Value>) -> [Element] {
+              sorted { $0[keyPath: keyPath] < $1[keyPath: keyPath] }
+          }
+      }
+
+      let bySalary = staff.sorted(by: \.salary)
+      ```
+
+      Where they show up in iOS work: SwiftUI (`ForEach(items, id: \.id)`, `@Environment(\.dismiss)`), Combine's `assign(to:on:)`, SwiftData's `#Predicate` and `SortDescriptor(\.date)`, KVO with `observe(\.property)`, and generic table or form code that edits fields by key path.
+    keyPoints:
+      - A typed reference to a property, applied with [keyPath:].
+      - KeyPath, WritableKeyPath, ReferenceWritableKeyPath.
+      - Key paths as functions (map(\.name)).
+      - Concrete uses in SwiftUI, Combine, SwiftData or KVO.
+    followUps:
+      - question: Why does writing through a `WritableKeyPath` require a `var`?
+        answer: |
+          Because writing changes the value, and for a struct that means mutating the root. `settings[keyPath: \.volume] = 7` only compiles if `settings` is a `var`. With a class, `ReferenceWritableKeyPath` writes through the reference, so a `let` constant is fine.
+    related: [m11]
+
+  - id: q-swift-access-control
+    category: swift
+    difficulty: easy
+    question: Walk me through Swift's access levels. What's the difference between `open` and `public`, and between `private` and `fileprivate`?
+    answer: |
+      From most to least open:
+
+      - `open`: visible outside the module **and** subclassable/overridable outside it. Only for classes and their members.
+      - `public`: visible outside the module, but other modules can't subclass or override.
+      - `package` (Swift 5.9): visible to other modules in the same package, not to outside clients.
+      - `internal` (the default): visible within the module.
+      - `fileprivate`: visible within the source file.
+      - `private`: visible within the enclosing declaration, and in extensions of that type in the **same file** (since Swift 4).
+
+      `private(set)` lets you expose a getter while keeping the setter private, which is a common way to protect state:
+
+      ```swift
+      struct Wallet {
+          private var cents = 0
+          private(set) var history: [Int] = []
+      }
+      extension Wallet {
+          mutating func add(_ amount: Int) {
+              cents += amount        // OK: same file
+              history.append(amount)
+          }
+      }
+      ```
+
+      In an app target it mostly matters for intent and for the compiler: `private` and `final` let it optimize more. In modular apps, `public` is your module's API, so I keep it small and expose protocols or factories instead of concrete internals.
+    keyPoints:
+      - All levels in order, including package.
+      - open allows subclassing outside the module; public doesn't.
+      - private extends to same-file extensions.
+      - private(set) and intent in modular code.
+    followUps:
+      - question: Why would you mark a class `final`?
+        answer: |
+          It says the class isn't designed for subclassing, and it lets the compiler call its methods directly instead of through dynamic dispatch. I make classes `final` by default and remove it only when inheritance is part of the design.
+    related: [m10, m14]
+
+  - id: q-swift-codable
+    category: swift
+    difficulty: medium
+    question: How does Codable work, and how do you handle JSON that doesn't match your model?
+    writesCode: true
+    answer: |
+      `Codable` is `Encodable & Decodable`. If every stored property is `Codable`, the compiler synthesizes `init(from:)`, `encode(to:)` and a `CodingKeys` enum. Optionals decode to `nil` when the key is missing.
+
+      For mismatches, in order of effort:
+
+      1. **Key names**: set `decoder.keyDecodingStrategy = .convertFromSnakeCase`, or write a `CodingKeys` enum for specific renames.
+      2. **Dates**: set `dateDecodingStrategy` (`.iso8601`, `.secondsSince1970`, or a custom formatter).
+      3. **Shape or type mismatches**: write `init(from:)` yourself.
+
+      ```swift
+      struct Product: Codable {
+          let id: Int
+          let displayName: String
+          let price: Decimal?
+
+          enum CodingKeys: String, CodingKey {
+              case id, displayName = "display_name", price
+          }
+      }
+
+      struct Inventory: Decodable {
+          let count: Int
+          init(from decoder: any Decoder) throws {
+              let container = try decoder.container(keyedBy: CodingKeys.self)
+              if let number = try? container.decode(Int.self, forKey: .count) {
+                  count = number
+              } else {
+                  count = Int(try container.decode(String.self, forKey: .count)) ?? 0
+              }
+          }
+          enum CodingKeys: CodingKey { case count }
+      }
+      ```
+
+      When the API format is messy, I prefer a separate DTO that mirrors the JSON exactly and a mapping to the domain model, rather than bending the domain type around the server.
+    keyPoints:
+      - Synthesis rules and missing keys for optionals.
+      - CodingKeys and key decoding strategies.
+      - Custom init(from:) for type or shape mismatches.
+      - DTO versus domain model separation.
+    followUps:
+      - question: How do you debug a decoding failure?
+        answer: |
+          Catch `DecodingError` and look at the case (`keyNotFound`, `typeMismatch`, `valueNotFound`, `dataCorrupted`) and its `codingPath`, which tells you exactly where in the JSON it failed. Printing `error.localizedDescription` hides most of that.
+      - question: Can enums with associated values be Codable?
+        answer: |
+          Yes, synthesis has supported them since Swift 5.5 (SE-0295). The default format is a keyed container per case, which may not match what your server sends, so for external APIs you often write the coding by hand.
+    related: [m09, m30]
+
+  - id: q-swift-equatable-hashable
+    category: swift
+    difficulty: easy
+    question: What do Equatable, Hashable and Identifiable each give you, and what's the rule between `==` and `hash(into:)`?
+    answer: |
+      - `Equatable`: `==`. Needed for `contains`, `firstIndex(of:)` and `removeDuplicates()` in Combine.
+      - `Hashable`: a hash value, so the type can be a `Set` element or a `Dictionary` key. It refines `Equatable`.
+      - `Identifiable`: an `id` that says "this is the same entity," even when its contents change. SwiftUI's `List` and `ForEach` use it to track rows.
+
+      Structs and enums get `Equatable` and `Hashable` synthesized when all stored properties (or associated values) conform.
+
+      The rule: **if `a == b`, then `a` and `b` must produce the same hash.** If you customize `==` to compare only some fields, `hash(into:)` must use only those fields (or a subset):
+
+      ```swift
+      struct Account: Hashable {
+          let id: Int
+          var balance: Double
+
+          static func == (lhs: Account, rhs: Account) -> Bool { lhs.id == rhs.id }
+          func hash(into hasher: inout Hasher) { hasher.combine(id) }
+      }
+      ```
+
+      Breaking it causes duplicates in sets and lookups that randomly fail. The opposite isn't required: two unequal values can share a hash; that's a collision, and it only costs performance.
+
+      `Identifiable` and `Equatable` answer different questions. Two versions of a user with the same `id` but a new name are the same entity but not equal values, which is how SwiftUI knows to update the row instead of replacing it.
+    keyPoints:
+      - What each protocol enables.
+      - Automatic synthesis conditions.
+      - Equal values must have equal hashes.
+      - Identity (Identifiable) versus value equality.
+    followUps:
+      - question: Why shouldn't you mutate an object while it's a dictionary key?
+        answer: |
+          The dictionary stored it in a bucket based on its hash at insertion. If the hashed fields change, lookups go to a different bucket and won't find it. With value types this mostly can't happen, since the key is a copy; it's a real risk with class keys that hash mutable state.
+    related: [m09, m16]
+
+  - id: q-swift-higher-order-functions
+    category: swift
+    difficulty: easy
+    question: Explain `map`, `compactMap`, `flatMap`, `filter` and `reduce`. What's their complexity, and when does chaining them get expensive?
+    answer: |
+      - `map` transforms each element: O(n), returns a new array.
+      - `compactMap` transforms and drops `nil`s: `["1", "x"].compactMap(Int.init)` gives `[1]`.
+      - `flatMap` transforms each element into a sequence and concatenates: `[[1, 2], [3]].flatMap { $0 }` gives `[1, 2, 3]`.
+      - `filter` keeps the elements that match: O(n).
+      - `reduce` folds everything into one value: `numbers.reduce(0, +)`.
+
+      Each eager call is O(n) and allocates a new array, so `filter { }.map { }.first` builds two full arrays to read one element. `lazy` fixes that by processing elements on demand:
+
+      ```swift
+      let firstEvenSquare = numbers.lazy
+          .filter { $0.isMultiple(of: 2) }
+          .map { $0 * $0 }
+          .first
+      ```
+
+      The classic trap is `reduce` with an array or dictionary accumulator: `reduce([]) { $0 + [$1] }` copies the accumulator each step, making it O(n²). `reduce(into:)` mutates in place:
+
+      ```swift
+      let counts = words.reduce(into: [:]) { counts, word in counts[word, default: 0] += 1 }
+      ```
+
+      Also worth knowing: `contains` on an array is O(n), on a `Set` it's O(1) on average; `sorted` is O(n log n). Chains are readable, but a plain `for` loop is fine when it's clearer or does several things in one pass.
+    keyPoints:
+      - What each function does, with a correct example.
+      - O(n) and a new allocation per eager step.
+      - lazy for early exit or long chains.
+      - reduce versus reduce(into:) and the O(n²) trap.
+    followUps:
+      - question: Is `lazy` always faster?
+        answer: |
+          No. A lazy chain re-runs its closures every time you iterate it, and accessing it by index can repeat work. If you'll iterate the result several times, materialize it once with `Array(...)`.
+    related: [m11, m15]
+
+  - id: q-swift-strings-unicode
+    category: swift
+    difficulty: medium
+    question: Why can't you index a Swift String with an Int, and why does `count` sometimes disagree with what UIKit reports?
+    answer: |
+      A Swift `Character` is an **extended grapheme cluster**, what a person sees as one character, and it can be made of several Unicode scalars of varying byte size. To find the 5th character, Swift has to walk from the start, so integer subscripting would look O(1) but be O(n). The API makes that cost visible with `String.Index`:
+
+      ```swift
+      let word = "Swift"
+      let third = word[word.index(word.startIndex, offsetBy: 2)] // "i"
+      ```
+
+      The same text can be counted several ways:
+
+      ```swift
+      let family = "👨‍👩‍👧"
+      family.count                 // 1 character
+      family.unicodeScalars.count  // 5
+      family.utf16.count           // 8
+      family.utf8.count            // 18
+      ```
+
+      `NSString.length` and `NSRange` count UTF-16 code units, so a `UITextField` delegate range or a regex match from Foundation doesn't line up with `count`. Convert with `Range(nsRange, in: string)` and `NSRange(range, in: string)` instead of doing arithmetic.
+
+      Equality is Unicode-aware too: `"café"` written with a precomposed é and with `e` plus a combining accent are `==` and both have `count` 4, even though their UTF-8 sizes differ (5 and 6 bytes). Also, `count` itself is O(n), so don't call it in a loop condition on a long string.
+    keyPoints:
+      - Character is a grapheme cluster; positions need a walk.
+      - String.Index makes the O(n) cost explicit.
+      - Different views (unicodeScalars, utf16, utf8) give different counts.
+      - NSRange is UTF-16; convert with Range(_:in:).
+      - Canonical equivalence in ==.
+    followUps:
+      - question: How do you check a username's length limit?
+        answer: |
+          Decide what the limit means first. For what the user sees, use `count`. For a server or database field limited in bytes, use `utf8.count`. Mixing them lets an emoji-heavy name pass the client check and fail on the server.
+    related: [m04, m07]
+
+  - id: q-swift-defer
+    category: swift
+    difficulty: easy
+    question: What does `defer` do, and in what order do several `defer` blocks run?
+    answer: |
+      A `defer` block runs when the current scope exits, however it exits: normal end, `return`, `throw` or `break`. Multiple `defer` blocks in the same scope run in **reverse order** of declaration, like a stack.
+
+      ```swift
+      func work() {
+          defer { print("first defer") }
+          defer { print("second defer") }
+          print("body")
+      }
+      work()
+      // body
+      // second defer
+      // first defer
+      ```
+
+      It keeps setup and cleanup next to each other, so a new early return can't skip the cleanup:
+
+      ```swift
+      lock.lock()
+      defer { lock.unlock() }
+
+      isLoading = true
+      defer { isLoading = false }
+      ```
+
+      A few rules: a `defer` only registers when execution reaches it, so one placed after an early `return` never runs on that path. It runs at the end of its scope, not the function, so a `defer` inside a loop body runs on every iteration. And you can't `return` or `throw` out of a `defer` block.
+    keyPoints:
+      - Runs on every exit path of the scope.
+      - Reverse order (LIFO).
+      - Real uses like unlock, closing files, resetting loading flags.
+      - Only registered when reached; scoped to the block, not the function.
+    followUps:
+      - question: Does a `defer` run if the app crashes with a force unwrap?
+        answer: |
+          No. A trap ends the process immediately; no cleanup runs. `defer` covers normal control flow and thrown errors, not crashes.
+    related: [m05, m12]
+
+  - id: q-swift-lazy-properties
+    category: swift
+    difficulty: easy
+    question: What is a `lazy` property, when do you use one, and is it thread-safe?
+    answer: |
+      A `lazy var` isn't initialized when the instance is created. Its initializer runs the first time someone reads it, and the result is stored for later reads.
+
+      ```swift
+      final class Report {
+          lazy var summary: String = {
+              print("computing summary")
+              return "done"
+          }()
+      }
+      let report = Report()   // nothing printed yet
+      report.summary          // prints "computing summary"
+      report.summary          // already stored, no print
+      ```
+
+      Use it when the value is expensive and might not be needed, or when its initializer needs `self` (a lazy initializer can reference `self`, a normal stored property's can't). In UIKit code you see it for subviews configured in a closure.
+
+      It must be `var` because it's assigned after init. On a struct, reading it the first time mutates the value, so you can't read it through a `let` constant.
+
+      **It isn't thread-safe.** The Swift book says that if several threads access an uninitialized lazy property at once, there's no guarantee it's initialized only once. In the Swift 6 language mode the compiler usually stops you from sharing such an instance across threads in the first place, because a class with mutable state isn't `Sendable`. Global variables and `static` stored properties are different: they're also initialized lazily, but the language guarantees that happens exactly once, even across threads.
+    keyPoints:
+      - Initialized on first access, then stored.
+      - Can reference self; must be var.
+      - Not thread-safe; may initialize twice.
+      - Globals and static properties are lazy and initialized once.
+    followUps:
+      - question: What's the difference between a lazy property and a computed property?
+        answer: |
+          A computed property runs its getter on every access and stores nothing. A lazy property runs once and stores the result. If the value depends on other state that changes, lazy gives you a stale value; computed doesn't.
+    related: [m09, m10]
+
+  - id: q-swift-static-class-final
+    category: swift
+    difficulty: easy
+    question: What's the difference between `static` and `class` members, and what does `final` change?
+    answer: |
+      Both declare type members (called on the type, not an instance). The difference is overriding:
+
+      - `static` members can't be overridden. In a class, `static` is the same as `final class`.
+      - `class` members (only in classes) can be overridden by subclasses.
+
+      ```swift
+      class Animal {
+          class func kind() -> String { "animal" }
+          static func make() -> String { "made \(kind())" }
+      }
+      class Dog: Animal {
+          override class func kind() -> String { "dog" }
+      }
+      print(Dog.make()) // made dog
+      ```
+
+      Stored type properties can only be `static`; `class` works for computed properties and methods.
+
+      `final` on a class prevents subclassing; on a method or property, it prevents overriding. Besides stating intent, it lets the compiler use direct calls instead of dynamic dispatch through the class's vtable. With whole-module optimization the compiler can infer `final` for non-public declarations that are never overridden in the module; it can't for `public` or `open` ones, since other modules might subclass. Writing `final` is clearer either way.
+
+      Structs and enums only have `static`, since they don't support inheritance.
+    keyPoints:
+      - static can't be overridden; class can.
+      - Stored type properties are static only.
+      - final blocks subclassing or overriding.
+      - Direct dispatch as a performance side effect.
+    followUps:
+      - question: Are static stored properties a good place for shared state?
+        answer: |
+          A `static let` is initialized exactly once, thread-safely, so a `static let shared = Session()` singleton is created safely. The risk is the mutable state inside it. In the Swift 6 language mode the compiler rejects a `static var` that isn't isolated (for example with `@MainActor`), and also a `static let` whose type isn't `Sendable`: *static property 'shared' is not concurrency-safe because non-'Sendable' type 'Session' may have shared mutable state*. Statics are also hard to reset in tests, so I prefer injecting the dependency.
+    related: [m10]
+
+  - id: q-swift-initializers
+    category: swift
+    difficulty: hard
+    question: Explain designated, convenience and failable initializers, and Swift's two-phase class initialization.
+    answer: |
+      - A **designated** initializer fully initializes the class's own stored properties and calls a designated initializer of its superclass.
+      - A **convenience** initializer must call another initializer of the **same** class (`self.init(...)`), eventually reaching a designated one.
+      - A **failable** initializer (`init?`) can return `nil`, for input that can't produce a valid instance.
+
+      ```swift
+      class Vehicle {
+          let wheels: Int
+          init(wheels: Int) { self.wheels = wheels }
+          convenience init() { self.init(wheels: 4) }
+      }
+
+      class Bike: Vehicle {
+          let hasBell: Bool
+          init(hasBell: Bool) {
+              self.hasBell = hasBell     // phase 1: own properties first
+              super.init(wheels: 2)      // then up the chain
+              // phase 2: self is fully usable from here
+          }
+      }
+
+      struct Percentage {
+          let value: Double
+          init?(_ value: Double) {
+              guard (0...100).contains(value) else { return nil }
+              self.value = value
+          }
+      }
+      ```
+
+      **Two-phase initialization**: in phase 1, each class in the chain initializes its own stored properties, from subclass up to root. Only after that, in phase 2, can initializers call methods, read `self` or modify inherited properties. That's why you set `hasBell` before `super.init` and can't call an instance method before it: the compiler rules out reading uninitialized memory, which Objective-C allowed.
+
+      Inheritance rules: a subclass inherits its superclass's designated initializers only if it defines none of its own (and its new properties have defaults), and inherits convenience initializers if it provides all of the superclass's designated ones. `required` forces every subclass to implement an initializer, which is why `UIViewController` subclasses with a custom `init` must also write `init?(coder:)`.
+    keyPoints:
+      - Designated delegates up; convenience delegates across.
+      - Failable init returns nil for invalid input.
+      - Two phases and why self is unusable before super.init.
+      - Initializer inheritance and required init(coder:).
+    followUps:
+      - question: What happens to a struct's memberwise initializer when you add a custom one?
+        answer: |
+          If you write an `init` in the struct's body, the memberwise initializer disappears. If you put your custom `init` in an extension instead, you keep both. Also, the memberwise initializer is only as visible as the least visible stored property it has to set: a `private let secret: String` without a default value makes it `private`, so other code can't call it.
+    related: [m10]
+
+  - id: q-swift-result-builders
+    category: swift
+    difficulty: hard
+    question: How do result builders work? What does SwiftUI's `@ViewBuilder` actually do with your code?
+    answer: |
+      A result builder (SE-0289, Swift 5.4) is a type marked `@resultBuilder` with static methods. When a closure or function body is annotated with it, the compiler rewrites each statement into calls to those methods: every expression becomes a partial result, and the builder combines them.
+
+      - `buildBlock` combines the statements of a block.
+      - `buildExpression` converts each expression (optional).
+      - `buildOptional` handles an `if` without `else`.
+      - `buildEither(first:)` and `buildEither(second:)` handle `if`/`else` and `switch`.
+      - `buildArray` handles `for` loops; `buildFinalResult` post-processes; `buildPartialBlock` (Swift 5.7) combines results pairwise instead of in one variadic call.
+
+      ```swift
+      @resultBuilder
+      enum ListBuilder {
+          static func buildBlock(_ parts: [String]...) -> [String] { parts.flatMap { $0 } }
+          static func buildExpression(_ line: String) -> [String] { [line] }
+          static func buildOptional(_ part: [String]?) -> [String] { part ?? [] }
+          static func buildEither(first: [String]) -> [String] { first }
+          static func buildEither(second: [String]) -> [String] { second }
+      }
+
+      func makeList(@ListBuilder _ content: () -> [String]) -> [String] { content() }
+
+      let menu = makeList {
+          "Home"
+          "Search"
+          if isPremium { "Downloads" } else { "Upgrade" }
+      }
+      ```
+
+      `@ViewBuilder` works the same way with views. Its `buildEither` produces a `_ConditionalContent<TrueView, FalseView>`, so both branches stay in the static type. That's why SwiftUI can tell the branches apart, and why switching branches gives the view a new identity (state resets) while changing a modifier value doesn't.
+
+      Builders only support the statements they implement. `guard`, or a local `let` used later in the block, can fail with confusing errors.
+    keyPoints:
+      - Compiler transforms statements into static method calls.
+      - The main build methods and what each handles.
+      - ViewBuilder encodes branches in the type (_ConditionalContent).
+      - Consequence for SwiftUI view identity.
+    followUps:
+      - question: How would you make the builder accept a `for` loop?
+        answer: |
+          Implement `buildArray`. The compiler collects the partial result of each iteration into an array and hands it to you: `static func buildArray(_ components: [[String]]) -> [String] { components.flatMap { $0 } }`. Without it, a `for` inside the builder closure doesn't compile.
+    related: [m11, m39]
+
+  - id: q-swift-macros
+    category: swift
+    difficulty: hard
+    question: What are Swift macros, how are they different from C macros, and which ones do you use?
+    answer: |
+      Swift macros (Swift 5.9, SE-0382 and SE-0389) generate code at compile time from the syntax tree. They come in two families:
+
+      - **Freestanding**, written with `#`: `#Preview { … }`, `#expect(x == 1)` in Swift Testing, `#Predicate` in SwiftData and Foundation.
+      - **Attached**, written with `@`: `@Observable`, `@Model`, `@Entry`. They can add members, accessors, conformances or peer declarations to the declaration they're attached to.
+
+      How they differ from C macros: C macros do text substitution before parsing, so they can produce anything, including broken code. A Swift macro receives the parsed syntax tree, is implemented in Swift with SwiftSyntax, runs as a compiler plugin in a sandbox, and its output must be valid Swift that's type-checked like the rest of your code. Macros are **additive**: they can add code but can't delete or rewrite what you wrote.
+
+      In Xcode you can right-click a macro and choose Expand Macro to see the generated code, which is the first thing I do when one misbehaves. For example, `@Observable` turns stored properties into computed ones backed by an observation registrar.
+
+      Tradeoffs: macro packages depend on SwiftSyntax, which can add noticeable time to clean builds, and generated code is harder to debug. I use the ones from Apple's frameworks freely and write custom ones only for repetitive boilerplate that a function or generic can't remove.
+    keyPoints:
+      - Freestanding (#) versus attached (@), with real examples.
+      - Operate on the syntax tree; output is type-checked.
+      - Additive only; sandboxed compiler plugin.
+      - Expand Macro for debugging; build-time and complexity tradeoffs.
+    followUps:
+      - question: Could `@Observable` have been a property wrapper?
+        answer: |
+          Not with the same behavior. It needs to add a registrar member to the class, rewrite each stored property into tracked accessors, and add a conformance. A property wrapper only wraps one property and can't add members to the enclosing type.
+    related: [m36, m39]
+
+  - id: q-swift-method-dispatch
+    category: swift
+    difficulty: hard
+    question: What kinds of method dispatch does Swift use, and how do `final`, protocols and `dynamic` affect them?
+    answer: |
+      Four mechanisms, from fastest to most flexible:
+
+      - **Static (direct) dispatch.** The compiler knows exactly which function to call and can inline it. Methods on structs and enums, `final` and `private` class members, `static` methods, methods declared in extensions of Swift classes, and protocol-extension methods that aren't requirements all dispatch this way.
+      - **Table (vtable) dispatch.** Non-final class methods and properties are called through the class's vtable, so a subclass override is found at runtime. This is the default for classes.
+      - **Witness tables.** Protocol requirements called through a generic parameter or an existential (`any P`) go through the conformance's witness table, which points to the conforming type's implementation.
+      - **Message dispatch.** `@objc dynamic` members are called with `objc_msgSend` through the Objective-C runtime. The Swift book says a `dynamic` member is always dispatched dynamically through that runtime and is never inlined or devirtualized. KVO and method swizzling need this.
+
+      The optimizer can turn table or witness dispatch into direct calls when it can prove the concrete type: generic specialization, or a class known to have no overrides. Under whole-module optimization it infers `final` for non-public declarations that nothing overrides. It can't do that for `public` or `open` classes, since other modules might subclass them.
+
+      Why it matters in practice: marking classes `final` by default is cheap and helps the optimizer. And the protocol-extension trap (a non-requirement method called through `any P` uses the extension's version, not the type's) is a dispatch question. In most app code, though, dispatch cost doesn't show up in a profile; correctness surprises matter more than speed.
+    keyPoints:
+      - Static, vtable, witness table and message dispatch, with what triggers each.
+      - Non-final class members use vtables by default.
+      - Protocol requirements go through witness tables; extension-only methods are static.
+      - "@objc dynamic means Objective-C message dispatch, needed for KVO and swizzling."
+      - WMO infers final only for non-public declarations.
+    followUps:
+      - question: Can you override a method that a superclass declares in an extension?
+        answer: |
+          Not for a pure Swift method: members declared in a class extension are statically dispatched and can't be overridden. If the member is `@objc`, it uses Objective-C dispatch and the override works. The usual fix is to declare the method in the class body.
+    related: [m10]
+
+  - id: q-swift-comparable
+    category: swift
+    difficulty: medium
+    question: How do Equatable, Hashable and Comparable fit together? Make a `Version` type sortable.
+    writesCode: true
+    answer: |
+      They build on each other in what they promise:
+
+      - `Equatable`: `==` is an equivalence relation (reflexive, symmetric, transitive).
+      - `Hashable` refines `Equatable`. Its requirement is `hash(into:)` (SE-0206, Swift 4.2; `hashValue` is the old API). Equal values must produce equal hashes; different values may collide.
+      - `Comparable` also refines `Equatable` and needs `<` to be a **strict total order**: irreflexive, transitive, and any two values are either equal or one is less than the other. You implement `<`, and `>`, `<=`, `>=`, `min`, `max` and `sorted()` come for free.
+
+      ```swift
+      struct Version: Comparable, Hashable {
+          let major: Int
+          let minor: Int
+
+          static func < (lhs: Version, rhs: Version) -> Bool {
+              if lhs.major != rhs.major { return lhs.major < rhs.major }
+              return lhs.minor < rhs.minor
+          }
+      }
+
+      let versions = [Version(major: 2, minor: 0), Version(major: 1, minor: 9), Version(major: 1, minor: 10)]
+      versions.sorted()  // 1.9, 1.10, 2.0
+      ```
+
+      The common bug is `lhs.major < rhs.major && lhs.minor < rhs.minor`. For 1.9 and 2.0 that returns `false` in **both** directions, so `sort` treats them as equal and the order you get is wrong. That's not a strict total order. Compare field by field, or use tuple comparison: `(lhs.major, lhs.minor) < (rhs.major, rhs.minor)`.
+
+      `==` and `hash(into:)` are synthesized here; `<` isn't for structs. Enums without raw values get synthesized `Comparable` since Swift 5.3 (SE-0266), as long as any associated values are `Comparable` too; cases compare in declaration order.
+    keyPoints:
+      - Hashable and Comparable both refine Equatable.
+      - "hash(into:) is the requirement; equal values hash equally; collisions allowed."
+      - Comparable needs a strict total order.
+      - Spots why the && comparison is broken and fixes it.
+    followUps:
+      - question: Should `<` be consistent with `==`?
+        answer: |
+          Yes. If neither `a < b` nor `b < a`, then `a == b` must be true. If your `==` compares an extra field that `<` ignores, sorting and binary search can disagree with equality checks. Compare the same fields in both.
+    related: [m09, m18]
+
+  - id: q-swift-self-vs-self-type
+    category: swift
+    difficulty: easy
+    question: What's the difference between `self` and `Self`?
+    answer: |
+      - `self` (lowercase) is a **value**: the current instance inside an instance method, or the type itself inside a `static` method.
+      - `Self` (capitalized) is a **type**: the type of the current value. In a protocol it means "whatever type conforms"; in a struct or enum it's just a shorter name for the type; in a class it's the **dynamic** type, which can be a subclass.
+
+      ```swift
+      protocol Copyable {
+          func copy() -> Self      // each conformer returns its own type
+      }
+
+      struct Temperature {
+          static let freezing = Temperature(celsius: 0)
+          let celsius: Double
+
+          func isWarmer(than other: Self) -> Bool { celsius > other.celsius }
+          static func fromFahrenheit(_ f: Double) -> Self { Self(celsius: (f - 32) * 5 / 9) }
+      }
+      ```
+
+      Since Swift 5.1 (SE-0068) you can use `Self` inside classes and value types, not only in protocols. In a class, returning `Self` means a subclass calling the method gets the subclass type back, and constructing it with `Self.init()` requires a `required` initializer so every subclass is guaranteed to have one.
+
+      Protocols with `Self` in a parameter position, like `Equatable`'s `==`, can't be compared through `any P`, because two boxes may hold different types.
+    keyPoints:
+      - self is a value; Self is a type.
+      - Self in a protocol is the conforming type.
+      - In a class, Self is the dynamic type; Self.init needs a required init.
+      - Self requirements and existentials.
+    followUps:
+      - question: "What does `type(of: self)` return compared with `Self`?"
+        answer: |
+          `type(of: self)` returns the runtime metatype as a value, which you can print or call static methods on. `Self` is the same idea at the type level, usable in signatures. In a class they both refer to the dynamic type.
+    related: [m10]
+
+  - id: q-swift-caseiterable
+    category: swift
+    difficulty: easy
+    question: What does CaseIterable give you, and what happens with enums that have associated values?
+    answer: |
+      `CaseIterable` adds a static `allCases` collection with every case, in declaration order (SE-0194, Swift 4.2). For a simple enum the compiler synthesizes it:
+
+      ```swift
+      enum Direction: CaseIterable { case north, south, east, west }
+      Direction.allCases.count // 4
+      ```
+
+      It's useful for pickers, segmented controls, settings screens and tests that loop over every case.
+
+      Synthesis only works when no case has associated values, since the compiler can't invent the payloads. If you want the conformance anyway, write `allCases` yourself:
+
+      ```swift
+      enum Filter: CaseIterable, Hashable {
+          case all
+          case category(Category)
+
+          enum Category: CaseIterable { case books, music }
+
+          static var allCases: [Filter] {
+              [.all] + Category.allCases.map(Filter.category)
+          }
+      }
+      ```
+
+      The risk with a manual list is forgetting to update it when you add a case. A unit test that checks `allCases.count`, or building the list from nested `allCases` as above, reduces that.
+    keyPoints:
+      - allCases in declaration order, synthesized for simple enums.
+      - Practical uses like pickers and tests.
+      - No synthesis with associated values; manual allCases.
+      - Keeping a manual list in sync.
+    followUps:
+      - question: Does adding `CaseIterable` to a public enum have API implications?
+        answer: |
+          Yes. Clients can rely on the list and its order, so adding or reordering cases changes behavior for them. For a library enum that will grow, that's worth thinking about before you add the conformance.
+    related: [m09]
+
+  - id: q-swift-protocol-composition
+    category: swift
+    difficulty: easy
+    question: What is protocol composition, and when do you use it?
+    answer: |
+      `A & B` is a type that requires conformance to both protocols. You can use it anywhere a type goes: parameters, properties, generic constraints, and with `some` or `any`.
+
+      ```swift
+      protocol Named { var name: String { get } }
+      protocol Aged { var age: Int { get } }
+
+      func greet(_ person: some Named & Aged) -> String {
+          "\(person.name), \(person.age)"
+      }
+
+      typealias Profile = Named & Aged
+      ```
+
+      It lets you keep protocols small and ask only for what a function needs. Instead of one big `UserProtocol`, a function says it needs something `Named & Aged`. The standard library does this too: `Codable` is a typealias for `Decodable & Encodable`.
+
+      You can also compose with a class: `UIView & Configurable` means "a `UIView` subclass that also conforms to `Configurable`," which is handy for cells or views built from configuration.
+
+      It's not a way to create new behavior: a composition has no members of its own beyond the protocols'. If you find yourself writing the same composition everywhere, a named protocol that inherits both (`protocol Profile: Named, Aged {}`) may read better, though then types have to conform to it explicitly.
+    keyPoints:
+      - A & B requires both conformances.
+      - Usable with some, any, generics and typealias.
+      - Small protocols, ask only for what you need; Codable as an example.
+      - Composing with a class type.
+    followUps:
+      - question: "What's the difference between `typealias P = A & B` and `protocol P: A, B {}`?"
+        answer: |
+          The typealias is just a name: any type that conforms to `A` and `B` already satisfies it. A new protocol is a separate conformance: a type that conforms to `A` and `B` isn't a `P` until it declares `: P`.
+    related: [m10]
+
+  - id: q-swift-array-vs-nsarray
+    category: swift
+    difficulty: medium
+    question: What's the difference between Swift's Array and NSArray, and what happens when you bridge between them?
+    answer: |
+      - `Array` is a generic **struct** with value semantics and copy-on-write. `[String]` holds only strings, and the compiler knows it.
+      - `NSArray` is an Objective-C **class**: a reference type, immutable (its mutable subclass is `NSMutableArray`), holding objects. Without lightweight generics in the Objective-C header, it's imported into Swift as `[Any]`, so you cast elements back.
+
+      Bridging is done with `as` and, per Apple's `Array` documentation:
+
+      - `Array` to `NSArray` is O(1) when the elements are classes or `@objc` protocols. Otherwise (for example `[Int]` or `[String]`, which bridge element by element) it takes O(n) time and space.
+      - `NSArray` to `Array` first calls `copy()` to get an immutable array. For an already immutable `NSArray` that's usually O(1) and the storage is shared with copy-on-write; for an `NSMutableArray` the copy's cost is unspecified. When the destination element type is a value type that bridges (`[Int]`), the elements are copied into contiguous storage in O(n).
+
+      Practical consequences: an `NSMutableArray` is shared by reference, so code holding it can see another owner's mutation; once bridged to a Swift `Array`, you have your own value. And an `[Any]` from an old API needs `as? [String]` or `compactMap { $0 as? String }`, which can fail at runtime.
+
+      In modern code you almost never create `NSArray` yourself; it shows up at the boundary with Objective-C frameworks.
+    keyPoints:
+      - Array is a generic value type; NSArray is a class of objects.
+      - Unannotated NSArray imports as [Any].
+      - Bridging cost depends on element type (O(1) for classes, O(n) otherwise).
+      - Reference sharing with NSMutableArray versus value semantics.
+    followUps:
+      - question: Why can't you bridge an array of your own Swift struct to NSArray?
+        answer: |
+          The element has to be a class, an `@objc` protocol, or a type that bridges to a Foundation type (`String`, `Int`, `Date`…). A plain Swift struct doesn't bridge, so the compiler rejects the cast.
+    related: [m07]
+
+  - id: q-swift-kvo-vs-observation
+    category: swift
+    difficulty: medium
+    question: Compare KVO and the Observation framework. When would you still use KVO?
+    answer: |
+      **KVO** is the Objective-C mechanism. It only works with classes that inherit from `NSObject`, on properties marked `@objc dynamic`. In Swift you call `observe(\.property, options:)`, which returns an `NSKeyValueObservation` token; observation stops when the token is deallocated, so you have to keep it. It fires on every change, on the thread that made the change.
+
+      ```swift
+      progressObservation = webView.observe(\.estimatedProgress, options: [.new]) { _, change in
+          print(change.newValue ?? 0)
+      }
+      ```
+
+      **Observation** (SE-0395, Swift 5.9; iOS 17 and later on Apple platforms) works through the `@Observable` macro on any class, no `NSObject` needed. It tracks **which properties are actually read**. SwiftUI reads properties in `body` and only invalidates the view when one of those changes. Outside SwiftUI, `withObservationTracking` gives you the same thing, with two details people miss: its `onChange` fires only **once**, and it's called just **before** the change (it has will-set semantics), so you re-register and read the new value later.
+
+      I use Observation for my own models. I still use KVO to watch properties of Apple classes that expose them that way, like `AVPlayerItem.status`, `WKWebView.estimatedProgress` or `UIScrollView.contentOffset`, and in code that supports iOS versions older than 17.
+    keyPoints:
+      - KVO needs NSObject and @objc dynamic; keep the observation token.
+      - Observation uses @Observable on any class; tracks properties actually read.
+      - withObservationTracking is one-shot with will-set timing.
+      - KVO still useful for Apple framework objects and older OS versions.
+    followUps:
+      - question: Why did SwiftUI move from `ObservableObject` to `@Observable`?
+        answer: |
+          With `ObservableObject`, any `@Published` change invalidates every view observing the object, even views that don't read the changed property. `@Observable` tracks access per property, so only views that read it update. It also removes `@Published`, and views can take the model as a plain property.
+    related: [m36]
+
+  - id: q-swift-custom-higher-order-function
+    category: swift
+    difficulty: medium
+    question: Write your own higher-order function as an extension on Sequence, for example a `grouped(by:)`.
+    writesCode: true
+    answer: |
+      A higher-order function takes or returns a function. I'd write `grouped(by:)` on `Sequence`, generic over the key, and mark it `rethrows` so it only needs `try` when the key closure throws:
+
+      ```swift
+      extension Sequence {
+          func grouped<Key: Hashable>(by key: (Element) throws -> Key) rethrows -> [Key: [Element]] {
+              var groups: [Key: [Element]] = [:]
+              for element in self {
+                  groups[try key(element), default: []].append(element)
+              }
+              return groups
+          }
+      }
+
+      let words = ["apple", "avocado", "banana"]
+      let byInitial = words.grouped { $0.first! }   // ["a": ["apple", "avocado"], "b": ["banana"]]
+      ```
+
+      Decisions worth saying out loud:
+
+      - **Extend `Sequence`**, not `Array`, so it works for sets, ranges and lazy sequences.
+      - **Non-escaping closure.** It's called only during the function, so no `@escaping`, and no capture worries for the caller.
+      - **`rethrows`** keeps the call site clean for non-throwing closures.
+      - **`default:` subscript** avoids a lookup-then-insert, and appending through it mutates in place.
+      - **Complexity:** O(n) hashing plus appends.
+
+      In real code I'd use the standard `Dictionary(grouping:by:)`, which does the same thing. The interview point is showing generics, closures and `rethrows` together. A `map` written by hand follows the same pattern: `reserveCapacity(underestimatedCount)`, loop, `append(try transform(element))`.
+    keyPoints:
+      - Correct generic signature with Hashable key.
+      - Extends Sequence; non-escaping closure; rethrows.
+      - Efficient dictionary update with default.
+      - States complexity and knows Dictionary(grouping:by:).
+    followUps:
+      - question: How would you make it lazy?
+        answer: |
+          Grouping needs every element before it can return, so it can't be lazy in a useful way. Functions like `map` and `filter` can, by returning a wrapper sequence whose iterator applies the closure on demand; that's what `LazyMapSequence` does, and that version's closure has to be `@escaping` because the wrapper stores it.
+    related: [m11]

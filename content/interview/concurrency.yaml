@@ -38,3 +38,694 @@ questions:
       - question: What is actor reentrancy?
         answer: When an actor method hits an `await`, the actor is free to process other messages in the meantime. When the method resumes, the state may have changed. That's why you re-check invariants after every `await`, or avoid suspending in the middle of an operation that has to be atomic.
     related: [m28, m29]
+
+  - id: q-conc-async-await-basics
+    category: concurrency
+    difficulty: easy
+    question: What does `await` actually do, and why is async/await better than completion handlers?
+    answer: |
+      `await` marks a **possible suspension point**. When the called function has to wait (for the network, a timer, an actor), the current task suspends and gives its thread back to the runtime, which can run other work there. When the result is ready, the task resumes after the `await`, possibly on a different thread. Nothing blocks.
+
+      Compared with completion handlers:
+
+      - **Straight-line code.** Sequential steps read top to bottom instead of nesting callbacks.
+      - **Errors use `throw`/`try`.** No `Result` juggling, and you can't forget to report a failure on one path.
+      - **The compiler checks you return.** A completion handler you forget to call on one branch compiles fine and hangs the caller; a missing `return` in an async function doesn't compile.
+      - **Cancellation and priority propagate** through structured tasks.
+      - **Isolation is checked.** With `@MainActor` the compiler knows where code runs, instead of you remembering to dispatch to the main queue.
+
+      ```swift
+      func loadProfile() async throws -> Profile {
+          let user = try await api.user()
+          let avatar = try await api.avatar(for: user.id)
+          return Profile(user: user, avatar: avatar)
+      }
+      ```
+
+      One thing that surprises people: between `await`s your code runs uninterrupted, but **at** each `await` other code may run, including code that changes the state you just read. That's where actor reentrancy bugs come from.
+    keyPoints:
+      - await is a possible suspension point; the thread is released, not blocked.
+      - The task may resume on a different thread.
+      - Concrete advantages (errors, guaranteed completion, cancellation, isolation).
+      - State can change across an await.
+    followUps:
+      - question: Can you call an async function from synchronous code?
+        answer: |
+          Not directly. You start a `Task { }` and call it inside, which creates a new top-level task. The synchronous caller doesn't wait for it. In SwiftUI, `.task { }` is usually the better entry point because it's tied to the view's lifetime.
+    related: [m29]
+
+  - id: q-conc-gcd-deadlock
+    category: concurrency
+    difficulty: easy
+    question: What's the difference between serial and concurrent queues, and between `sync` and `async`? How do you deadlock with GCD?
+    answer: |
+      - A **serial** queue runs one work item at a time, in order. A **concurrent** queue can run several at once.
+      - The queues you get: the **main queue** (serial, main thread, for UI), the **global concurrent queues** (shared by the whole process, one per quality-of-service class: `.userInteractive`, `.userInitiated`, `.default`, `.utility`, `.background`, from highest to lowest), and **custom queues** you create with a label, serial by default or concurrent with `attributes: .concurrent`.
+      - `async` submits work and returns immediately. `sync` submits work and **waits** until it finishes.
+
+      These are independent: you can `sync` onto a concurrent queue or `async` onto a serial one.
+
+      The classic deadlock is calling `sync` on the queue you're already running on:
+
+      ```swift
+      let queue = DispatchQueue(label: "com.example.cache")
+      queue.sync {
+          queue.sync { print("inner") }   // waits for the outer block, which waits for this one
+      }
+      ```
+
+      `DispatchQueue.main.sync` from the main thread is the same bug. Apple's documentation states it directly: calling `sync` targeting the current queue results in deadlock. In practice libdispatch often detects it and crashes, with `__DISPATCH_WAIT_FOR_QUEUE__` in the stack trace, which is easier to diagnose than a hang.
+
+      A serial queue with `sync` for reads and `async` for writes was the common way to protect shared state before actors. In new code I use an actor, or a `Mutex` when the critical section is tiny and synchronous.
+    keyPoints:
+      - Main, global (by QoS) and custom queues; serial versus concurrent is about the queue, sync versus async about the caller waiting.
+      - sync on the current queue deadlocks, including main.sync from main.
+      - Recognizes the crash signature.
+      - Knows actors or locks as the modern replacement.
+    followUps:
+      - question: What's a reader-writer pattern with GCD?
+        answer: |
+          A concurrent queue where reads use `sync` and writes use `async(flags: .barrier)`. The barrier waits for in-flight reads, runs alone, then lets reads resume. It works, but it's easy to get wrong, and an actor or a lock is simpler for most app code.
+    related: [m28]
+
+  - id: q-conc-actor-basics
+    category: concurrency
+    difficulty: easy
+    question: What is an actor, and how is it different from a class?
+    answer: |
+      An actor is a reference type that protects its mutable state by allowing only one task at a time to run its isolated code. From outside, you access its methods and properties with `await`, because you might have to wait your turn. Inside, it accesses its own state synchronously.
+
+      ```swift
+      actor Counter {
+          private var value = 0
+          func increment() -> Int {
+              value += 1
+              return value
+          }
+      }
+
+      let counter = Counter()
+      let newValue = await counter.increment()
+      ```
+
+      Differences from a class:
+
+      - **Isolation.** The compiler rejects direct access to an actor's mutable state from outside. With a class, preventing data races is your job.
+      - **No inheritance.** Actors can conform to protocols but can't subclass or be subclassed.
+      - **Cross-actor calls are async** from outside, even for methods that are synchronous inside.
+      - **Values passed in and out must be `Sendable`** (or safely transferred), so you can't leak a mutable reference out of the actor.
+
+      Actors prevent data races, not logic races. Because of reentrancy, state can change across an `await` inside an actor method, which is the next thing an interviewer will usually ask about.
+    keyPoints:
+      - One task at a time runs actor-isolated code.
+      - await from outside; synchronous inside.
+      - No inheritance; Sendable at the boundary.
+      - Prevents data races, not every race condition.
+    followUps:
+      - question: What does `nonisolated` mean on an actor member?
+        answer: |
+          The member isn't protected by the actor, so callers don't need `await`. It can only touch immutable `Sendable` state, like a `let` constant, or no state at all. A typical use is a computed `description` built from `let` properties.
+    related: [m29]
+
+  - id: q-conc-async-let-vs-task-group
+    category: concurrency
+    difficulty: medium
+    question: How do you run several async operations in parallel? When do you use `async let` and when a task group?
+    writesCode: true
+    answer: |
+      Both create **child tasks**: structured, cancelled together with the parent, and guaranteed to finish before the scope ends.
+
+      `async let` is for a fixed, small number of operations known at compile time, possibly with different types:
+
+      ```swift
+      async let name = fetchName()
+      async let score = fetchScore()
+      let (userName, userScore) = await (name, score)   // both ran at the same time
+      ```
+
+      A task group is for a dynamic number of operations of the same type, like downloading every URL in an array:
+
+      ```swift
+      let total = await withTaskGroup(of: Int.self) { group in
+          for number in 1...5 {
+              group.addTask { await square(number) }
+          }
+          var sum = 0
+          for await value in group { sum += value }
+          return sum
+      }
+      ```
+
+      Results from a group arrive in **completion order**, not submission order. If order matters, return the index along with the value and sort or place by index.
+
+      With `withThrowingTaskGroup`, an error thrown out of the group cancels the remaining children. Same with `async let`: if you leave the scope by throwing, unawaited children are cancelled and then awaited.
+
+      For hundreds of items, I limit concurrency: start N tasks, and add a new one each time one finishes inside the `for await` loop.
+    keyPoints:
+      - Both are structured child tasks.
+      - async let for a fixed set; group for a dynamic set.
+      - Group results come in completion order.
+      - Errors cancel siblings; limiting concurrency for large inputs.
+    followUps:
+      - question: Is `let a = await f(); let b = await g()` parallel?
+        answer: |
+          No, `g()` only starts after `f()` finishes. You need `async let` or a group to overlap them.
+      - question: What happens if you declare an `async let` and never await it?
+        answer: |
+          It still runs. When the scope ends, the child task is cancelled and implicitly awaited, so the function can't return before it's done. The compiler warns if the value is never used.
+    related: [m29]
+
+  - id: q-conc-task-vs-detached
+    category: concurrency
+    difficulty: medium
+    question: What's the difference between `Task { }` and `Task.detached { }`? When would you use each?
+    answer: |
+      Both create an **unstructured** top-level task: it isn't a child of the current task, it isn't cancelled automatically when the caller's scope ends, and you need to keep the handle if you want to cancel it or wait for it.
+
+      The difference is what they inherit:
+
+      - `Task { }` inherits the current **actor isolation**, the **priority** and the **task-local values**. Created from `@MainActor` code, the closure runs on the main actor and can touch UI state directly.
+      - `Task.detached { }` inherits none of that. It runs on the global concurrent executor, with no isolation.
+
+      ```swift
+      @MainActor final class ViewModel {
+          var title = ""
+          func refresh() {
+              Task {
+                  title = "updated"            // fine: still on the main actor
+              }
+              Task.detached {
+                  self.title = "updated"       // error: main actor-isolated property
+              }                                // can't be mutated from a nonisolated context
+          }
+      }
+      ```
+
+      I almost always use `Task { }` and call `async` functions that are themselves nonisolated or isolated elsewhere. `Task.detached` is for the rare case where I really don't want to inherit anything, like a low-priority cleanup job started from the main actor. Even then, a nonisolated async function (or `@concurrent` in Swift 6.2) is usually a clearer way to get work off the main actor.
+
+      Neither one gives you structured concurrency. If the work is part of a larger operation, `async let` or a task group is better.
+    keyPoints:
+      - Both are unstructured; keep the handle to cancel.
+      - Task inherits isolation, priority and task-locals.
+      - Detached inherits nothing.
+      - Prefers Task, and nonisolated or @concurrent functions to leave the main actor.
+    followUps:
+      - question: Does dropping the reference to a Task cancel it?
+        answer: |
+          No. The task keeps running; you just can't cancel it or get its result anymore. Apple's docs call this out explicitly.
+    related: [m29]
+
+  - id: q-conc-cancellation
+    category: concurrency
+    difficulty: medium
+    question: How does cancellation work in Swift Concurrency? What happens when you cancel a task?
+    writesCode: true
+    answer: |
+      Cancellation is **cooperative**. `task.cancel()` sets a flag on the task and its child tasks; it doesn't stop any code. The code has to notice and stop itself.
+
+      Ways to notice:
+
+      - `Task.isCancelled` returns a `Bool`; you decide what to return.
+      - `try Task.checkCancellation()` throws `CancellationError`.
+      - Many async APIs check for you: `Task.sleep` throws when cancelled, and `URLSession`'s async methods cancel the request and throw.
+      - `withTaskCancellationHandler` runs a closure immediately on cancellation, for bridging to APIs with their own cancel method.
+
+      ```swift
+      func processAll(_ items: [Item]) async throws -> [Output] {
+          var results: [Output] = []
+          for item in items {
+              try Task.checkCancellation()
+              results.append(await process(item))
+          }
+          return results
+      }
+      ```
+
+      Cancellation propagates **down** the structured tree: cancelling a parent cancels its `async let` children and group tasks. Unstructured tasks (`Task { }`) aren't children, so you cancel them yourself, for example in `viewDidDisappear`. SwiftUI's `.task { }` cancels its task when the view disappears and restarts it when its `id` changes.
+
+      A common bug is a long loop with no `await` and no check. It ignores cancellation until it finishes.
+    keyPoints:
+      - Cooperative; cancel only sets a flag.
+      - isCancelled, checkCancellation, cancellation handler.
+      - System APIs like Task.sleep and URLSession throw on cancel.
+      - Propagates to children, not to unstructured tasks.
+    followUps:
+      - question: Should you show an error alert for `CancellationError`?
+        answer: |
+          No. Cancellation is usually the user leaving the screen or starting a newer search. Catch it (and `URLError.cancelled`) separately and do nothing, or just return.
+      - question: How would you cancel a previous search when the user types a new character?
+        answer: |
+          Keep the search `Task` in a property, call `cancel()` on it before starting a new one, and optionally `try await Task.sleep(for: .milliseconds(300))` at the start of the new task as a debounce. The sleep throws if the task is cancelled during the wait.
+    related: [m29]
+
+  - id: q-conc-actor-reentrancy
+    category: concurrency
+    difficulty: hard
+    question: Actors are reentrant. What does that mean, and how would you build a cache that never downloads the same image twice?
+    writesCode: true
+    answer: |
+      While an actor method is suspended at an `await`, the actor isn't locked; it can run other calls. So any state you checked before the `await` may be different after it.
+
+      This naive cache downloads twice when two callers ask for the same key at the same time:
+
+      ```swift
+      actor NaiveCache {
+          private var storage: [String: Image] = [:]
+          func image(for key: String) async throws -> Image {
+              if let cached = storage[key] { return cached }
+              let image = try await download(key)   // second caller gets in here too
+              storage[key] = image
+              return image
+          }
+      }
+      ```
+
+      The fix is to record the **in-flight work** before suspending, so the second caller awaits the same task:
+
+      ```swift
+      actor ImageCache {
+          private var storage: [String: Task<Image, any Error>] = [:]
+
+          func image(for key: String) async throws -> Image {
+              if let existing = storage[key] {
+                  return try await existing.value
+              }
+              let task = Task { try await download(key) }
+              storage[key] = task          // set before any await
+              return try await task.value
+          }
+      }
+      ```
+
+      Between the check and the assignment there's no `await`, so no other call can interleave. If a download fails I'd remove the entry so the next caller can retry.
+
+      Why actors are reentrant: a non-reentrant actor would deadlock whenever two actors await each other, and it would block the actor during long waits. The price is that you write actor methods so their invariants hold at every `await`.
+    keyPoints:
+      - Actor runs other calls while suspended.
+      - State checked before an await can be stale after it.
+      - Stores the in-flight Task before suspending.
+      - No await between check and update.
+      - Why reentrancy was chosen (deadlocks), and handling failures.
+    followUps:
+      - question: How do you test that the cache deduplicates?
+        answer: |
+          Inject a fake downloader that counts calls and suspends (for example with a continuation or a short sleep), start two concurrent requests for the same key with `async let`, await both and assert the count is 1.
+    related: [m29]
+
+  - id: q-conc-mainactor-isolation
+    category: concurrency
+    difficulty: medium
+    question: What does `@MainActor` guarantee, and how is it different from `DispatchQueue.main.async`?
+    answer: |
+      `@MainActor` is a global actor whose executor is the main thread. Marking a type, function or property with it makes that code **isolated** to the main actor, and the compiler enforces it: calling it from a non-isolated context requires `await`, and in the Swift 6 language mode accessing it synchronously from elsewhere is an error.
+
+      Differences from `DispatchQueue.main.async`:
+
+      - **Compile time versus runtime.** With GCD, nothing stops you from forgetting the dispatch. With `@MainActor`, a missing hop doesn't compile.
+      - **No unnecessary hop.** `DispatchQueue.main.async` always enqueues the work for later, even if you're already on the main thread. Calling a `@MainActor` function from code already on the main actor runs it right away.
+      - **Composable.** A whole view model can be `@MainActor`, and everything inside it is isolated without wrapping each line.
+
+      UIKit's `UIViewController` and `UIView` are already annotated `@MainActor`, and so is SwiftUI's `View` protocol since the iOS 18 SDK, so most UI code inherits it.
+
+      For synchronous callbacks you know run on the main thread but that the compiler can't prove, like some delegate methods from older frameworks, `MainActor.assumeIsolated { }` checks at runtime and traps if you're wrong.
+    keyPoints:
+      - Global actor tied to the main thread.
+      - Compiler-enforced isolation versus remembered dispatch.
+      - main.async always defers; a main actor call from main doesn't hop.
+      - UIKit and SwiftUI types are already MainActor.
+      - assumeIsolated for callbacks the compiler can't verify.
+    followUps:
+      - question: Is code inside a `@MainActor` async function guaranteed to block the main thread while it awaits?
+        answer: |
+          No. At each `await` the function suspends and the main thread is free to handle events. Only the synchronous stretches between `await`s run on the main thread. Heavy synchronous work there still freezes the UI, which is why CPU-heavy work belongs in a nonisolated or `@concurrent` function.
+    related: [m29]
+
+  - id: q-conc-sendable
+    category: concurrency
+    difficulty: medium
+    question: What is `Sendable`, and which types are Sendable?
+    answer: |
+      `Sendable` marks a type whose values can be safely passed between concurrency domains (tasks and actors) without causing data races. The compiler uses it to check every value that crosses an isolation boundary.
+
+      What's Sendable:
+
+      - Value types whose stored properties are all `Sendable`. Non-public structs and enums get the conformance implicitly; public ones must declare it.
+      - Actors, always: their state is protected.
+      - `final` classes with only immutable (`let`) stored properties of Sendable types, when you declare the conformance. Adding a `var` is an error: *stored property 'value' of 'Sendable'-conforming class 'Counter' is mutable*.
+      - Classes isolated to a global actor, like a `@MainActor` view model.
+      - Closures marked `@Sendable`, which can only capture Sendable values.
+
+      A class with internal synchronization, like a lock, can be `@unchecked Sendable`. That turns off the check, so you're promising it yourself. Since iOS 18, `Mutex` from the Synchronization module lets you write such a class with a checked `Sendable` conformance:
+
+      ```swift
+      import Synchronization
+
+      final class HitCounter: Sendable {
+          private let count = Mutex(0)
+          func increment() { count.withLock { $0 += 1 } }
+      }
+      ```
+
+      Since Swift 6.0, region-based isolation (SE-0414) also lets you pass a non-Sendable value into another domain if the compiler can prove you don't use it afterwards, which removed a lot of false positives.
+    keyPoints:
+      - Safe to cross isolation domains.
+      - Implicit for non-public value types with Sendable members.
+      - Actors and global-actor-isolated classes are Sendable.
+      - "@unchecked Sendable is a promise, not a check; Mutex as the safer option."
+      - Region-based isolation reduces false positives.
+    followUps:
+      - question: A final class with only `let` properties. Is it Sendable automatically?
+        answer: |
+          No. Classes never get implicit `Sendable`. You can declare the conformance and the compiler will accept it, as long as the class is `final` and its properties are `let`s of Sendable types.
+    related: [m29]
+
+  - id: q-conc-continuations
+    category: concurrency
+    difficulty: medium
+    question: How do you wrap a completion-handler API so you can call it with `await`?
+    writesCode: true
+    answer: |
+      With a continuation. `withCheckedThrowingContinuation` suspends the current task and gives you a continuation that you resume from the callback:
+
+      ```swift
+      extension LegacyClient {
+          func user(id: Int) async throws -> User {
+              try await withCheckedThrowingContinuation { continuation in
+                  fetchUser(id: id) { result in
+                      continuation.resume(with: result)
+                  }
+              }
+          }
+      }
+      ```
+
+      The rule: **resume exactly once on every path.** Resume twice and a checked continuation traps (`SWIFT TASK CONTINUATION MISUSE: … tried to resume its continuation more than once`). Never resume and the task stays suspended forever; the checked version logs a warning when the continuation is deallocated without being resumed. Watch for callbacks that can fire more than once (progress updates) or not at all (an early return in the legacy code).
+
+      `withUnsafeContinuation` has the same API without the runtime checks. I use the checked one unless profiling shows the check matters, which in app code it practically never does.
+
+      For APIs that produce many values over time, like a delegate reporting locations, a continuation is the wrong tool; use `AsyncStream`. And check whether the framework already has an async version: many Apple APIs gained `async` overloads automatically from Objective-C completion handlers.
+    keyPoints:
+      - withChecked(Throwing)Continuation and resume from the callback.
+      - Resume exactly once; what happens otherwise.
+      - Checked versus unsafe.
+      - AsyncStream for multiple values; check for existing async APIs.
+    followUps:
+      - question: How do you support cancellation in a wrapped API?
+        answer: |
+          Wrap the continuation in `withTaskCancellationHandler`. In the `onCancel` closure, call the legacy API's cancel method (for example, cancel the underlying request); the legacy callback then fires with a cancellation error, and that path resumes the continuation.
+    related: [m28, m29]
+
+  - id: q-conc-asyncstream
+    category: concurrency
+    difficulty: medium
+    question: What's an AsyncSequence, and how do you create one with AsyncStream?
+    writesCode: true
+    answer: |
+      An `AsyncSequence` is like a `Sequence` whose elements arrive over time. You consume it with `for await` (or `for try await` if it can throw), and the loop suspends between elements. Examples: `URL.lines`, `URLSession.bytes(for:)`, `NotificationCenter.default.notifications(named:)`.
+
+      `AsyncStream` builds one from code that pushes values: delegates, callbacks, observers.
+
+      ```swift
+      func countdown(from start: Int) -> AsyncStream<Int> {
+          AsyncStream { continuation in
+              let task = Task {
+                  for number in stride(from: start, through: 0, by: -1) {
+                      continuation.yield(number)
+                      try? await Task.sleep(for: .seconds(1))
+                  }
+                  continuation.finish()
+              }
+              continuation.onTermination = { _ in task.cancel() }
+          }
+      }
+
+      for await number in countdown(from: 3) { print(number) }
+      ```
+
+      Since Swift 5.9, `AsyncStream.makeStream(of:)` returns the stream and its continuation as a pair, which is handy when the producer is a class that stores the continuation.
+
+      Things to get right:
+      - Call `finish()` or the consumer's loop never ends.
+      - Use `onTermination` to clean up the producer when the consumer stops (its task is cancelled or it breaks out).
+      - Pick a buffering policy. The default is unbounded; for frequent values where only the latest matters, `.bufferingNewest(1)`.
+      - An `AsyncStream` has one consumer. It isn't a broadcast like a Combine subject; multiple iterators split the values.
+    keyPoints:
+      - Consumed with for await; suspends between elements.
+      - yield, finish, onTermination.
+      - makeStream(of:) for stored continuations.
+      - Buffering policy and single consumer.
+    followUps:
+      - question: When would you still use Combine instead?
+        answer: |
+          When you need operators that the standard library doesn't provide, like `debounce`, `combineLatest` or `merge`, and you don't want to add the swift-async-algorithms package, or when the codebase is already built on Combine. For new code, async sequences plus that package cover most cases.
+    related: [m29]
+
+  - id: q-conc-swift6-migration
+    category: concurrency
+    difficulty: hard
+    question: How would you migrate a large app to the Swift 6 language mode?
+    answer: |
+      Incrementally, module by module. Swift 6 mode turns data-race checks into errors, and an entire app at once is too many errors to triage.
+
+      1. **Turn on complete checking in Swift 5 mode first.** The `SWIFT_STRICT_CONCURRENCY = complete` build setting (or `-strict-concurrency=complete`) reports the same issues as warnings, so you can fix them while still shipping.
+      2. **Start with leaf modules** (models, utilities) and move up toward the UI. Switch each target to Swift 6 when it has no warnings. Swift 5 mode is still supported, so there's no deadline per target.
+      3. **Annotate UI code with `@MainActor`.** View models and coordinators that only touch UI belong there; this removes a large share of the errors at once. On Swift 6.2 or later, default main actor isolation per module (SE-0466) does this for you.
+      4. **Make shared models Sendable**: structs where possible, `final` classes with `let`s, or actors for real shared mutable state.
+      5. **Handle dependencies you don't control** with `@preconcurrency import`, which downgrades diagnostics from modules that haven't adopted concurrency yet.
+      6. **Bridge the rest**: continuations for callback APIs, `MainActor.assumeIsolated` for callbacks that you know run on main, and `@unchecked Sendable` or `nonisolated(unsafe)` only with a comment explaining why it's safe.
+
+      One runtime gotcha: in Swift 6 mode the compiler inserts dynamic isolation checks (SE-0423) in some places, such as `@preconcurrency` conformances. If a framework calls your `@MainActor` code from a background thread, the app now traps instead of racing silently. Test on devices after switching each module.
+    keyPoints:
+      - Incremental, module by module, leaf modules first.
+      - Complete checking as warnings in Swift 5 mode.
+      - MainActor for UI, Sendable models, actors for shared state.
+      - "@preconcurrency import and escape hatches used with care."
+      - Runtime isolation checks after switching.
+    followUps:
+      - question: When is `@unchecked Sendable` acceptable?
+        answer: |
+          When the type really is thread-safe through means the compiler can't see, like an internal lock around all mutable state, or an immutable class from an old framework. It's not acceptable as a way to silence an error you don't understand, since it hides real data races.
+    related: [m28, m29]
+
+  - id: q-conc-approachable-concurrency
+    category: concurrency
+    difficulty: hard
+    question: What changed with "approachable concurrency" in Swift 6.2, and what does default main actor isolation do?
+    answer: |
+      Swift 6.2 added a set of opt-in changes aimed at app code, where most work happens on the main thread anyway:
+
+      - **Default actor isolation (SE-0466).** A module can make every unannotated declaration `@MainActor` by default: `-default-isolation MainActor`, `.defaultIsolation(MainActor.self)` in a 6.2 package manifest, or the Default Actor Isolation build setting in Xcode. Code that should run elsewhere opts out with `nonisolated`. Actors and explicitly annotated code aren't affected, and other modules keep their own default.
+      - **`nonisolated(nonsending)` (SE-0461).** With the `NonisolatedNonsendingByDefault` upcoming feature, a nonisolated `async` function runs on the **caller's** actor instead of hopping to the global executor. Calling a plain async helper from the main actor no longer requires its arguments to be `Sendable`.
+      - **`@concurrent`** marks a function that should always run off the caller's actor, for CPU-heavy work.
+      - **Isolated conformances (SE-0470)**: a `@MainActor` type can conform to a protocol only for use on the main actor.
+
+      ```swift
+      // Module built with default MainActor isolation
+      final class PhotoStore {                      // implicitly @MainActor
+          var thumbnails: [String: Data] = [:]
+
+          func add(_ data: Data, for key: String) async {
+              let thumbnail = await Self.makeThumbnail(from: data)  // off the main actor
+              thumbnails[key] = thumbnail                            // back on it
+          }
+
+          @concurrent
+          nonisolated static func makeThumbnail(from data: Data) async -> Data {
+              // expensive work
+          }
+      }
+      ```
+
+      The tradeoff: you write far fewer annotations and get fewer false-positive errors, but parallelism becomes explicit. Heavy work that used to leave the main actor by accident now stays on it unless you mark it `@concurrent`. I'd use it for app and UI modules, and keep library or networking modules on the nonisolated default.
+    keyPoints:
+      - SE-0466 default isolation is per module and opt-in.
+      - nonisolated async functions run on the caller's actor with the upcoming feature (SE-0461).
+      - "@concurrent to offload CPU-heavy work."
+      - Tradeoff between fewer errors and implicit main-thread work.
+    followUps:
+      - question: Is this on by default in new projects?
+        answer: |
+          It's opt-in in the compiler and in Swift packages, and existing Xcode projects keep `nonisolated`. Several sources report that app projects created from Xcode 26's templates set Default Actor Isolation to MainActor; check the build settings of the project you're on rather than assuming.
+    related: [m29]
+
+  - id: q-conc-priority-executors
+    category: concurrency
+    difficulty: hard
+    question: How do task priorities and executors work, and why is blocking inside async code dangerous?
+    answer: |
+      **Priorities.** Tasks have a `TaskPriority` (`.high`, `.medium`, `.low`, and the aliases `.userInitiated`, `.utility`, `.background`). `Task { }` inherits the current priority; child tasks inherit their parent's. The runtime **escalates** priority to avoid inversion: if a high-priority task awaits a lower-priority task's result, that task and its children are boosted. Swift 6.2 (SE-0462) added APIs to escalate manually and to react to escalation.
+
+      **Executors.** An executor decides where a job runs. By default:
+      - Non-isolated async code runs on the **global concurrent executor**, a cooperative pool with roughly one thread per CPU core.
+      - Each actor has a serial executor that runs one job at a time on that pool.
+      - The main actor's executor is the main thread.
+
+      Custom actor executors (SE-0392, Swift 5.9) let an actor run on, for example, a specific dispatch queue, which helps when integrating with code that expects one. Task executor preferences (SE-0417, Swift 6.0) influence where nonisolated work runs. App code rarely needs either.
+
+      **Blocking.** Because the pool is so small, blocking a thread with `DispatchSemaphore.wait()`, `DispatchGroup.wait()` or `Thread.sleep` inside a task takes away a whole core's worth of threads. Block enough of them while waiting for other tasks to make progress and those tasks may never get a thread: a deadlock. Swift Concurrency assumes every task can always make forward progress. The runtime also can't see a semaphore dependency, so it can't escalate priority through it.
+
+      The fix is to `await` instead of block: continuations to bridge callbacks, `Task.sleep` instead of `Thread.sleep`, task groups instead of `DispatchGroup`.
+    keyPoints:
+      - Priority inheritance and automatic escalation.
+      - Global concurrent executor, actor serial executors, main thread.
+      - Custom executors exist but are rarely needed.
+      - Blocking the cooperative pool can deadlock; forward progress.
+      - Await-based replacements for semaphores and groups.
+    followUps:
+      - question: What does `Task.yield()` do?
+        answer: |
+          It suspends the current task briefly so other tasks waiting for the same executor can run. It's useful in long CPU loops that check cancellation, but it isn't a scheduling guarantee and doesn't replace moving heavy work off the main actor.
+    related: [m28, m29]
+
+  - id: q-conc-dispatchgroup-vs-semaphore
+    category: concurrency
+    difficulty: medium
+    question: What's the difference between a DispatchGroup and a DispatchSemaphore? When is a semaphore the right tool?
+    writesCode: true
+    answer: |
+      **A group waits for a set of work to finish.** It keeps a count: `enter()` increments it, `leave()` decrements it, and when it reaches zero, `notify(queue:)` runs its block. `wait()` blocks the calling thread until then.
+
+      ```swift
+      let group = DispatchGroup()
+      for id in ids {
+          group.enter()
+          api.fetch(id) { result in
+              store(result)        // protect shared state; callbacks may run concurrently
+              group.leave()
+          }
+      }
+      group.notify(queue: .main) { reloadUI() }
+      ```
+
+      Every `enter()` needs exactly one `leave()`. A missing `leave()` means `notify` never fires; an extra one crashes.
+
+      **A semaphore counts available resources.** `wait()` decrements the count and blocks if it would go below zero; `signal()` increments it and wakes a waiter. Created with a value of N, it lets at most N threads through at once:
+
+      ```swift
+      let limiter = DispatchSemaphore(value: 2)
+      DispatchQueue.concurrentPerform(iterations: 8) { _ in
+          limiter.wait()
+          defer { limiter.signal() }
+          processLargeFile()            // never more than 2 at a time
+      }
+      ```
+
+      A semaphore is the right tool when threaded GCD code must cap access to a limited resource, or in a synchronous context that genuinely has to wait for a callback, like a command-line tool. It's the wrong tool on the main thread (it freezes the UI, and deadlocks if the callback is delivered on main) and inside Swift Concurrency, where blocking a cooperative thread can starve the pool. There, use `await` with a continuation, or limit concurrency inside a task group.
+    keyPoints:
+      - Group counts enter and leave; notify or wait when it reaches zero.
+      - Semaphore counts resources; wait blocks, signal releases.
+      - Balanced enter/leave and wait/signal.
+      - Semaphores never on main or inside async code.
+    followUps:
+      - question: Why prefer `notify` over `wait` on a group?
+        answer: |
+          `wait()` blocks the current thread until everything finishes. On the main thread that freezes the UI, and if any of the callbacks need the main thread to finish, it deadlocks. `notify` schedules a block for later and returns immediately.
+    related: [m28]
+
+  - id: q-conc-operation-vs-gcd
+    category: concurrency
+    difficulty: medium
+    question: When would you use OperationQueue instead of GCD? And what's a DispatchWorkItem?
+    answer: |
+      `Operation` and `OperationQueue` are a Foundation layer built on GCD. An operation is an object, which gives you things a closure on a queue doesn't:
+
+      - **Dependencies.** `parse.addDependency(download)`; the queue won't start `parse` until `download` finishes, even across different queues.
+      - **Cancellation state.** `cancel()` sets `isCancelled`; a running operation still has to check it, but operations not yet started are skipped.
+      - **Concurrency limit.** `maxConcurrentOperationCount = 2` caps how many run at once without semaphores.
+      - **Priority and QoS.** `queuePriority` orders ready operations within one queue; `qualityOfService` tells the system how important the work is. QoS from lowest to highest is `.background`, `.utility`, `.default`, `.userInitiated`, `.userInteractive`.
+      - **Observable state** through KVO (`isExecuting`, `isFinished`), which you must manage yourself when writing an asynchronous operation subclass.
+
+      GCD is lighter: closures on queues, no objects. Good for one-off work.
+
+      `DispatchWorkItem` sits in between: a block wrapped in an object you can `cancel()`, `wait()` on or `notify`. Cancelling only prevents it from starting; it doesn't stop it once running. The classic use is debouncing:
+
+      ```swift
+      pendingSearch?.cancel()
+      let item = DispatchWorkItem { [weak self] in self?.search(text) }
+      pendingSearch = item
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: item)
+      ```
+
+      In new code, Swift Concurrency covers most of this: task groups for dependencies and limits, `Task` cancellation, and `Task.sleep` for debouncing. You'll still meet `OperationQueue` in older codebases and in APIs like `URLSession`'s delegate queue.
+    keyPoints:
+      - Operations add dependencies, cancellation state and concurrency limits.
+      - queuePriority versus qualityOfService; QoS order.
+      - DispatchWorkItem cancel only prevents start; debouncing example.
+      - Swift Concurrency equivalents for new code.
+    followUps:
+      - question: Why is writing an asynchronous Operation subclass error-prone?
+        answer: |
+          The queue considers an operation finished when `isFinished` becomes true, so for async work you override `isAsynchronous`, `isExecuting` and `isFinished`, update them in a thread-safe way, and send the KVO notifications by hand. Forgetting a notification leaves the queue waiting forever or starts dependents too early.
+    related: [m28]
+
+  - id: q-conc-thread-explosion
+    category: concurrency
+    difficulty: hard
+    question: What is thread explosion, and how do GCD and Swift Concurrency deal with it?
+    answer: |
+      Thread explosion is when an app ends up with far more threads than CPU cores. Each thread costs memory for its stack and kernel resources, and with many runnable threads the CPU spends its time context switching instead of doing work.
+
+      With GCD it happens when work on concurrent queues **blocks**: waiting on a semaphore, a lock held for long, synchronous I/O, or `sync` calls. When a worker thread blocks, GCD can bring up another thread so the queue keeps making progress. Submit many blocking items and you get many threads. There's also a cap on how many worker threads GCD will create; once all of them are blocked, work that would unblock them can't run, which is a deadlock.
+
+      How to avoid it with GCD:
+      - Don't block in work items; use async APIs and callbacks.
+      - Use a small number of serial queues per subsystem instead of throwing everything onto global queues.
+      - Limit concurrency explicitly (`OperationQueue.maxConcurrentOperationCount`, or a semaphore around a limited resource).
+
+      Swift Concurrency was designed around this. Its cooperative pool has about one thread per core and never grows; a task that waits suspends and gives the thread back instead of blocking it. The contract in return is that your code must never block those threads. A semaphore wait inside a task doesn't make the pool spawn a replacement, so it just loses that core, and enough of them can hang the app.
+    keyPoints:
+      - Definition and costs (memory, context switches).
+      - GCD spawns threads when workers block; thread limit can deadlock.
+      - Mitigations like no blocking, few serial queues, explicit limits.
+      - Cooperative pool doesn't grow; never block it.
+    followUps:
+      - question: How would you notice thread explosion in an app?
+        answer: |
+          In the debugger's thread list or Instruments (System Trace, or the Thread States view), you see dozens of threads, many blocked in semaphore or lock waits, often on the same queue's work. Xcode's debug navigator also shows the thread count while the app runs.
+    related: [m28, m29]
+
+  - id: q-conc-locks-atomics
+    category: concurrency
+    difficulty: medium
+    question: How do you make a counter or shared state thread-safe without an actor? Does Swift have an `@atomic` attribute?
+    writesCode: true
+    answer: |
+      There's no `@atomic` attribute in Swift. (Objective-C's `atomic` property attribute only made each individual getter or setter call atomic, which doesn't help with read-modify-write.) What Swift has since 6.0 is the Synchronization module: `Atomic` (SE-0410) and `Mutex` (SE-0433), available on iOS 18 and later.
+
+      - **`Atomic<Value>`** for single values like counters and flags. It's noncopyable, so you store it in a `let`.
+      - **`Mutex<Value>`** for anything that needs several steps done together.
+
+      ```swift
+      import Synchronization
+
+      final class Account: Sendable {
+          private let balance = Mutex(100)
+
+          func withdraw(_ amount: Int) -> Bool {
+              balance.withLock { current in
+                  guard current >= amount else { return false }
+                  current -= amount
+                  return true
+              }
+          }
+      }
+
+      final class Stats: Sendable {
+          private let requests = Atomic<Int>(0)
+          func record() { requests.add(1, ordering: .relaxed) }
+      }
+      ```
+
+      The `withdraw` check and the subtraction happen under one lock. If you did "read balance, then subtract" as two separate atomic operations, each step would be safe but two threads could both pass the check. That's a **race condition** without a data race, and atomics don't prevent it.
+
+      For older deployment targets: `OSAllocatedUnfairLock` (iOS 16+), `NSLock`, or a serial queue. And static `let` singletons are already initialized exactly once in a thread-safe way; the risk is the mutable state inside them, which is why Swift 6 rejects a `static let` of a non-Sendable type.
+    keyPoints:
+      - No @atomic in Swift; Atomic and Mutex in Synchronization (Swift 6.0, iOS 18).
+      - Atomic for single values, Mutex for compound operations.
+      - Check-then-act across two atomic operations is still a race.
+      - Older alternatives and the static let singleton point.
+    followUps:
+      - question: When is a lock better than an actor?
+        answer: |
+          When the critical section is short and synchronous and callers can't or shouldn't `await`, like a cache read from synchronous code or a counter updated from many places. An actor makes every access async. For state that's touched across suspension points or has more complex logic, an actor is easier to get right.
+    related: [m28, m29]

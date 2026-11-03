@@ -70,3 +70,315 @@ questions:
       - The local check stays as user experience.
       - Review other data the API trusts from the client.
     related: [m42, m01-l03]
+
+  - id: q-sec-data-protection
+    category: security
+    difficulty: medium
+    question: The app stores a session token, cached account statements as PDFs, and a "has seen onboarding" flag. Where does each one go?
+    answer: |
+      Each piece of data goes where its sensitivity calls for:
+
+      - **Onboarding flag → `UserDefaults`.** It's not sensitive, and `UserDefaults` is meant for small preferences. It's an unencrypted plist in the app container, so nothing secret goes there.
+      - **Session token → Keychain.** It's a credential. The Keychain encrypts it and lets me pick the accessibility with `kSecAttrAccessible`. The default is `WhenUnlocked`; I'd use a `ThisDeviceOnly` variant so it isn't restored onto another device.
+      - **Statement PDFs → files in the app container with Data Protection set to `complete`.** Files are encrypted with a key tied to the passcode, and the protection class says when they can be read:
+
+      | Class | Readable |
+      | --- | --- |
+      | `complete` | only while the device is unlocked |
+      | `completeUnlessOpen` | files already open stay readable after lock; new files can be created while locked |
+      | `completeUntilFirstUserAuthentication` (the default) | after the first unlock since boot, until the next reboot |
+      | `none` | always |
+
+      You set it per file, for example `try data.write(to: url, options: .completeFileProtection)`, or as the default for the whole app with the Data Protection entitlement.
+
+      The tradeoff with `complete` is background work: if a background task needs a file while the device is locked, it can't read it. Apple's guidance is a weaker class only for files the app genuinely needs in the background. I'd also put the PDFs in Caches if they can be downloaded again, exclude them from backup, and delete them on sign-out.
+    keyPoints:
+      - Matches each piece of data to UserDefaults, Keychain or protected files.
+      - Knows UserDefaults isn't encrypted beyond the default file protection.
+      - Names the Data Protection classes and when each is readable.
+      - Knows the default file class is completeUntilFirstUserAuthentication.
+      - Background access as the tradeoff of complete protection.
+    followUps:
+      - question: Why not put the PDFs in the Keychain too?
+        answer: |
+          The Keychain is meant for small secrets like passwords, tokens and keys, not documents. For larger data, the usual pattern is files with strong Data Protection, and if you need more, encrypt the file with a key that lives in the Keychain.
+    writesCode: false
+    related: [m42, m31]
+
+  - id: q-sec-ats
+    category: security
+    difficulty: easy
+    question: What is App Transport Security, and when would you add an exception?
+    answer: |
+      ATS is the system policy that makes connections through the URL loading system (`URLSession`) use **HTTPS with modern TLS**. It has been on by default since apps linked against the iOS 9 SDK. Beyond normal certificate validation, it requires TLS 1.2 or later, forward secrecy, SHA-256 or stronger certificate signatures, and minimum key sizes (2048-bit RSA or 256-bit ECC). A plain `http://` request is blocked.
+
+      Exceptions go in Info.plist under `NSAppTransportSecurity`:
+      - `NSAllowsArbitraryLoads` turns ATS off for everything. I wouldn't ship that.
+      - `NSExceptionDomains` with `NSExceptionAllowsInsecureHTTPLoads` allows one specific domain, for example a legacy partner server you can't fix.
+      - `NSAllowsArbitraryLoadsInWebContent` relaxes it only for web views, for a browser-like feature.
+
+      Several of these need a justification in App Review. The right fix is almost always on the server.
+
+      Two details that come up: ATS doesn't apply to lower-level APIs like the Network framework, so there you're responsible for the TLS settings yourself. And ATS can also be **tightened**, not just relaxed, with keys like `NSPinnedDomains` for pinning.
+    keyPoints:
+      - Requires HTTPS with modern TLS for URLSession by default.
+      - Names the concrete requirements, like TLS 1.2 and forward secrecy.
+      - Prefers narrow per-domain exceptions and fixing the server.
+      - Knows some exceptions require justification in App Review.
+      - ATS doesn't cover the Network framework.
+    followUps:
+      - question: Your QA team uses a debugging proxy with its own root certificate. Do you need an ATS exception?
+        answer: |
+          No. Once the proxy's root certificate is installed and trusted on the test device, the connection is still HTTPS with a certificate that chains to a trusted root, so ATS accepts it. That's also why pinning exists: a trusted root someone installed is enough to intercept traffic.
+    writesCode: false
+    related: [m42, m30]
+
+  - id: q-sec-api-keys
+    category: security
+    difficulty: medium
+    question: How do you keep a third-party API key secret in an iOS app?
+    answer: |
+      **You can't.** Anything shipped in the binary or fetched by it can be extracted: from the app bundle, with `strings` or a disassembler, or by watching the traffic through a proxy on a device the attacker controls. An `.xcconfig` file keeps the key out of git, which is good, but the key still ends up in the built app.
+
+      So the question becomes how to limit the damage:
+
+      - **Don't put powerful keys in the app.** If the key can spend money or read other users' data, the call goes through my backend, which holds the key and authenticates the user with their own session token.
+      - **If a key must be in the client** (some map or analytics SDKs), use one that's designed to be public and restrict it on the provider's side: by bundle ID, by API, with quotas.
+      - **Make abuse expensive and visible:** rate limiting per user on the backend, monitoring, and the ability to rotate the key.
+      - **App Attest** (DeviceCheck, iOS 14+) lets the backend verify that a request comes from a genuine instance of my app, which raises the bar for scripts calling the API directly. It's not a secret store; it's a signal the server checks.
+
+      Obfuscating the key only slows down a determined attacker. I'd use it at most as an extra layer, never as the plan.
+    keyPoints:
+      - States that client-side secrets can't be kept secret.
+      - How keys are extracted from the binary and from traffic.
+      - Moves privileged calls behind the backend.
+      - Restricted, rotatable keys for SDKs that need one.
+      - App Attest as a server-verified signal, and obfuscation as a speed bump only.
+    followUps:
+      - question: What about downloading the key from the server at launch instead?
+        answer: |
+          It keeps the key out of the bundle, but the app still has it in memory and sends it over the network, so an attacker with a proxy or a debugger gets it anyway. It does let you rotate keys without an app release, which is a real benefit.
+    writesCode: false
+    related: [m42]
+
+  - id: q-sec-oauth-pkce
+    category: security
+    difficulty: hard
+    question: How should a mobile app implement OAuth 2.0 sign-in, and what problem does PKCE solve?
+    answer: |
+      Use the **authorization code flow with PKCE**, run in the system's browser session, not in a web view.
+
+      The flow:
+      1. The app generates a random **code verifier** (RFC 7636: 43 to 128 characters from the unreserved URL set) and derives the **code challenge** as `BASE64URL(SHA256(verifier))`, method `S256`.
+      2. It opens the authorization URL with `code_challenge`, `code_challenge_method=S256`, a random `state`, and the redirect URI, using `ASWebAuthenticationSession`.
+      3. The user signs in on the identity provider's page. The provider redirects to the app with an authorization **code**.
+      4. The app checks `state`, then exchanges the code plus the original **verifier** at the token endpoint.
+      5. The server hashes the verifier and compares it with the challenge it saw in step 2. Only then does it issue tokens.
+
+      **The problem PKCE solves:** a mobile app is a *public client*; it can't keep a client secret. Custom URL schemes can be registered by other apps, so a malicious app could intercept the redirect and steal the code. Without PKCE, that code is enough to get tokens. With PKCE, the attacker also needs the verifier, which never left the app.
+
+      **Why not a web view:** RFC 8252 (OAuth for native apps) says native apps must not use embedded user agents. In a web view the app can read what the user types, and the user can't verify the page. `ASWebAuthenticationSession` shows the domain, can share the browser's existing sign-in, and only delivers the callback to the app that started the session.
+
+      Afterwards: access token in memory or the Keychain, refresh token in the Keychain with `ThisDeviceOnly`, and revoke tokens on sign-out.
+    keyPoints:
+      - Authorization code flow with PKCE, not the implicit flow or a client secret.
+      - How the verifier and S256 challenge are generated and checked.
+      - The attack it prevents, an intercepted authorization code.
+      - "ASWebAuthenticationSession instead of a web view, and why (RFC 8252)."
+      - The state parameter and token storage in the Keychain.
+    followUps:
+      - question: Is PKCE a replacement for the state parameter?
+        answer: |
+          They protect against different things. PKCE binds the code to the client that started the flow. `state` ties the response to a request this app actually made, which protects against cross-site request forgery. Many providers' guidance is to use both; I check `state` before exchanging the code.
+      - question: Should you use a universal link instead of a custom scheme for the redirect?
+        answer: |
+          It's better when the identity provider supports it, because a universal link is tied to a domain you prove you own, so other apps can't claim it. PKCE still applies either way.
+    writesCode: false
+    related: [m42, m30]
+
+  - id: q-sec-biometrics
+    category: security
+    difficulty: hard
+    question: "The app shows a Face ID prompt and, if evaluatePolicy returns true, unlocks the user's account. What's wrong with that?"
+    answer: |
+      `LAContext.evaluatePolicy` returns a **Boolean to the app**. On a jailbroken device, or with an instrumentation tool, an attacker can hook that call and make it return `true` without any face. If the only thing gating access is an `if success { … }` in the app, the biometric check is a UI, not a security control.
+
+      What makes biometrics meaningful is tying them to **a secret the system only releases after it verifies the user**:
+
+      - **Keychain item with access control.** Store the refresh token with a `SecAccessControl` that requires `.biometryCurrentSet` (or `.userPresence` to allow the passcode). Reading it triggers Face ID, and the Secure Enclave gates the release. No match, no token, regardless of what the app's code claims. `.biometryCurrentSet` also invalidates the item if someone enrolls a new face or finger.
+      - **Secure Enclave key for server-side proof.** At enrollment, create a private key in the Secure Enclave with a biometric access control and register the public key with the backend. To approve a sensitive action, the server sends a challenge, the app signs it (which requires Face ID), and the server verifies the signature. Now the server, not the app, decides.
+
+      Smaller details: `NSFaceIDUsageDescription` is required in Info.plist; `.deviceOwnerAuthenticationWithBiometrics` has no passcode fallback while `.deviceOwnerAuthentication` does; and Apple's docs warn not to assume a past successful evaluation means future ones will succeed.
+    keyPoints:
+      - The evaluatePolicy result alone can be bypassed on a compromised device.
+      - Biometrics should unlock a Keychain item or a key, not just a branch in code.
+      - "biometryCurrentSet invalidates on enrollment changes."
+      - Secure Enclave signing of a server challenge for high-risk actions.
+      - The Info.plist usage string and the policy fallback difference.
+    followUps:
+      - question: How do you notice that the user added a new fingerprint since they enabled biometric login?
+        answer: |
+          With a `.biometryCurrentSet` Keychain item, the system handles it: the item becomes unreadable after an enrollment change and the user has to sign in again. If you only use `LAContext`, you can compare `evaluatedPolicyDomainState` with a value you saved earlier, but that's again a check in app code.
+    writesCode: false
+    related: [m42]
+
+  - id: q-sec-jailbreak
+    category: security
+    difficulty: medium
+    question: Should a banking app detect jailbroken devices? How reliable is that?
+    answer: |
+      It's worth doing as **one signal**, but it isn't reliable, and the security model can't depend on it.
+
+      Typical checks look for files and apps a jailbreak installs, try to write outside the sandbox, check whether suspicious dynamic libraries are loaded, or look for a debugger. All of these run inside the app, on a device the attacker controls. Tools that hook functions at runtime can make every check return "clean". Each new jailbreak also changes the artifacts, so the list goes stale. And false positives lock out legitimate users.
+
+      What I'd do:
+      - Use detection to **adjust risk**, not as a wall: warn the user, limit high-risk operations, and send the signal to the backend's fraud system.
+      - Rely on controls that survive a compromised client: server-side authorization and limits, short-lived tokens, Secure Enclave keys for approving transactions, and **App Attest** so the server can check that requests come from a genuine app instance.
+      - Treat it as MASVS-RESILIENCE: it raises the cost of an attack, it doesn't prevent it.
+
+      If the business insists on blocking, I'd make the decision server-side and configurable, so a false positive wave can be turned off without a release.
+    keyPoints:
+      - Detection is a heuristic that can be bypassed.
+      - Gives examples of checks and how they're defeated.
+      - Mentions false positives and maintenance cost.
+      - Uses it as a risk signal with server-side controls doing the real work.
+      - App Attest or Secure Enclave keys as stronger alternatives.
+    followUps:
+      - question: Isn't App Attest just another jailbreak check?
+        answer: |
+          No. It doesn't inspect the device for jailbreak artifacts. It creates a key in the Secure Enclave and gets an attestation from Apple that the key belongs to a genuine instance of your app; your server verifies it. It's about the app's integrity, and the verification happens on your server, not in the app.
+    writesCode: false
+    related: [m42]
+
+  - id: q-sec-masvs
+    category: security
+    difficulty: easy
+    question: What is OWASP MASVS, and how would you use it on an iOS project?
+    answer: |
+      The **Mobile Application Security Verification Standard** is OWASP's list of security requirements for mobile apps. Its companion, the MASTG (testing guide), explains how to test each one on iOS and Android. In the current version the controls are grouped into eight areas:
+
+      - **STORAGE:** sensitive data at rest (Keychain, Data Protection, no secrets in logs or backups).
+      - **CRYPTO:** using cryptography correctly, no homemade algorithms or hardcoded keys.
+      - **AUTH:** authentication and authorization, done on the server.
+      - **NETWORK:** secure communication, TLS and pinning where needed.
+      - **PLATFORM:** interaction with the OS: URL schemes, universal links, web views, the pasteboard, screenshots in the app switcher.
+      - **CODE:** code quality, input validation, up-to-date dependencies.
+      - **RESILIENCE:** resistance to reverse engineering and tampering.
+      - **PRIVACY:** data minimization and user control over their data.
+
+      How I'd use it: as a checklist when designing a feature (a new deep link touches PLATFORM, a new cache touches STORAGE), as the common language with the security team and auditors, and to prioritize. A banking app needs the resilience controls; a recipe app probably doesn't.
+    keyPoints:
+      - Knows what MASVS and MASTG are and who publishes them.
+      - Names most of the eight control groups with an iOS example.
+      - Uses it during design and in conversations with auditors.
+      - Scales the controls to the app's risk.
+    followUps:
+      - question: Which MASVS area does "the app switcher shows the account balance" fall into?
+        answer: |
+          PLATFORM (and arguably STORAGE, since the snapshot is stored on disk). The usual fix is to cover sensitive content with a placeholder view when the scene moves to the background.
+    writesCode: false
+    related: [m42]
+
+  - id: q-sec-privacy-manifest
+    category: security
+    difficulty: medium
+    question: What is a privacy manifest, and what are "required reason" APIs?
+    answer: |
+      A **privacy manifest** is a property list named `PrivacyInfo.xcprivacy` that an app or a third-party SDK includes in its bundle. It declares:
+      - `NSPrivacyTracking` and `NSPrivacyTrackingDomains`: whether it tracks, and which domains are used for tracking. If the user hasn't granted tracking permission through App Tracking Transparency, requests to those domains fail.
+      - `NSPrivacyCollectedDataTypes`: the types of data collected and why.
+      - `NSPrivacyAccessedAPITypes`: which **required reason APIs** it uses, and the approved reason for each.
+
+      **Required reason APIs** are APIs that could be used for fingerprinting, so Apple makes you declare why you call them. The current categories are file timestamps, system boot time, disk space, active keyboards, and `UserDefaults`. Each category has a fixed list of approved reasons, and you may only use the API for the reasons you declared. Since May 1, 2024, App Store Connect rejects apps that use these APIs without declaring a reason.
+
+      The practical part: each SDK has to ship its own manifest; the app's manifest doesn't cover an SDK's usage. Xcode merges them into a privacy report you can generate from an archive. When I add a dependency, I check it has a manifest, and I review the report before each release. `UserDefaults` surprises people: almost every app uses it, so almost every app needs that entry.
+    keyPoints:
+      - PrivacyInfo.xcprivacy and its main keys.
+      - Required reason APIs exist to prevent fingerprinting.
+      - Names some categories, especially UserDefaults.
+      - Uploads without declared reasons are rejected since May 2024.
+      - Each SDK needs its own manifest; the privacy report from an archive.
+    followUps:
+      - question: Does the privacy manifest replace the App Store privacy "nutrition label"?
+        answer: |
+          No. You still fill in the privacy details in App Store Connect. The manifests and the generated report help you get those answers right, especially for data collected by SDKs.
+    writesCode: false
+    related: [m42, m41]
+
+  - id: q-sec-logging
+    category: security
+    difficulty: easy
+    question: A crash report shows a user's email and auth token in the logs. How do you stop that from happening?
+    answer: |
+      Treat logs as data that leaves the device. Anything logged can end up in a sysdiagnose, a crash reporter, or a third-party logging SDK. The rules I follow:
+
+      - **Never log secrets:** tokens, passwords, full card or account numbers, request bodies of authenticated calls. That includes `print` of a whole request or response "just for debugging".
+      - **Use `Logger` (unified logging) and its privacy levels.** By default, the system redacts dynamic strings and objects in log messages, while integers, floating-point numbers and Booleans are shown. You opt in to showing a value with `privacy: .public`, and you can use `.private(mask: .hash)` so you can still correlate messages without revealing the value:
+
+        ```swift
+        logger.info("Loaded account \(accountID, privacy: .private(mask: .hash))")
+        ```
+
+      - **Be careful with third-party crash and analytics SDKs.** They don't follow `Logger`'s redaction; whatever you pass them gets uploaded. Scrub identifiers before sending breadcrumbs.
+      - Watch `description` and string interpolation of whole models. A `Codable` user struct printed in a log line leaks every field. A custom description that hides sensitive fields helps.
+
+      To catch regressions, I'd add a lint rule against `print` in release code and review new log statements in code review.
+    keyPoints:
+      - Logs leave the device through diagnostics and third-party SDKs.
+      - Never log secrets or full request bodies.
+      - "Logger redacts dynamic strings by default; numbers and Booleans aren't redacted."
+      - privacy .public and .private(mask:) used deliberately.
+      - Third-party SDKs don't apply the same redaction.
+    followUps:
+      - question: Why does a redacted value still show up when you debug in Xcode?
+        answer: |
+          When Xcode launches the app, it turns off redaction for that process, so private values appear in its console (an Apple tools engineer confirmed this on the developer forums). To see what a user's device actually records, launch the app without Xcode and stream the logs with the Console app.
+    writesCode: false
+    related: [m42]
+
+  - id: q-sec-symmetric-asymmetric
+    category: security
+    difficulty: medium
+    question: What's the difference between symmetric and asymmetric encryption, and which iOS APIs would you use for each?
+    answer: |
+      **Symmetric** crypto uses one shared secret key to encrypt and decrypt. It's fast and handles any amount of data, so it does the bulk work: encrypting a file, a database field, a message body. The hard part is getting the same key to both sides without anyone else seeing it.
+
+      **Asymmetric** crypto uses a key pair. The public key can be handed to anyone; the private key never leaves its owner. It's slow and meant for small things: **key agreement** (two parties derive the same secret from their own private key and the other's public key) and **signatures** (prove that data came from the private key holder and wasn't changed).
+
+      Real systems combine them. TLS 1.3 uses an ephemeral elliptic-curve key exchange plus the server's certificate signature to agree on keys, derives traffic keys with HKDF, then encrypts every record with AES-GCM or ChaCha20-Poly1305.
+
+      On iOS that's **CryptoKit** (iOS 13):
+
+      - Symmetric: `SymmetricKey`, `AES.GCM` and `ChaChaPoly`. Both are authenticated encryption, so tampering makes `open` throw. Let CryptoKit generate the nonce; reusing one with the same key breaks GCM.
+      - Asymmetric: `Curve25519` and `P256` (`.KeyAgreement` and `.Signing`), plus `HPKE` (iOS 17) to encrypt to someone's public key.
+      - Key derivation: `SharedSecret.hkdfDerivedSymmetricKey(using:salt:sharedInfo:outputByteCount:)` (iOS 13) or the `HKDF` type (iOS 14). A raw ECDH secret isn't used as a key directly.
+
+      ```swift
+      import CryptoKit
+      import Foundation
+
+      let secret = try myPrivateKey.sharedSecretFromKeyAgreement(with: serverPublicKey)
+      let key = secret.hkdfDerivedSymmetricKey(
+          using: SHA256.self, salt: salt,
+          sharedInfo: Data("backup-v1".utf8), outputByteCount: 32)
+      let box = try AES.GCM.seal(plaintext, using: key)
+      let payload = box.combined!   // nonce + ciphertext + tag (non-nil with the default 12-byte nonce)
+      ```
+
+      **Secure Enclave** keys (`SecureEnclave.P256.Signing.PrivateKey`, `.KeyAgreement.PrivateKey`) are created inside the enclave and can't be exported or imported. `dataRepresentation` is an encrypted blob only that same enclave can use, so you store it in the Keychain and the private key itself never exists in app memory.
+    keyPoints:
+      - Symmetric for bulk data with a shared key; asymmetric for key agreement and signatures.
+      - Public keys are shared, private keys never are.
+      - Hybrid encryption, with TLS as the example.
+      - "CryptoKit types: AES.GCM, ChaChaPoly, Curve25519, P256, HKDF; derives keys instead of using raw ECDH output."
+      - Authenticated encryption and nonce reuse.
+      - Secure Enclave keys are generated inside and can't be exported.
+    followUps:
+      - question: Why can't you just use a Curve25519 key in the Secure Enclave?
+        answer: For classic elliptic-curve keys, the Secure Enclave only supports NIST P-256, which is why CryptoKit exposes `SecureEnclave.P256` and not a Curve25519 variant. Since iOS 26 it also offers post-quantum keys (`SecureEnclave.MLKEM768`, `MLKEM1024`, `MLDSA65`, `MLDSA87`). If you need hardware-backed keys with classic curves, you pick P-256.
+      - question: Where do you store a symmetric key you generated with CryptoKit?
+        answer: In the Keychain as a generic password item, with an accessibility class that matches when the app needs it (for example `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`). Apple's "Storing CryptoKit keys in the keychain" sample shows the conversions. Never in UserDefaults or a file next to the data it protects.
+      - question: How does a server verify that a request was signed by a specific device?
+        answer: At enrollment the app creates a Secure Enclave signing key and registers its public key. Later the server sends a random challenge, the app signs it with `signature(for:)`, and the server checks the signature with the stored public key. A fresh challenge each time stops replay.
+    writesCode: true
+    related: [m42]

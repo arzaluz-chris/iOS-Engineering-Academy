@@ -21,6 +21,8 @@ questions:
     followUps:
       - question: Why shouldn't you read view.bounds in viewDidLoad to compute layout?
         answer: Because at that point the view doesn't have its final size in the hierarchy yet; it might have the storyboard's size, or zero. Auto Layout or the layout methods are the right place.
+      - question: What about viewDidUnload?
+        answer: It's gone. Since iOS 6, UIKit no longer unloads a view controller's view under memory pressure, so `viewDidUnload` was deprecated and stopped being called. Memory warnings go to `didReceiveMemoryWarning()`, where you drop caches you can rebuild.
     related: [m22]
 
   - id: q-uikit-cell-reuse
@@ -31,15 +33,565 @@ questions:
       `UITableView` and `UICollectionView` only create the cells needed to fill the screen plus a small margin. As you scroll, cells that go off screen are put in a reuse queue and handed back when you call `dequeueReusableCell`. That way a list of 10,000 items uses a few dozen cells.
 
       Typical bugs:
-      - **Leftover state:** setting a property only in some cases (for example, showing a badge if the item is new and not removing it if it isn't). Every configuration has to set all the state, or reset it in `prepareForReuse`.
+      - **Leftover state:** setting a property only in some cases (for example, showing a badge if the item is new and not removing it if it isn't). Every configuration in `cellForRowAt` has to set all the content. Apple's docs reserve `prepareForReuse` for state that isn't content (alpha, editing, selection) and say the data source should always reset all content.
       - **Images in the wrong cell:** an async download finishes after the cell is already showing a different item. You fix it by cancelling the load in `prepareForReuse`, or by checking that the item's identifier is still the same before setting the image.
       - Heavy work in `cellForRowAt`, which runs on the main thread on every scroll.
     keyPoints:
       - The cell pool and dequeue.
-      - Leftover state, and prepareForReuse or full configuration.
+      - Leftover state; full content configuration in cellForRowAt, prepareForReuse only for non-content state.
       - Async loads that land in the wrong cell.
       - No heavy work during configuration.
     followUps:
       - question: What do diffable data sources give you over reloadData?
         answer: You describe the state you want with a **snapshot** of identifiers, and the data source works out the differences and animates insertions, deletions and moves. It avoids the model/view inconsistencies that throw exceptions with `performBatchUpdates`. It needs stable `Hashable` identifiers.
+    related: [m24]
+
+  - id: q-uikit-frame-vs-bounds
+    category: uikit
+    difficulty: easy
+    question: What's the difference between a view's frame and its bounds?
+    answer: |
+      Both are `CGRect`s, but they're measured in different coordinate systems.
+
+      - **`frame`** is the view's position and size in its **superview's** coordinate system. You use it when you're placing the view inside its parent.
+      - **`bounds`** is the view's rectangle in **its own** coordinate system. The origin is usually `(0, 0)`, and you use it when you lay out or draw the view's own content, for example in `layoutSubviews` or `draw(_:)`.
+
+      Two cases where the difference stops being academic:
+
+      - **Transforms.** If you rotate or scale a view, Apple's docs say `frame` is undefined. The bounds keep the real size; the frame becomes the bounding box of the rotated view. With a transform you move the view with `center` and resize it with `bounds`.
+      - **Scroll views.** Scrolling a `UIScrollView` changes the origin of its bounds (`contentOffset` is that origin). The frame stays put while the visible region of the content moves.
+
+      With Auto Layout you rarely set either one directly; the layout engine sets the frames, and you read `bounds` when you need the final size.
+    keyPoints:
+      - Frame is in the superview's coordinates; bounds is in the view's own.
+      - The bounds origin is usually zero but doesn't have to be.
+      - With a non-identity transform, frame is undefined; use center and bounds.
+      - Scroll views scroll by moving their bounds origin.
+    followUps:
+      - question: How do you convert a point from one view's coordinate system to another's?
+        answer: With `convert(_:to:)` or `convert(_:from:)` on `UIView`, for points and rects. A typical case is finding where a cell's button sits in the window to anchor a popover or a tooltip.
+    related: [m23]
+
+  - id: q-uikit-scene-lifecycle
+    category: uikit
+    difficulty: medium
+    question: What's the difference between the app life cycle and the scene life cycle in UIKit, and what changes with the iOS 27 SDK?
+    answer: |
+      Since iOS 13, UIKit splits the life cycle in two:
+
+      - **App delegate (`UIApplicationDelegate`)**: process-level events. Launch, push notification registration, and handing out scene configurations in `application(_:configurationForConnecting:options:)`.
+      - **Scene delegate (`UIWindowSceneDelegate`)**: one instance of the UI. It creates the window in `scene(_:willConnectTo:options:)` and receives the foreground and background transitions: `sceneDidBecomeActive`, `sceneWillResignActive`, `sceneDidEnterBackground`, `sceneWillEnterForeground`. These replace the `applicationDidBecomeActive` family.
+
+      The reason for the split is that one process can show several scenes at once on iPad (and on an external display), and each one can be in a different state.
+
+      **What changes:** Apple's TN3187 says that in the release after iOS 26, apps built with the latest SDK that don't adopt the scene life cycle won't launch. That's iOS 27. Before that, iOS 18.4 and iOS 26 only logged a warning. Adopting scenes doesn't mean supporting multiple windows: `UIApplicationSupportsMultipleScenes` can stay `false`. You need a `UIApplicationSceneManifest` in the Info.plist (or the app delegate configuration method), and the code that ran in `applicationDidBecomeActive` moves to the scene delegate.
+    keyPoints:
+      - App delegate for the process, scene delegate for each UI instance.
+      - The window is created in scene(_:willConnectTo:options:).
+      - Foreground and background callbacks move to the scene delegate.
+      - With the iOS 27 SDK, an app without the scene life cycle doesn't launch (TN3187).
+      - Adopting scenes doesn't require supporting multiple windows.
+    followUps:
+      - question: Where would you save unsaved user work when the app goes to the background?
+        answer: In `sceneDidEnterBackground(_:)` for that scene's state, since that's where the scene life cycle tells you its UI left the screen. With several scenes, each scene saves its own state. Work that belongs to the whole process, like flushing a shared database, can still react to app-level notifications.
+      - question: How do you handle a deep link that launches the app from a cold start?
+        answer: With scenes, the URL arrives in the `connectionOptions` of `scene(_:willConnectTo:options:)` (its `urlContexts` or `userActivities`). If the app is already running, it arrives in `scene(_:openURLContexts:)` or `scene(_:continue:)`. A common bug is handling only the second path and losing links on cold start.
+    related: [m21, m22]
+
+  - id: q-uikit-layout-pass
+    category: uikit
+    difficulty: medium
+    question: What do setNeedsLayout, layoutIfNeeded and layoutSubviews each do, and how do you animate a constraint change?
+    answer: |
+      - **`layoutSubviews()`**: where a view positions its subviews. The default implementation applies the constraints. You override it only when constraints aren't enough, and **you never call it directly**.
+      - **`setNeedsLayout()`**: marks the view as needing layout and returns right away. The layout happens in the next update cycle, so several changes get batched into one pass.
+      - **`layoutIfNeeded()`**: if layout is pending, it runs it **now**, for that view and its subtree. If nothing is pending, it does nothing.
+
+      That's why animating a constraint looks like this:
+
+      ```swift
+      heightConstraint.constant = isExpanded ? 240 : 80
+      UIView.animate(withDuration: 0.3) {
+          self.view.layoutIfNeeded()
+      }
+      ```
+
+      Changing `constant` only invalidates the layout. Calling `layoutIfNeeded()` inside the animation block forces the new frames to be computed there, so the frame change is what gets animated. You call it on a view that contains everything that moves, usually the controller's root view, not on the view whose constraint you changed.
+    keyPoints:
+      - layoutSubviews applies the layout and isn't called directly.
+      - setNeedsLayout invalidates and waits for the next cycle.
+      - layoutIfNeeded forces pending layout immediately.
+      - Animating constraints means changing them, then layoutIfNeeded inside the animation on a common ancestor.
+    followUps:
+      - question: What's the risk of calling layoutIfNeeded often?
+        answer: You lose the batching. Each call can force a full layout pass of the subtree right then, so calling it in a loop or on every scroll event multiplies the work on the main thread. Prefer `setNeedsLayout` unless you need the final frames immediately.
+      - question: Is there an equivalent for content that doesn't affect geometry?
+        answer: In iOS 26 and later, `UIView` and `UIViewController` have `updateProperties()`, which runs before layout and is meant for text, colors and visibility. You schedule it with `setNeedsUpdateProperties()`. That keeps content changes from triggering layout work.
+    related: [m23]
+
+  - id: q-uikit-hugging-compression
+    category: uikit
+    difficulty: medium
+    question: A label and a text field sit side by side in a row. When the screen is narrow the label gets truncated; when it's wide the label stretches. How do you fix it with Auto Layout?
+    answer: |
+      With **content hugging** and **compression resistance** priorities. A view with an **intrinsic content size** (a label's text, a button's title) gets two pairs of implicit constraints from Auto Layout:
+
+      - **Hugging**: resists growing beyond its intrinsic size.
+      - **Compression resistance**: resists shrinking below it.
+
+      Each has a priority. Per Apple's Auto Layout guide, views default to 250 for hugging and 750 for compression resistance (Interface Builder sets labels' hugging to 251). When two views both have the same hugging priority and there's extra space, the layout is ambiguous about which one stretches.
+
+      For this row:
+
+      ```swift
+      nameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+      nameLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+      textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
+      ```
+
+      Now the text field is the one that stretches, and when space is short it gives way before the label does. `.required` is 1000, `.defaultHigh` 750, `.defaultLow` 250. Apple recommends staying close to those values and nudging by one or two points to break ties.
+
+      For a custom view, override `intrinsicContentSize` and call `invalidateIntrinsicContentSize()` when its content changes.
+    keyPoints:
+      - Intrinsic content size produces implicit size constraints.
+      - Hugging resists growing; compression resistance resists shrinking.
+      - Defaults 250 and 750; equal priorities cause ambiguity.
+      - Raise the label's priorities or lower the text field's.
+      - invalidateIntrinsicContentSize for custom views.
+    followUps:
+      - question: When does it make sense to give a constraint a priority lower than required?
+        answer: When it's a preference, not a rule. For example, a width of 300 at priority 750 combined with a required `lessThanOrEqualTo` the screen width minus margins. On a large screen you get 300; on a small one the optional constraint gives way instead of breaking the layout with an unsatisfiable-constraints error.
+    related: [m23]
+
+  - id: q-uikit-hit-testing
+    category: uikit
+    difficulty: medium
+    question: A user taps the screen. How does UIKit decide which view gets the touch, and what happens if that view doesn't handle it?
+    answer: |
+      Two different mechanisms.
+
+      **Hit testing finds the view.** UIKit calls `hitTest(_:with:)` on the window, which walks down the hierarchy calling `point(inside:with:)` on subviews, front to back, and returns the deepest view that contains the point. It skips views that are hidden, have `isUserInteractionEnabled` set to `false`, or have an alpha below 0.01. It also ignores points outside a view's bounds, so a subview that sticks out of a parent with `clipsToBounds == false` **can't be tapped** in the part that sticks out.
+
+      **The responder chain handles what that view doesn't.** If the touched view doesn't handle the event, it goes to the next responder: the superview, up to the view controller's root view, then the view controller, the window, the `UIWindowScene`, the `UIApplication`, and the app delegate if it's a `UIResponder`.
+
+      Gesture recognizers come first: they see the touches before the view, and if one recognizes its gesture, by default the view's touches are cancelled.
+
+      The responder chain is also how a control with a `nil` target finds its action, which is how the edit menu finds `copy(_:)` and `paste(_:)`.
+    keyPoints:
+      - hitTest and point(inside:) walk down to the deepest view that contains the point.
+      - Hidden, non-interactive or nearly transparent views are skipped.
+      - Points outside a parent's bounds aren't hits, even on visible subviews.
+      - Unhandled events go up the responder chain to the controller, window, scene and app.
+      - Gesture recognizers see touches before the view.
+    followUps:
+      - question: How would you make a small 24-point button easier to tap without changing how it looks?
+        answer: |
+          Override `point(inside:with:)` in a button subclass and return `bounds.insetBy(dx: -10, dy: -10).contains(point)`. The enlarged area still has to be inside the superview's bounds, since hit testing never reaches a view if its parent rejects the point.
+      - question: A button inside a view that sticks out of a card isn't tappable. Why?
+        answer: The card's `hitTest` rejects points outside its own bounds, so it never asks its subviews about them, even though `clipsToBounds` is `false` and the button is visible. The fixes are to lay out the card so it contains the button, or override the card's `hitTest`/`point(inside:with:)` to check that subview.
+    related: [m22, m26]
+
+  - id: q-uikit-gesture-conflicts
+    category: uikit
+    difficulty: medium
+    question: You add a tap gesture recognizer to a view, and now a double-tap recognizer on the same view or the buttons inside it misbehave. How do you control how gesture recognizers interact?
+    answer: |
+      Gesture recognizers get touches before views do, and by default only one can recognize at a time. There are a few controls:
+
+      - **`require(toFail:)`**: the single tap waits for the double tap to fail. `singleTap.require(toFail: doubleTap)`. The cost is a short delay on the single tap.
+      - **`gestureRecognizer(_:shouldRecognizeSimultaneouslyWith:)`** in the delegate: return `true` to let two recognize together, like a pinch and a rotation on the same photo. Returning `false` doesn't guarantee they won't, because the other recognizer's delegate can still return `true`.
+      - **`cancelsTouchesInView`** (default `true`): when the recognizer succeeds, the view's pending touches are cancelled. Set it to `false` when the view underneath also needs the touches, for example a tap-to-dismiss-keyboard recognizer on a screen full of controls.
+      - **`gestureRecognizerShouldBegin(_:)`** and `gestureRecognizer(_:shouldReceive:)` in the delegate, to decide case by case, like ignoring a pan unless it starts mostly horizontal.
+
+      In practice I add the fewest recognizers I can, and when two conflict I decide which one should win and express that with one of these hooks.
+    keyPoints:
+      - Recognizers see touches before views; one recognizes at a time by default.
+      - require(toFail:) for single versus double tap.
+      - shouldRecognizeSimultaneouslyWith for combined gestures.
+      - cancelsTouchesInView decides whether the view still gets the touches.
+      - Delegate hooks for conditional recognition.
+    followUps:
+      - question: Why is a full-screen tap recognizer to dismiss the keyboard a classic source of bugs?
+        answer: With `cancelsTouchesInView` left at `true`, it can eat touches meant for table cells or controls underneath, so rows stop being selectable. Setting it to `false`, or using the scroll view's `keyboardDismissMode`, avoids it.
+    related: [m27]
+
+  - id: q-uikit-containment
+    category: uikit
+    difficulty: medium
+    question: How do you embed one view controller inside another, and why not just add its view as a subview?
+    writesCode: true
+    answer: |
+      With **view controller containment**. The parent adds the child, adds its view, and then tells the child the move is complete:
+
+      ```swift
+      func embed(_ child: UIViewController, in container: UIView) {
+          addChild(child)
+          child.view.translatesAutoresizingMaskIntoConstraints = false
+          container.addSubview(child.view)
+          NSLayoutConstraint.activate([
+              child.view.topAnchor.constraint(equalTo: container.topAnchor),
+              child.view.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+              child.view.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+              child.view.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+          ])
+          child.didMove(toParent: self)
+      }
+
+      func remove(_ child: UIViewController) {
+          child.willMove(toParent: nil)
+          child.view.removeFromSuperview()
+          child.removeFromParent()
+      }
+      ```
+
+      `addChild` calls `willMove(toParent:)` for you, and `removeFromParent` calls `didMove(toParent: nil)` for you; the other two calls are yours.
+
+      If you only add the view, the child controller isn't part of the controller hierarchy: it doesn't get appearance callbacks reliably, it doesn't receive trait and size changes, its `parent` and `navigationController` are `nil`, and nothing keeps it alive unless you hold it yourself. Containment is how you split a large screen into smaller controllers, and how `UIHostingController` gets embedded to add SwiftUI to a UIKit screen.
+    keyPoints:
+      - addChild, add the view, then didMove(toParent:).
+      - 'Removal is willMove(toParent: nil), removeFromSuperview, removeFromParent.'
+      - Which calls are automatic and which are yours.
+      - Without containment, appearance callbacks, traits and parent references break.
+      - Used for splitting screens and for embedding UIHostingController.
+    followUps:
+      - question: When would you split a screen into child view controllers?
+        answer: When parts of it have their own logic and life cycle, like a header with its own data loading, a reusable empty or error state, or a section that also appears elsewhere. It's one of the more practical ways to shrink a massive view controller without changing the architecture of the whole app.
+    related: [m22, m40]
+
+  - id: q-uikit-diffable-compositional
+    category: uikit
+    difficulty: hard
+    question: You're building a feed with UICollectionView, a diffable data source and a compositional layout. What do you use as item identifiers, and how do you update a single item whose content changed?
+    answer: |
+      **Use stable IDs as identifiers, not whole models.** A diffable data source diffs snapshots by `Hashable` identifier. If the identifier is the full model struct, any field change produces a different hash, and the diff sees a delete plus an insert: the cell is replaced, you get the wrong animation, and scroll position or focus can jump. So I use `Post.ID`, keep the models in a store keyed by ID, and look them up in the cell provider. Identifiers have to be unique across the snapshot, or the data source raises an exception.
+
+      **To update one item**, keep its ID and mark it in the snapshot:
+
+      ```swift
+      var snapshot = dataSource.snapshot()
+      snapshot.reconfigureItems([post.id])
+      dataSource.apply(snapshot, animatingDifferences: true)
+      ```
+
+      `reconfigureItems` (iOS 15) reruns the cell configuration on the **existing** cell, without dequeuing a new one or calling `prepareForReuse`. `reloadItems` replaces the cell, which is only needed when the cell type changes.
+
+      **Compositional layout** describes the layout as items inside groups inside sections, with sizes as fractions of the container or estimates for self-sizing. Each section can have its own layout, including horizontal scrolling with `orthogonalScrollingBehavior`, which replaces the old "collection view inside a table cell" pattern.
+
+      Diffable data sources and compositional layout are iOS 13+; cell registrations are iOS 14+.
+    keyPoints:
+      - Identifiers are stable IDs; models are looked up separately.
+      - A whole-model identifier turns edits into delete plus insert.
+      - Identifiers must be unique in the snapshot.
+      - reconfigureItems updates the existing cell; reloadItems replaces it.
+      - Compositional layout as item, group, section, with per-section layouts.
+    followUps:
+      - question: Why can't you change the collection view's dataSource after setting up a diffable data source?
+        answer: Apple's docs say not to. The diffable data source owns the collection view's state. If you need a different data source, you create a new collection view and a new diffable data source.
+      - question: What's a cell registration, and what does it replace?
+        answer: '`UICollectionView.CellRegistration` (iOS 14) pairs a cell type with a configuration closure, and you dequeue with `dequeueConfiguredReusableCell(using:for:item:)`. It replaces registering a class with a string reuse identifier and casting the dequeued cell, so the types are checked at compile time.'
+    related: [m24]
+
+  - id: q-uikit-communication
+    category: uikit
+    difficulty: easy
+    question: When do you use a delegate, a closure or NotificationCenter to communicate between objects?
+    answer: |
+      They solve different shapes of communication:
+
+      - **Delegate**: one-to-one, with several related callbacks, often including questions the object asks back (`tableView(_:heightForRowAt:)`). It's a protocol, so the contract is explicit. The delegate property is `weak` to avoid a retain cycle, which means the protocol has to be class-bound (`AnyObject`).
+      - **Closure**: one-to-one for one or two callbacks, like "the user picked a contact" or a completion. Less ceremony than a protocol. You have to watch captures: a controller that stores a closure capturing `self` strongly creates a cycle, so you capture `[weak self]`.
+      - **NotificationCenter**: one-to-many broadcast where the sender doesn't know who's listening, like a session expiring or the keyboard appearing. The cost is that it's loosely typed and hard to trace: anyone can post and anyone can listen.
+
+      My default is a closure for a single callback, a delegate when there's a real protocol with several methods, and notifications only for app-wide events. For data that changes over time, I'd usually expose it through Observation or an `AsyncSequence` rather than any of the three.
+    keyPoints:
+      - Delegate for one-to-one with several callbacks; weak and class-bound.
+      - Closures for single callbacks; watch strong captures of self.
+      - Notifications for one-to-many broadcasts, at the cost of traceability.
+      - A reason for each choice, not one tool for everything.
+    followUps:
+      - question: Do you need to remove NotificationCenter observers?
+        answer: For selector-based observers added with `addObserver(_:selector:name:object:)`, not since iOS 9; the system cleans them up. For block-based ones from `addObserver(forName:object:queue:using:)`, yes. The center holds the returned token strongly until you remove it, and the block should capture `self` weakly.
+    related: [m26]
+
+  - id: q-uikit-main-thread
+    category: uikit
+    difficulty: easy
+    question: Why must UI updates happen on the main thread, and how do you make sure they do?
+    answer: |
+      UIKit isn't thread-safe. Views, layout and the render tree are designed to be touched from one thread, the main thread, which also runs the run loop that processes touches and draws frames. Updating a view from a background thread can crash, show stale UI, or corrupt layout in ways that are hard to reproduce.
+
+      How you make sure:
+
+      - **In Swift Concurrency**, UIKit classes like `UIView` and `UIViewController` are `@MainActor`. If a view controller starts a `Task`, the task inherits the main actor; after `await`ing work that runs elsewhere, it resumes on the main actor, so assigning to a label afterwards is safe. In Swift 6 mode, touching a main-actor property from a nonisolated context is a **compile error**, not a runtime surprise.
+      - **In older code with GCD**, you hop back with `DispatchQueue.main.async { … }` inside completion handlers, because `URLSession` calls them on a background queue.
+      - **At runtime**, Xcode's Main Thread Checker flags UIKit calls made off the main thread while debugging.
+
+      The flip side matters too: don't do heavy work on the main thread. Decoding JSON or images there causes hangs and dropped frames.
+    keyPoints:
+      - UIKit isn't thread-safe; the main thread runs the event loop and rendering.
+      - UIKit types are @MainActor; Swift 6 rejects off-main access at compile time.
+      - DispatchQueue.main.async in callback-based code.
+      - Main Thread Checker at runtime.
+      - Keep heavy work off the main thread.
+    followUps:
+      - question: Does `Task { }` inside a view controller method run on a background thread?
+        answer: No. It inherits the actor of the context that creates it, so inside a `@MainActor` view controller the task's synchronous parts run on the main actor. The work you `await`, like a network call, can run elsewhere, and the task comes back to the main actor afterwards.
+    related: [m21, m28, m29]
+
+  - id: q-uikit-scroll-performance
+    category: uikit
+    difficulty: hard
+    question: A feed with images stutters when you scroll fast. How do you find the cause and what do you fix?
+    answer: |
+      **Measure first.** I'd profile on a real device with Instruments, using the **Animation Hitches** template, and the Time Profiler for the main thread. A hitch is a frame that misses its deadline. The trace tells you whether the time goes to your code during commit (cell configuration, layout) or to rendering.
+
+      **Usual causes and fixes:**
+
+      - **Image decoding on the main thread.** A `UIImage` from compressed data decodes the first time it's drawn, so assigning a large JPEG to an image view can block a frame. Decode ahead of time with `preparingForDisplay()` off the main thread (iOS 15+), or `prepareForDisplay(completionHandler:)`. Apple recommends a serial queue when you prepare many images, since a concurrent queue can start too many threads.
+      - **Images far larger than the view.** A 4000-pixel photo in an 80-point thumbnail wastes decode time and memory. Downsample with `preparingThumbnail(of:)` and cache the result.
+      - **Offscreen rendering.** Shadows without a `shadowPath` make Core Animation work out the shape from the layer's content; setting an explicit path usually improves performance. Masks can also force offscreen passes. `shouldRasterize` helps only for content that doesn't change, because the cached bitmap is rebuilt otherwise.
+      - **Expensive cell configuration or layout**: formatters created per cell, deep stack views, synchronous work in `cellForItemAt`.
+
+      Then I check the result in Instruments again rather than trusting how it feels.
+    keyPoints:
+      - Profile on device with Animation Hitches and Time Profiler.
+      - Decode images off the main thread (preparingForDisplay).
+      - Downsample large images and cache them.
+      - shadowPath, masks and rasterization as offscreen rendering factors.
+      - Keep cell configuration cheap; verify after the fix.
+    followUps:
+      - question: How do you avoid showing an image in the wrong cell after an async load?
+        answer: Track which item the cell is showing. When the load finishes, check that the cell's current item ID still matches before assigning, and cancel the load in `prepareForReuse`. Apple's own `preparingForDisplay()` sample does the ID check.
+      - question: What's the role of prefetching?
+        answer: '`UICollectionViewDataSourcePrefetching` tells you which index paths are coming up so you can start downloading and decoding before the cells appear, and which ones to cancel when the user changes direction. It moves work earlier; it doesn''t remove it, so decoding still has to stay off the main thread.'
+    related: [m27, m43]
+
+  - id: q-uikit-presentation
+    category: uikit
+    difficulty: easy
+    question: When do you push a view controller and when do you present it modally? What should you know about how sheets get dismissed?
+    answer: |
+      **Push** when the new screen is the next step in a hierarchy: list, then detail, then a sub-detail. It goes on the `UINavigationController` stack, and the back button and edge swipe come for free.
+
+      **Present modally** when it's a separate task the user enters and then completes or cancels: composing a message, a login, a filter screen. It has its own close or done buttons.
+
+      Things that trip people up:
+
+      - `modalPresentationStyle` defaults to `.automatic`. For most view controllers UIKit maps that to a **form sheet in iOS 18 and later** and a page sheet before that. On iPhone in compact width, both look like a card the user can swipe down.
+      - **Swipe-to-dismiss.** The user can dismiss a sheet without tapping your buttons. If the screen has unsaved changes, set `isModalInPresentation = true` and implement `presentationControllerDidAttemptToDismiss(_:)` to ask whether to discard them.
+      - `presentationControllerDidDismiss(_:)` is called when the user swipes the sheet away, but **not** when you dismiss it in code. If your cleanup (releasing a coordinator, refreshing the parent) only runs from the button, a swipe skips it.
+    keyPoints:
+      - Push for hierarchical navigation; present for a self-contained task.
+      - .automatic maps to form sheet on iOS 18+, page sheet before.
+      - Users can swipe sheets away; isModalInPresentation to block it.
+      - presentationControllerDidDismiss isn't called for programmatic dismissal.
+    followUps:
+      - question: How do you return a result from a modally presented screen?
+        answer: |
+          With a closure or delegate passed in when it's created, like `onSave: (Draft) -> Void`, called before dismissing. The presented controller shouldn't reach into its presenter. In an app with coordinators, the coordinator gets the result and decides what happens next.
+    related: [m25]
+
+  - id: q-uikit-swiftui-interop
+    category: uikit
+    difficulty: medium
+    question: How do you add a SwiftUI screen or component to an existing UIKit app?
+    answer: |
+      It depends on the size of the piece.
+
+      - **A full screen**: create a `UIHostingController(rootView:)` and push or present it like any other view controller.
+      - **Part of a screen**: embed the hosting controller as a **child view controller** (`addChild`, add its view with constraints, `didMove(toParent:)`). If the SwiftUI content changes size, set `sizingOptions` (iOS 16+): `.intrinsicContentSize` makes the hosting view invalidate its intrinsic size when the ideal size changes, so Auto Layout follows. The default is an empty set, which is a common source of "the SwiftUI part doesn't resize".
+      - **Cells**: set `cell.contentConfiguration = UIHostingConfiguration { … }` (iOS 16+). You get a SwiftUI row inside a regular `UICollectionView` or `UITableView` cell, and in list layouts things like swipe actions get bridged.
+
+      For data, the SwiftUI view receives the same models the UIKit side uses. An `@Observable` model works well because both sides observe it. Callbacks from SwiftUI back to UIKit (a tap that should push a UIKit screen) are closures passed into the root view, so navigation stays with whoever owns it on the UIKit side.
+
+      I'd migrate this way screen by screen, starting with new or isolated screens, rather than rewriting.
+    keyPoints:
+      - UIHostingController for screens; push or present it.
+      - Child view controller containment for parts of a screen.
+      - sizingOptions for content that changes size.
+      - UIHostingConfiguration for cells.
+      - Shared models and closures for callbacks; incremental migration.
+    followUps:
+      - question: And the other direction, a UIKit view inside SwiftUI?
+        answer: Conform a struct to `UIViewRepresentable` (or `UIViewControllerRepresentable`). SwiftUI calls `makeUIView` once and `updateUIView` whenever the inputs change. Delegate and target-action callbacks go through a `Coordinator` from `makeCoordinator()`. SwiftUI owns the UIKit view's frame, bounds, center and transform, so you don't set them yourself.
+    related: [m40]
+
+  - id: q-uikit-observation-tracking
+    category: uikit
+    difficulty: hard
+    question: Can UIKit react to changes in an @Observable model automatically, the way SwiftUI does? How does that work, and on which iOS versions?
+    answer: |
+      Yes, in recent versions. UIKit does **automatic observation tracking** in certain methods: while one of them runs, UIKit records which `@Observable` properties you read, and when one of those properties changes, it schedules the method to run again.
+
+      - **iOS 26 and later**: it's on by default. The main hooks are the new `updateProperties()` on `UIView` and `UIViewController`, which runs before layout and is meant for content and styling (text, colors, visibility), and `layoutSubviews()` for geometry. Cells get it through `configurationUpdateHandler`.
+      - **iOS 18**: it's off by default. You opt in with the `UIObservationTrackingEnabled` Info.plist key, and since `updateProperties()` doesn't exist there, you use methods like `viewWillLayoutSubviews()`.
+
+      ```swift
+      override func updateProperties() {
+          super.updateProperties()
+          statusLabel.text = model.statusText
+          statusLabel.isHidden = !model.showsStatus
+      }
+      ```
+
+      The design advice from Apple is to keep content updates in `updateProperties()` and geometry in `layoutSubviews()`, so a text change doesn't cost a layout pass. The update order is traits, then properties, then layout, then display.
+
+      For apps that still support iOS 17, I'd keep explicit updates (a `didSet`, a Combine publisher or `withObservationTracking`) for those versions.
+    keyPoints:
+      - UIKit tracks @Observable reads inside specific methods and reruns them on change.
+      - On by default in iOS 26; opt-in with UIObservationTrackingEnabled on iOS 18.
+      - updateProperties() for content, layoutSubviews() for geometry.
+      - configurationUpdateHandler for cells.
+      - A fallback for older deployment targets.
+    followUps:
+      - question: How do you trigger updateProperties() manually?
+        answer: Call `setNeedsUpdateProperties()` on the view or view controller. UIKit runs `updateProperties()` in the next update pass, the same batching idea as `setNeedsLayout()`.
+      - question: Why does it matter that the tracking is per property?
+        answer: Because only reads count. If `updateProperties()` reads `statusText` but not `unreadCount`, changing `unreadCount` doesn't rerun it. It's the same model SwiftUI uses, and it means a large model doesn't cause updates in views that don't read the property that changed.
+    related: [m27, m40]
+
+  - id: q-uikit-view-vs-layer
+    category: uikit
+    difficulty: medium
+    question: What's the difference between a UIView and a CALayer? And between clipsToBounds and masksToBounds?
+    answer: |
+      **Every `UIView` is backed by a `CALayer`.** The `layer` property is never `nil`, and the view is that layer's delegate. They split the work:
+
+      - **`CALayer`** (Core Animation) holds the visual content and properties that get rendered and animated: contents, background color, border, corner radius, shadow, transform. Layers don't handle touches and aren't part of the responder chain.
+      - **`UIView`** adds everything around that: event handling and the responder chain, gesture recognizers, Auto Layout, accessibility, trait collections, and the UIKit animation APIs.
+
+      So "UIView renders slower than CALayer" is a myth: a view's rendering *is* its layer's rendering. Using bare sublayers makes sense when you need many lightweight visual elements without interaction, or a specialized layer like `CAShapeLayer` or `CAGradientLayer`. To make a view's own layer a different class, you override `layerClass`.
+
+      **`clipsToBounds` vs `masksToBounds`**: the same setting at two levels. `clipsToBounds` on the view sets its layer's `masksToBounds`, and both clip the content (subviews or sublayers) to the bounds, including the corner radius. Both default to `false`, though `UIScrollView` defaults `clipsToBounds` to `true`. Clipping also cuts off the layer's own shadow, which is why a rounded card with a shadow is usually two views: an outer one for the shadow and an inner one that clips.
+    keyPoints:
+      - Every view is layer-backed; the view is the layer's delegate.
+      - Layers render; views add events, layout, accessibility and traits.
+      - The "views are slower" claim is wrong.
+      - clipsToBounds sets masksToBounds; both clip subviews or sublayers.
+      - Clipping hides the shadow; use two views for shadow plus rounded clipping.
+    followUps:
+      - question: When would you add a CAShapeLayer instead of a subview?
+        answer: For drawing a path that you want to animate, like a progress ring with `strokeEnd`, or many small non-interactive shapes. It's cheaper than a view per shape and Core Animation can animate the path properties directly.
+    related: [m22, m27]
+
+  - id: q-uikit-app-entry-point
+    category: uikit
+    difficulty: easy
+    question: Where does a UIKit app start? What do @main and UIApplicationMain do?
+    answer: |
+      The app delegate is marked with **`@main`** (SE-0281, Swift 5.3). `UIApplicationDelegate` provides a static `main()` method, and the system calls it to launch the app. You can only have one entry point.
+
+      That `main()` does what the `UIApplicationMain` function always did: it creates the `UIApplication` object, creates your app delegate and sets it, starts the **main run loop** on the main thread, and loads the main storyboard if the Info.plist names one. It never returns. From there, UIKit calls `application(_:didFinishLaunchingWithOptions:)` and then, with scenes, asks for a scene configuration and connects the scene, where your scene delegate creates the window.
+
+      The older **`@UIApplicationMain`** attribute did the same job. It was deprecated by SE-0383 (Swift 5.10) and is an **error in Swift 6 language mode**, so new code and migrated code use `@main`. You only write a `main.swift` that calls `UIApplicationMain(_:_:_:_:)` yourself in unusual cases, like using a custom `UIApplication` subclass.
+
+      In a SwiftUI app, `@main` goes on the type conforming to `App`, and SwiftUI's own `main()` sets everything up.
+    keyPoints:
+      - "@main on the app delegate; UIApplicationDelegate provides main()."
+      - Creates UIApplication and the delegate and starts the main run loop.
+      - Launch callbacks, then scene connection and window creation.
+      - "@UIApplicationMain is an error in Swift 6 mode (SE-0383)."
+      - "@main on the App type in SwiftUI."
+    followUps:
+      - question: What should and shouldn't go in didFinishLaunchingWithOptions?
+        answer: Things the whole process needs before any UI, like crash reporting and configuring the dependency container. It shouldn't do slow synchronous work (network calls, large file reads), because it delays launch, and with scenes the window setup belongs in the scene delegate, not here.
+    related: [m21]
+
+  - id: q-uikit-auto-layout-basics
+    category: uikit
+    difficulty: easy
+    question: How does Auto Layout work, and what makes a layout ambiguous or unsatisfiable?
+    answer: |
+      Each constraint is a **linear equation** between two attributes: `button.leading = container.leading × 1.0 + 16`. Auto Layout collects all the constraints in a hierarchy, solves them, and sets each view's frame to the solution. You describe relationships, and the frames follow when the screen size, the text or the language direction changes.
+
+      For every view, the constraints have to pin down **position and size on both axes**. Intrinsic content size counts: a label already knows its width and height, so position constraints can be enough.
+
+      - **Ambiguous**: more than one solution. Usually a missing constraint, or two views with the same hugging or compression priority competing for space. Views end up in a random-looking place.
+      - **Unsatisfiable**: required constraints that contradict each other. UIKit logs the conflict and breaks one of them at runtime. A symbolic breakpoint on `UIViewAlertForUnsatisfiableConstraints` stops there, and the view debugger in Xcode shows the constraints.
+
+      Two everyday mistakes: forgetting `translatesAutoresizingMaskIntoConstraints = false` on views created in code (UIKit then adds constraints from the autoresizing mask that conflict with yours), and making everything required when some constraints should be optional with a lower priority.
+    keyPoints:
+      - Constraints are linear equations the engine solves into frames.
+      - Each view needs position and size on both axes; intrinsic size helps.
+      - Ambiguous means many solutions; unsatisfiable means contradictions.
+      - translatesAutoresizingMaskIntoConstraints for views made in code.
+      - Debugging with the log, the breakpoint and the view debugger.
+    followUps:
+      - question: When would you use a UIStackView instead of individual constraints?
+        answer: For rows and columns of views, which is most of a typical screen. The stack view creates the constraints for spacing and alignment, and hiding an arranged subview removes it from the layout. You still constrain the stack view itself and set priorities on its contents.
+    related: [m23]
+
+  - id: q-uikit-traits-size-classes
+    category: uikit
+    difficulty: medium
+    question: What are trait collections and size classes, and how do you build a layout that adapts to them?
+    answer: |
+      A **trait collection** describes the environment a view or view controller is in: horizontal and vertical **size classes**, display scale, light or dark appearance, Dynamic Type size, layout direction. Every view and view controller has a `traitCollection`, and traits flow down from the window.
+
+      **Size classes** are coarse: `compact` or `regular` per axis. An iPhone in portrait is compact width and regular height; an iPad full screen is regular in both. On iPad, an app in Split View or Slide Over can become compact width, so size classes, not the device type, decide the layout.
+
+      How I adapt:
+
+      - Keep one set of constraints that works across sizes when possible (stack views, flexible widths, readable content guides).
+      - When the structure has to change, switch based on the horizontal size class, like a stack view going from vertical to horizontal, or a split view controller showing one or two columns.
+      - React to changes with `registerForTraitChanges(_:handler:)` (iOS 17+), which replaced `traitCollectionDidChange(_:)` (deprecated in iOS 17).
+
+      Size classes don't control font size. Text size comes from Dynamic Type, a different trait (`preferredContentSizeCategory`).
+    keyPoints:
+      - Trait collections describe the environment, inherited from the window.
+      - Size classes are compact or regular per axis.
+      - iPad multitasking can make the app compact width; don't check the device.
+      - registerForTraitChanges in iOS 17, replacing traitCollectionDidChange.
+      - Font size comes from Dynamic Type, not size classes.
+    followUps:
+      - question: Why not just check UIDevice's userInterfaceIdiom to decide between iPhone and iPad layouts?
+        answer: Because an iPad app can run in a narrow window next to another app, and then it needs the compact layout. The size class tells you how much space you have; the idiom only tells you which device you're on.
+    related: [m23]
+
+  - id: q-uikit-dynamic-type
+    category: uikit
+    difficulty: easy
+    question: How do you support Dynamic Type in UIKit, including with a custom font?
+    answer: |
+      Dynamic Type lets users choose their text size in Settings, including larger accessibility sizes. Supporting it takes three things:
+
+      1. **Scalable fonts.** System fonts come from `UIFont.preferredFont(forTextStyle: .body)`. A custom font works too: `UIFontMetrics(forTextStyle: .body).scaledFont(for: brandFont)` returns a version that scales with the user's setting.
+      2. **Automatic updates.** Set `adjustsFontForContentSizeCategory = true` on labels, text fields and text views. Apple's docs say it only works when the font came from `preferredFont(forTextStyle:)` or a `UIFontMetrics` scaling method.
+      3. **A layout that can grow.** `numberOfLines = 0`, no fixed heights on text, self-sizing cells, and at the largest sizes, switching horizontal rows to vertical stacks so text isn't truncated.
+
+      `UIFontMetrics` also scales non-font values with `scaledValue(for:)`, useful for spacing or icon sizes that should grow with the text.
+
+      I test at the largest accessibility size in the simulator or with Xcode's environment overrides. Truncated labels and overlapping views show up immediately.
+    keyPoints:
+      - preferredFont(forTextStyle:) for system fonts.
+      - UIFontMetrics to scale custom fonts.
+      - adjustsFontForContentSizeCategory for automatic updates.
+      - Layouts that grow; multi-line labels, no fixed heights.
+      - Test at accessibility sizes.
+    followUps:
+      - question: How do you change a layout when the text size gets very large?
+        answer: Check `traitCollection.preferredContentSizeCategory.isAccessibilityCategory` and, for example, switch a stack view's axis from horizontal to vertical. Register for that trait's changes so it updates while the app is running.
+    related: [m27, m43]
+
+  - id: q-uikit-table-vs-collection
+    category: uikit
+    difficulty: easy
+    question: Would you use UITableView or UICollectionView for a new list screen today?
+    answer: |
+      For new code, I'd usually use **`UICollectionView` with a list layout**. Since iOS 14, `UICollectionLayoutListConfiguration` gives table-like lists (plain, grouped, inset grouped, sidebar) with swipe actions, separators, headers and footers. The same collection view can then mix a list section with a grid or a horizontal carousel through compositional layout, which a table can't.
+
+      Both support what a list needs: reusable cells with reuse identifiers, section headers and footers (table views have header and footer views; collection views use supplementary views), selection and highlighting, diffable data sources and self-sizing cells.
+
+      `UITableView` isn't deprecated, and a lot of production code uses it. For a simple single-column list in a codebase that already uses tables everywhere, staying consistent is a fine reason to use it.
+
+      Memory works the same way in both: only the visible cells (plus a few) exist, and they're recycled through the reuse queue identified by the reuse identifier or a cell registration.
+    keyPoints:
+      - Collection view with list configuration (iOS 14) covers table use cases.
+      - Compositional layout allows mixing lists and grids.
+      - Both have headers and footers, selection and reuse.
+      - UITableView isn't deprecated; consistency is a valid reason.
+      - Reuse keeps memory proportional to visible cells.
+    followUps:
+      - question: What happens if you register a cell with one reuse identifier and dequeue with another?
+        answer: '`dequeueReusableCell(withReuseIdentifier:for:)` has nothing registered for that identifier, so UIKit raises an exception at runtime. Cell registrations avoid that class of bug because there''s no string to mistype.'
     related: [m24]

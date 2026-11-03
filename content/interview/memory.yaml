@@ -22,3 +22,288 @@ questions:
       - question: Why are delegates usually declared weak?
         answer: Because the delegating object (say, a view) is usually owned by its delegate (the view controller). If the view held the controller strongly, you'd have a cycle. To declare `weak var delegate`, the protocol has to be class-constrained (`AnyObject`).
     related: [m13]
+
+  - id: q-mem-weak-vs-unowned
+    category: memory
+    difficulty: medium
+    question: When do you use `weak` and when `unowned`? What happens if you get it wrong?
+    answer: |
+      Both create a reference that doesn't keep the object alive. The difference is what happens when the object goes away.
+
+      - `weak` is always an optional `var`. When the object is deallocated, the reference becomes `nil` automatically. Reading it is always safe; you just have to handle `nil`.
+      - `unowned` is non-optional. You promise the object will outlive every use of the reference. If you break the promise, accessing it traps: `Fatal error: Attempted to read an unowned reference but object … was already destroyed`.
+
+      I use `unowned` only when the lifetimes are tied by design, so the referenced object can't die first. The Swift book's example is a credit card that can't exist without its customer:
+
+      ```swift
+      final class Customer {
+          var card: CreditCard?
+      }
+      final class CreditCard {
+          unowned let customer: Customer
+          init(customer: Customer) { self.customer = customer }
+      }
+      ```
+
+      Everywhere else, and especially in closures that might run later (network callbacks, timers, notification handlers), I use `weak`. The safety is worth the `guard let`. A crash from `unowned` happens only on the path where the timing is unlucky, which makes it hard to reproduce.
+
+      There's also `unowned(unsafe)`, which skips the runtime check entirely; reading a dead object is then undefined behavior instead of a clean trap. I've never needed it in app code.
+    keyPoints:
+      - weak becomes nil; it's an optional var.
+      - unowned is non-optional and traps if the object is gone.
+      - unowned only when lifetimes are tied by design.
+      - weak for async callbacks; unowned(unsafe) exists but has no runtime check.
+    followUps:
+      - question: Why does `unowned` crash cleanly instead of reading garbage memory?
+        answer: |
+          Swift keeps a separate unowned reference count. When the strong count reaches zero, the object is deinitialized, but its memory isn't freed while unowned references remain, so the runtime can still check and trap on access. Only `unowned(unsafe)` drops that check.
+      - question: Is `weak` free?
+        answer: |
+          Almost. A weak reference goes through a side table the runtime allocates for that object the first time someone references it weakly, so there's a small cost. It's not a reason to pick `unowned` in UI code.
+    related: [m13]
+
+  - id: q-mem-closure-retain-cycles
+    category: memory
+    difficulty: medium
+    question: Show me a retain cycle caused by a closure and how you'd fix it.
+    writesCode: true
+    answer: |
+      The cycle forms when an object stores a closure, directly or through something it owns, and that closure captures the object strongly.
+
+      ```swift
+      final class Downloader {
+          var onFinish: (() -> Void)?
+          let name: String
+          init(name: String) { self.name = name }
+
+          func start() {
+              onFinish = { print("finished \(self.name)") }   // self -> onFinish -> self
+          }
+
+          func startFixed() {
+              onFinish = { [weak self] in
+                  guard let self else { return }
+                  print("finished \(self.name)")
+              }
+          }
+
+          deinit { print("deinit \(name)") }
+      }
+      ```
+
+      If I create a `Downloader`, call `start()` and drop my reference, `deinit` never runs. With `startFixed()` it does. `[weak self]` breaks the cycle, and `guard let self` gives a strong reference only for the duration of that call, so the object can't disappear halfway through.
+
+      Not every closure needs this. A non-escaping closure (`map`, `filter`, `UIView.animate`'s animations block) runs and is released before the call returns. An escaping closure that isn't stored by `self` or anything `self` owns, like a one-shot `DispatchQueue.main.async`, only delays deallocation briefly. The ones to watch are closures stored in properties, in objects `self` owns (a view model's callback, a cell's button handler), and in long-lived observers.
+    keyPoints:
+      - Cycle is object -> closure -> object.
+      - "[weak self] plus guard let self, and why the guard is safe."
+      - Uses deinit to prove the fix.
+      - Distinguishes non-escaping and one-shot closures that can't cycle.
+    followUps:
+      - question: Does a capture list with a plain variable copy the object?
+        answer: |
+          It copies the **reference**, not the object. `{ [box] in … }` captures the value of `box` at creation time, but for a class that value is a strong reference. Later reassigning the outer `box` doesn't affect the closure, and the closure keeps the old instance alive.
+      - question: Can a cycle involve no `self` at all?
+        answer: |
+          Yes. A closure stored in object A that captures object B, while B holds A strongly, is the same cycle. So is a closure stored in a property that captures a local variable holding the same object. The rule is about the reference graph, not the word `self`.
+    related: [m11, m13]
+
+  - id: q-mem-structs-and-arc
+    category: memory
+    difficulty: easy
+    question: Do structs take part in ARC? Can a struct cause a retain cycle?
+    answer: |
+      A struct itself isn't reference counted: it has no identity and nothing points to it. But any class references inside it are. Copying a struct that holds a class instance retains that instance; destroying the copy releases it. A struct with many reference-type properties can generate a lot of retain/release traffic when copied around.
+
+      Standard collections and `String` are structs that hold a reference to a heap buffer, which is how copy-on-write works. That buffer is reference counted too.
+
+      A struct alone can't form a cycle, because nothing can hold a reference to a struct value. But a struct can be **part** of a cycle when a class holds the struct and the struct holds a closure or reference back to the class:
+
+      ```swift
+      struct ButtonConfig {
+          var onTap: () -> Void
+      }
+
+      final class Screen {
+          var config = ButtonConfig(onTap: {})
+          func setUp() {
+              config.onTap = { self.save() }   // Screen -> config -> closure -> Screen
+          }
+          func save() {}
+      }
+      ```
+
+      The fix is the same as always: capture `self` weakly in the closure.
+    keyPoints:
+      - The struct isn't counted; class references inside it are.
+      - Copying a struct retains its references.
+      - Collections are structs wrapping a counted buffer.
+      - A struct can be a link in a cycle through closures or references.
+    followUps:
+      - question: Can you use `weak` on a struct property?
+        answer: |
+          Only if the property's type is a class (or a class-bound protocol). `weak` and `unowned` apply to references to class instances; a struct-typed property can't be weak because there's no reference to weaken.
+    related: [m10, m13]
+
+  - id: q-mem-stack-vs-heap
+    category: memory
+    difficulty: hard
+    question: Are value types stored on the stack and reference types on the heap?
+    answer: |
+      That's the common simplification, and it's not quite right. Where something lives depends on how it's used, not only on whether it's a struct or a class.
+
+      - A class instance is normally allocated on the heap, with a reference count. The optimizer can sometimes allocate it on the stack when it can prove the instance never escapes the function.
+      - A struct local variable can live on the stack or in registers. But a struct stored as a property of a class lives inside that object, on the heap.
+      - `Array`, `Dictionary`, `Set` and `String` are structs, but their elements live in a heap buffer. The struct on the stack is just a small header pointing to it.
+      - A local variable captured by an escaping closure is moved into a heap box so it can outlive the function.
+      - An existential (`any Shape`) stores small values inline in its container; values too large for the inline buffer are boxed on the heap.
+
+      Why it matters: heap allocation needs a thread-safe allocator call and reference counting, which is slower than stack allocation. That's part of why small structs are fast. But "use structs to avoid the heap" isn't a reliable rule: a struct with several class or `String` properties still causes reference counting on every copy.
+
+      If performance matters, I measure with Instruments (Allocations, Time Profiler) instead of reasoning from struct versus class.
+    keyPoints:
+      - Rejects the simple rule without overcorrecting.
+      - Struct fields of classes live in the heap object.
+      - Collections keep elements in a heap buffer.
+      - Captured variables and large existentials are boxed.
+      - Measures with Instruments rather than guessing.
+    followUps:
+      - question: What's the cost of reference counting itself?
+        answer: |
+          Retain and release are atomic operations, since another thread could touch the same object. They're cheap individually but add up in tight loops. The optimizer removes many pairs, and making classes `final` and keeping types small helps it. You see the cost in Time Profiler as `swift_retain` and `swift_release`.
+    related: [m10, m13]
+
+  - id: q-mem-timer-notification-pitfalls
+    category: memory
+    difficulty: medium
+    question: What memory problems do Timer and NotificationCenter cause, and how do you avoid them?
+    answer: |
+      **Timer.** The run loop keeps a strong reference to a scheduled timer, and a target-selector timer keeps a strong reference to its target until it's invalidated (both are in Apple's `Timer` docs). So a view controller that schedules a repeating timer with `target: self` is kept alive by the run loop, and invalidating it in `deinit` doesn't work because `deinit` never runs.
+
+      Fixes: use the block-based API with `[weak self]`, and invalidate the timer explicitly when the screen goes away (`viewDidDisappear`, or `deinit` once the cycle is gone). Even with a weak capture, a repeating timer keeps firing until invalidated.
+
+      ```swift
+      timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+          self?.refresh()
+      }
+      // later
+      timer?.invalidate()
+      ```
+
+      **NotificationCenter.** With the block-based `addObserver(forName:object:queue:using:)`, the center copies the block and holds it strongly until you remove the observer. If the block captures `self` strongly, `self` lives forever, and the block keeps running. Capture weakly, store the returned token, and call `removeObserver(token)`.
+
+      The selector-based `addObserver(_:selector:name:object:)` doesn't need manual removal on iOS 9 and later, per Apple's docs.
+
+      In Swift Concurrency code, I prefer `for await _ in NotificationCenter.default.notifications(named:)` inside a task tied to the view's lifetime, like SwiftUI's `.task`, which cancels it automatically.
+    keyPoints:
+      - Run loop retains the timer; timer retains its target.
+      - Invalidate explicitly; deinit-based cleanup fails while the cycle exists.
+      - Block observers are held until removed; keep the token.
+      - Selector observers auto-clean on iOS 9+.
+    followUps:
+      - question: Is `[weak self]` enough for a repeating timer?
+        answer: |
+          It prevents the leak of `self`, but the timer itself is still scheduled on the run loop and its block keeps firing, doing nothing once `self` is `nil`. You still invalidate it, for example in `deinit`, which now runs because nothing holds `self`.
+    related: [m13, m26]
+
+  - id: q-mem-task-self-capture
+    category: memory
+    difficulty: hard
+    question: Do you need `[weak self]` inside `Task { }`?
+    writesCode: true
+    answer: |
+      Usually not, but sometimes yes. A `Task` closure retains what it captures, including `self`, until the task finishes. For a short task, like loading data once, that just keeps the object alive a little longer, which is fine and often what you want.
+
+      It becomes a leak when the task never finishes and `self` stores it, such as a loop that polls or iterates an endless `AsyncStream`:
+
+      ```swift
+      @MainActor final class Poller {
+          private var task: Task<Void, Never>?
+
+          func start() {
+              task = Task { [weak self] in
+                  while !Task.isCancelled {
+                      guard let self else { return }
+                      self.tick()
+                      try? await Task.sleep(for: .seconds(1))
+                  }
+              }
+          }
+
+          func tick() {}
+          deinit { task?.cancel() }
+      }
+      ```
+
+      With a strong capture, `deinit` would never run, so the `cancel()` in it would never happen. With `[weak self]`, `guard let self` inside the loop holds `self` for one iteration only, so the object can be freed between iterations. If you write `guard let self` once *before* the loop, you're back to a strong reference for the task's whole life.
+
+      Often the better fix is ownership of the task's lifetime: in SwiftUI, `.task { }` cancels when the view disappears; in UIKit, cancel in `viewDidDisappear`. Cancellation alone doesn't stop a loop that doesn't check for it, though, so the loop still needs `Task.isCancelled` or a throwing `Task.sleep`.
+    keyPoints:
+      - A Task retains its captures until it completes.
+      - Short tasks are fine with a strong self.
+      - Long-running loops stored on self leak.
+      - Where guard let self goes matters.
+      - Tie the task to a lifecycle and check cancellation.
+    followUps:
+      - question: Why don't you have to write `self.` inside a `Task` closure?
+        answer: |
+          The standard library marks `Task`'s initializer so implicit `self` is allowed, on the reasoning that the task runs to completion and releases its captures, so a cycle is uncommon. That makes the long-running case easy to miss in review.
+    related: [m13, m29]
+
+  - id: q-mem-autoreleasepool
+    category: memory
+    difficulty: medium
+    question: Does `autoreleasepool` still matter in Swift?
+    answer: |
+      Rarely, but yes. Swift code itself doesn't use autorelease: ARC releases objects as soon as their last strong reference goes away. Objective-C APIs, though, can return autoreleased objects, and those are released only when the enclosing autorelease pool drains. On the main thread that pool drains at the end of each run loop iteration.
+
+      So a tight loop that calls into Objective-C frameworks thousands of times can build up a lot of temporary objects before the pool drains: decoding images, reading files with Foundation, processing large batches of `NSString` or `NSData`. Memory spikes, and on a device that can mean a jetsam termination.
+
+      Wrapping the loop body drains the temporaries on every iteration:
+
+      ```swift
+      for url in imageURLs {
+          autoreleasepool {
+              guard let image = UIImage(contentsOfFile: url.path) else { return }
+              thumbnails.append(makeThumbnail(from: image))
+          }
+      }
+      ```
+
+      It only lowers **peak** memory for temporaries that would be released anyway. It does nothing for a retain cycle: objects in a cycle never reach a zero count, whether or not a pool drains.
+
+      I only add it when Instruments' Allocations shows a sawtooth that climbs during a loop and drops at the end; adding it everywhere costs a little and adds noise. It's a Darwin API from the Objective-C runtime; on Linux there's no autorelease pool.
+    keyPoints:
+      - Pure Swift doesn't autorelease; Objective-C APIs can.
+      - Pool drains at the end of the run loop iteration.
+      - Tight loops over Objective-C frameworks can spike memory.
+      - Use it when measurements show the buildup; it doesn't fix retain cycles.
+    followUps:
+      - question: Can a dispatch queue manage autorelease pools for you?
+        answer: |
+          A queue you create can take `autoreleaseFrequency: .workItem`, which sets up a pool before each block and drains it when the block finishes. The default for queues you create is `.inherit`, from the target queue. Either way, a long loop inside a single block still accumulates until that block ends, so the per-iteration `autoreleasepool` is still the fix there.
+    related: [m13]
+
+  - id: q-mem-finding-leaks
+    category: memory
+    difficulty: easy
+    question: "A screen leaks: memory goes up every time you open and close it. How do you find the cause?"
+    answer: |
+      1. **Confirm it.** Put a `print` or a breakpoint in the view controller's (or view model's) `deinit`. Open and close the screen; if `deinit` doesn't run, something still holds it.
+      2. **Memory Graph Debugger.** Open and close the screen a few times, then click Debug Memory Graph in Xcode's debug bar. It pauses the app and takes a snapshot of the heap: the navigator lists live instances by type; if there are three instances of a screen that's closed, pick one and the graph shows who's referencing it. Xcode also flags some leaks (cycles with no outside references) with a purple warning. Turning on Malloc Stack Logging in the scheme's Diagnostics tab adds the allocation backtrace for each object.
+      3. **Instruments.** The Leaks instrument finds unreachable cycles over time. Allocations with "Mark Generation" shows what was created between two points and never freed, which also catches objects that are still reachable but shouldn't be (abandoned memory, like an ever-growing cache).
+
+      The usual causes I check first: a closure stored by the object or by something it owns that captures `self` strongly; a delegate that isn't `weak`; a repeating timer or block-based notification observer; a long-running `Task` that captures `self`.
+
+      Once fixed, I verify that `deinit` runs, and add a test that creates the object, releases it, and asserts a `weak` reference to it is `nil`.
+    keyPoints:
+      - deinit check as a quick confirmation.
+      - Memory Graph Debugger to see who holds the object.
+      - Leaks versus Allocations generations (abandoned memory).
+      - Lists the common causes.
+      - Verifies the fix, ideally with a test.
+    followUps:
+      - question: Why might the Leaks instrument show nothing while memory still grows?
+        answer: |
+          Leaks only reports memory nothing can reach anymore. An object kept alive by a singleton, a static cache or a run loop timer is still reachable, so it isn't a "leak" to the tool. Allocations' generation analysis finds that kind of growth.
+    related: [m13, m33]

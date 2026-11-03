@@ -1,0 +1,249 @@
+questions:
+  - id: q-data-storage-options
+    category: persistence
+    difficulty: easy
+    question: What are the ways to persist data in an iOS app, and when would you use each one?
+    answer: |
+      Pick by **what the data is**, not by which API you know best:
+      - **`UserDefaults`:** small settings and flags (theme, "onboarding seen"). It's a property list stored unencrypted, loaded by the app, so no secrets and no large or growing data.
+      - **Keychain:** secrets such as tokens and passwords. Encrypted by the system, with access control.
+      - **Files** in the app container: documents, images, downloaded media, a `Codable` blob written as JSON. Simple and fast when you read and write the whole thing at once.
+      - **SwiftData** (iOS 17+) or **Core Data:** a model with relationships, queries, sorting, and more data than fits comfortably in memory. Core Data still matters for older deployment targets and existing apps.
+      - **SQLite** directly, or through a library on top of it: when you want full control over SQL, a schema shared with other platforms, or performance tuning that an object graph framework hides.
+      - **Cloud:** `NSUbiquitousKeyValueStore` for a few small values synced across the user's devices, CloudKit (or Core Data/SwiftData with CloudKit) for syncing a real data set, or your own backend when data is shared between users or platforms.
+
+      A common real answer is a mix: settings in `UserDefaults`, the token in the Keychain, the model in SwiftData, and image caches as files in `Caches`.
+    keyPoints:
+      - UserDefaults only for small, non-sensitive settings.
+      - Keychain for secrets.
+      - Files for blobs and documents.
+      - SwiftData/Core Data for structured, queryable data with relationships.
+      - SQLite and cloud options with a reason to pick them.
+    followUps:
+      - question: Why not keep a 5 MB array of models in UserDefaults?
+        answer: |
+          Every write rewrites the property list, the whole store gets loaded into memory, and you can't query it. It also isn't encrypted beyond normal file protection. Past a handful of small values, a file or a database is the right home.
+    related: [m31, m42]
+
+  - id: q-data-sandbox-directories
+    category: persistence
+    difficulty: easy
+    question: Your app downloads files and generates thumbnails. Where in the sandbox do you put each, and what gets backed up?
+    answer: |
+      Each app has its own container, and the directory you choose decides backup and cleanup behavior:
+      - **`Documents/`:** content the user created or would miss. Backed up. It can be exposed in the Files app if you turn on file sharing, so don't drop internal databases here.
+      - **`Library/Application Support/`:** files the app needs to work but the user doesn't manage, such as the SwiftData or Core Data store. Backed up. It may not exist on a fresh install, so create it before writing.
+      - **`Library/Caches/`:** data you can re-create, such as thumbnails and cached responses. **Not backed up**, and the system can purge it when the device is low on space.
+      - **`tmp/`:** short-lived files you delete when done. Not backed up and purged by the system.
+
+      So: thumbnails go in `Caches`. Downloaded episodes the user can download again are trickier. They aren't purgeable from the user's point of view, but they're large and re-downloadable. Apple's guidance for that case is `Application Support` (or `Documents`) with **`isExcludedFromBackup`** set to true, set again each time you save the file, because some file operations reset it.
+
+      Get the URLs from `FileManager.default.urls(for:in:)`, or `URL.documentsDirectory` and friends on iOS 16+. Never hard-code a path: the container path changes between installs and updates.
+    keyPoints:
+      - Documents, Application Support, Caches and tmp, with their purpose.
+      - Which are backed up and which can be purged.
+      - isExcludedFromBackup for large, re-downloadable data.
+      - Looks up directories through FileManager or URL, never hard-coded paths.
+    followUps:
+      - question: How do you share files between the app and its widget?
+        answer: |
+          Through an **App Group**: both targets get the same group entitlement, and `FileManager.default.containerURL(forSecurityApplicationGroupIdentifier:)` returns a shared container. `UserDefaults(suiteName:)` with the group identifier does the same for small settings.
+    related: [m31]
+
+  - id: q-data-managed-object-context
+    category: persistence
+    difficulty: medium
+    question: What is a managed object context in Core Data, and how does it relate to the rest of the stack?
+    answer: |
+      `NSManagedObjectContext` is the **scratchpad** where you work with managed objects. You fetch objects into it, change them, insert and delete, and nothing reaches disk until you call `save()`. It tracks changes, maintains inverse relationships, validates, handles faulting and can support undo.
+
+      The stack around it:
+      - **`NSManagedObjectModel`:** the schema, the entities and attributes from the `.xcdatamodeld` file.
+      - **`NSPersistentStoreCoordinator`:** connects the model to one or more **persistent stores** (usually SQLite).
+      - **Contexts** sit on top of the coordinator, or on top of a parent context.
+      - **`NSPersistentContainer`** (iOS 10+) builds all of this for you and gives you `viewContext` for the UI plus `newBackgroundContext()` for work off the main thread.
+
+      Two rules come from the context design. Each managed object belongs to **one context**, and the same row loaded in two contexts is two different objects. And a context is tied to its queue, so you touch it and its objects only inside `perform` or `performAndWait` (or on the main queue for `viewContext`).
+    keyPoints:
+      - The context is an in-memory scratchpad until save().
+      - Change tracking, faulting, validation and undo.
+      - Model, coordinator, store and container roles.
+      - viewContext vs background contexts.
+      - Objects belong to one context and its queue.
+    followUps:
+      - question: What's a fault?
+        answer: |
+          A placeholder object whose properties haven't been loaded yet. Core Data fetches the data the first time you access a property. Faulting keeps memory down for large graphs, but touching a property on each of 1,000 faults in a loop fires 1,000 small fetches. Setting `relationshipKeyPathsForPrefetching` or `returnsObjectsAsFaults = false` on the fetch request avoids that when you know you'll need the data.
+    related: [m31]
+
+  - id: q-data-delete-rules
+    category: persistence
+    difficulty: medium
+    question: Explain Core Data's delete rules with an example of when you'd use each.
+    answer: |
+      A delete rule is set on a **relationship** and decides what happens to the related objects when the source object is deleted:
+      - **Nullify:** the related objects stay, and their inverse relationship is set to nil. Example: deleting a `Playlist` shouldn't delete its `Song`s; they just stop pointing to that playlist. This is the default and the safe choice most of the time.
+      - **Cascade:** the related objects are deleted too. Example: deleting an `Order` deletes its `OrderLine`s, which have no meaning without it.
+      - **Deny:** the delete fails (at save time, with a validation error) while the relationship still has objects. Example: you can't delete a `Customer` who still has open `Invoice`s.
+      - **No Action:** Core Data does nothing to the related objects. They keep pointing at a deleted object unless you fix them yourself, which leaves the graph inconsistent. I'd only use it with a clear reason and code that cleans up.
+
+      Think about both directions. `Order.lines` is cascade, while `OrderLine.order` is usually nullify. Cascading in both directions on a many-to-many can wipe far more data than you meant to.
+
+      SwiftData has the same idea through `@Relationship(deleteRule:)`, with `.nullify` as the default and `.cascade`, `.deny` and `.noAction` available.
+    keyPoints:
+      - The rule is per relationship and runs when the source is deleted.
+      - Nullify, cascade, deny and no action with a fitting example each.
+      - Deny fails at save with a validation error.
+      - No action leaves dangling references.
+      - Considers both sides of the relationship.
+    followUps:
+      - question: Does a batch delete apply the delete rules?
+        answer: |
+          `NSBatchDeleteRequest` works directly on the store and doesn't load objects into a context, so it doesn't run per-object validation. For relationships, check the behavior in the docs for your OS version and test it rather than assuming. Batch deletes also don't update objects already in memory, so you merge the deleted object IDs into your contexts with `NSManagedObjectContext.mergeChanges(fromRemoteContextSave:into:)`.
+    related: [m31]
+
+  - id: q-data-core-data-tradeoffs
+    category: persistence
+    difficulty: medium
+    question: Would you use Core Data as the main persistence layer of a new app? What are its benefits and limitations?
+    answer: |
+      **Benefits:**
+      - It manages an **object graph**, not just rows: relationships, inverses, delete rules, validation and undo come built in.
+      - Memory efficiency through faulting and batched fetches, so large data sets work on a phone.
+      - `NSFetchedResultsController` drives table and collection views with change tracking.
+      - Lightweight migrations for most schema changes, and sync to the user's private CloudKit database with `NSPersistentCloudKitContainer` (iOS 13+).
+      - No third-party dependency, and it's mature.
+
+      **Limitations:**
+      - Steep learning curve, and the threading rules are easy to break: managed objects can't cross contexts or queues.
+      - `NSManagedObject` subclasses are reference types tied to a context. Many teams map them to plain structs at the boundary, which is extra code.
+      - It isn't a general-purpose SQL database: complex aggregate queries are awkward, and it's Apple-only, so you can't share the layer with Android.
+      - Syncing with your own backend is entirely on you.
+
+      For a **new app targeting iOS 17+**, I'd look at **SwiftData** first. It's built on Core Data's storage technology with a Swift-native API. I'd still pick Core Data when the deployment target is lower, when I need features SwiftData doesn't have yet, or when the app already has a Core Data stack that works.
+    keyPoints:
+      - Object graph features, not only storage.
+      - Faulting and memory efficiency.
+      - Threading rules and the cost of mapping to value types.
+      - Apple-only and not a SQL replacement.
+      - SwiftData as the first look for iOS 17+, with reasons to stay on Core Data.
+    followUps:
+      - question: Should view models expose NSManagedObject instances directly?
+        answer: |
+          It's convenient, especially with `@FetchRequest` in SwiftUI, and for small apps that's fine. The cost is that the UI is tied to a context: the object can turn into a fault, be deleted underneath you, or be touched from the wrong queue. In larger apps I'd keep managed objects inside a repository and hand structs to the UI, accepting the mapping code.
+    related: [m31, m37]
+
+  - id: q-data-core-data-concurrency
+    category: persistence
+    difficulty: hard
+    question: You need to import 50,000 records from an API into Core Data without freezing the UI. How do you handle threads and contexts?
+    answer: |
+      Do the import on a **private-queue context** and let the main context pick up the result:
+
+      1. Create the import context with `container.newBackgroundContext()` (or use `performBackgroundTask`). It runs on its own private queue.
+      2. Do all work inside `context.perform { }` (or `try await context.perform { }` on iOS 15+). Touching a context or its objects outside its queue is a bug even if it seems to work.
+      3. Save in batches, for example every 500 records, and call `reset()` after each save so memory doesn't grow with all 50,000 objects. For pure inserts, `NSBatchInsertRequest` (iOS 13+) writes directly to the store and is much faster.
+      4. On the UI side, set `viewContext.automaticallyMergesChangesFromParent = true` so saves from the background context show up in the main context. Batch requests bypass contexts, so for those you merge the changes yourself or use persistent history tracking.
+      5. Set a **merge policy** (for example `NSMergeByPropertyObjectTrumpMergePolicy`) and a uniqueness constraint on the server id, so a re-import updates records instead of duplicating them.
+
+      To hand an object between contexts, pass its `NSManagedObjectID`, which is safe to share, and call `existingObject(with:)` on the other side. Never pass the `NSManagedObject` itself.
+
+      During development, turn on the `-com.apple.CoreData.ConcurrencyDebug 1` launch argument. It makes Core Data crash on the first wrong-queue access instead of corrupting data later.
+    keyPoints:
+      - Private-queue context and perform/performAndWait.
+      - Batched saves with reset, or NSBatchInsertRequest.
+      - automaticallyMergesChangesFromParent on the view context.
+      - Merge policy plus uniqueness constraints for re-imports.
+      - Passes NSManagedObjectID across contexts, not objects.
+      - Concurrency debug launch argument.
+    followUps:
+      - question: What's the SwiftData equivalent?
+        answer: |
+          A `@ModelActor` actor (iOS 17+) that owns its own `ModelContext` on its own executor. You do the import inside the actor and pass `PersistentIdentifier`s, not model objects, back to the main actor, the same rule as object IDs in Core Data.
+    related: [m31, m29]
+
+  - id: q-data-swiftdata-vs-core-data
+    category: persistence
+    difficulty: medium
+    question: What is SwiftData, and how does it compare with Core Data?
+    answer: |
+      SwiftData (iOS 17+) is Apple's Swift-first persistence framework. You mark a class with **`@Model`**, and the macro generates the persistence code. There's no `.xcdatamodeld` file: the Swift class is the schema.
+
+      The mapping to Core Data concepts is close:
+      - `ModelContainer` ≈ persistent container, `ModelContext` ≈ managed object context.
+      - `@Query` in SwiftUI ≈ `@FetchRequest`/`NSFetchedResultsController`.
+      - `#Predicate` and `FetchDescriptor` replace `NSPredicate` strings, so the compiler checks key paths.
+      - `@Relationship(deleteRule:)`, `@Attribute(.unique)`, and from iOS 18 `#Unique` and `#Index`.
+      - `@ModelActor` for background work.
+
+      Under the hood it uses Core Data's storage technology, and by default a SQLite store, so the two can even share a store file during a migration.
+
+      **Why pick it:** much less code, type-checked queries, tight SwiftUI integration and Observation support. **Why not yet:** it requires iOS 17, some features arrived later (history tracking and `#Unique` on iOS 18), and teams with complex Core Data setups (custom migrations, fine-grained fetch tuning, `NSFetchedResultsController` in UIKit) may find gaps. I'd check each feature against the deployment target before committing.
+    keyPoints:
+      - "@Model classes as the schema; no model file."
+      - ModelContainer, ModelContext, @Query and #Predicate mapped to Core Data concepts.
+      - Built on Core Data storage, SQLite by default.
+      - iOS 17 minimum and features that need iOS 18.
+      - A reasoned choice based on deployment target and needs.
+    followUps:
+      - question: Can SwiftData models be structs?
+        answer: |
+          No. `@Model` applies to classes, because the context tracks identity and changes to each instance, and the models are observable. If you want value types in your UI or domain layer, map from the model to a struct at the boundary.
+    related: [m31, m37]
+
+  - id: q-data-migrations
+    category: persistence
+    difficulty: hard
+    question: You're shipping v2 of an app and the data model changed. How do you migrate users' existing data?
+    answer: |
+      First classify the change.
+
+      **Lightweight (inferred) migration** handles additive and simple changes: adding an attribute that's optional or has a default, removing one, making a required attribute optional, adding an entity, renaming with a renaming identifier. With `NSPersistentContainer`, `shouldMigrateStoreAutomatically` and `shouldInferMappingModelAutomatically` are true by default, so adding a **new model version** and making it current is enough.
+
+      **Custom migrations** are for changes Core Data can't infer: splitting `fullName` into `firstName` and `lastName`, changing a type and transforming values, deduplicating. Options:
+      - Core Data mapping models with custom `NSEntityMigrationPolicy` (the old heavyweight path).
+      - **Staged migration** (`NSStagedMigrationManager`, iOS 17+): a sequence of lightweight and custom stages with hooks before and after each one.
+      - In SwiftData, a `SchemaMigrationPlan` with `VersionedSchema`s and `MigrationStage.lightweight` or `.custom` with `willMigrate`/`didMigrate` closures.
+
+      The process matters as much as the API:
+      - Never edit a shipped model version. Add a new one.
+      - Test migrations from **every version still in the wild**, using real store files saved from old builds, not only from the previous release.
+      - Large stores can take a while to migrate at launch. Run it before showing the main UI and keep an eye on launch time.
+      - Have a plan for failure: for pure caches, delete and re-download; for user data, never silently wipe it.
+    keyPoints:
+      - Lightweight vs custom migrations and examples of each.
+      - New model version instead of editing the shipped one.
+      - Staged migration (iOS 17+) and SwiftData's SchemaMigrationPlan.
+      - Tests from every old version with real store files.
+      - Failure plan that never silently deletes user data.
+    followUps:
+      - question: A migration crashes for 1% of users after release. What do you do?
+        answer: |
+          Stop the rollout with phased release, get the crash logs to see which source version and which step fail, and reproduce with a store from that version. The fix ships as a new build that handles that path; the users whose launch crashes can't fix it themselves. That's why I'd want migration tests against old stores in CI before the release, not after.
+    related: [m31]
+
+  - id: q-data-file-protection
+    category: persistence
+    difficulty: medium
+    question: What are data protection classes, and which one would you use for a health app's local database?
+    answer: |
+      When the device has a passcode, iOS encrypts files with keys tied to a **protection class**, which decides when the file can be read:
+      - **`.complete`:** only while the device is unlocked. Shortly after lock, the key is discarded and reads fail.
+      - **`.completeUnlessOpen`:** files already open stay accessible after lock, and you can create new files while locked, but you can't reopen existing ones.
+      - **`.completeUntilFirstUserAuthentication`:** readable after the first unlock since boot, even while locked later. **This is the default** for app files.
+      - **`.none`:** always readable.
+
+      You set it per file with `Data.write(to:options: .completeFileProtection)` or the `fileProtectionKey` resource value, or for the whole app with the Data Protection entitlement.
+
+      For a health app, I'd use `.complete` for the database **if the app never needs it in the background**. The catch: background work (a background refresh, a HealthKit observer, a push that wakes the app) will fail to open the store while the phone is locked. If the app does background writes, use `.completeUnlessOpen` for a log file it appends to, or split the data so sensitive records get `.complete` and background-written files get a weaker class. Use `applicationProtectedDataWillBecomeUnavailable` and `…DidBecomeAvailable` to close and reopen files around lock.
+    keyPoints:
+      - Names the four classes and when each is readable.
+      - completeUntilFirstUserAuthentication is the default.
+      - Sets the class per file or app-wide through the entitlement.
+      - Trades protection against background access needs.
+      - Uses the protected-data availability callbacks.
+    followUps:
+      - question: Does data protection replace the Keychain for tokens?
+        answer: |
+          No. Data protection keeps files encrypted at rest on a locked device. The Keychain adds per-item access control, `ThisDeviceOnly` options that keep items out of backups and device migrations, and biometric gating. Tokens still belong in the Keychain.
+    related: [m31, m42]

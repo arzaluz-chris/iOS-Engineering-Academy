@@ -19,6 +19,11 @@ export const CATEGORY_LABEL: Record<InterviewCategory, string> = {
   architecture: 'Architecture and design',
   testing: 'Testing',
   security: 'Security',
+  networking: 'Networking',
+  persistence: 'Persistence and Core Data',
+  performance: 'Performance',
+  tooling: 'Build tools and dependencies',
+  platform: 'Platform features',
   'system-design': 'Mobile system design',
 }
 

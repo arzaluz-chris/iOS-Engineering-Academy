@@ -1,0 +1,433 @@
+questions:
+  - id: q-net-session-types
+    category: networking
+    difficulty: easy
+    question: What kinds of URLSession sessions and tasks are there, and when do you use each?
+    answer: |
+      **Sessions** come from a `URLSessionConfiguration`:
+      - **`.default`:** uses the disk-backed cache, cookie store and credential store. It's what you want for normal API traffic, usually one long-lived session for the whole app.
+      - **`.ephemeral`:** same idea, but nothing is written to disk. Cache, cookies and credentials live in memory and disappear when the session is invalidated. Good for private browsing or a "guest" mode.
+      - **`.background(withIdentifier:)`:** hands uploads and downloads to a separate system process, so they keep going while the app is suspended or even after the system terminates it.
+
+      `URLSession.shared` is a ready-made session with no configuration you can change and no delegate. Fine for a quick request, not for an app's networking layer.
+
+      **Tasks** are created from a session:
+      - **Data task:** short request/response kept in memory, like JSON from an API.
+      - **Upload task:** sends a body from data or a file. Only uploads from a file work in a background session.
+      - **Download task:** writes the response to a temporary file. This is the one for large files and background transfers.
+      - **WebSocket task** (iOS 13+): two-way messages over `ws:`/`wss:`.
+      - **Stream task:** a raw TCP connection. You rarely need it in an app.
+    keyPoints:
+      - Default vs ephemeral is about what gets persisted to disk.
+      - Background sessions run in a separate process and survive suspension.
+      - Data, upload, download, WebSocket and stream tasks and what each one is for.
+      - Large files go through download tasks, not data tasks.
+      - Reuse a session instead of creating one per request.
+    followUps:
+      - question: Why not create a new URLSession for every request?
+        answer: |
+          Each session has its own connection pool, cache and cookies. A new session per request throws away HTTP/2 connection reuse and TLS session reuse, so every call pays the handshake again. Sessions also hold a strong reference to their delegate until you call `finishTasksAndInvalidate()` or `invalidateAndCancel()`, so a session per request is an easy way to leak.
+    related: [m30]
+
+  - id: q-net-download-progress
+    category: networking
+    difficulty: medium
+    question: How would you show a progress bar for a file download?
+    answer: |
+      Use a **download task** and read progress from the session delegate. `URLSessionDownloadDelegate` calls `urlSession(_:downloadTask:didWriteData:totalBytesWritten:totalBytesExpectedToWrite:)` periodically, and `didFinishDownloadingTo` when the file is ready:
+
+      ```swift
+      final class DownloadObserver: NSObject, URLSessionDownloadDelegate {
+          private let onProgress: @Sendable (Double) -> Void
+
+          init(onProgress: @escaping @Sendable (Double) -> Void) {
+              self.onProgress = onProgress
+          }
+
+          func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask,
+                          didWriteData bytesWritten: Int64, totalBytesWritten: Int64,
+                          totalBytesExpectedToWrite: Int64) {
+              // Expected size is unknown (-1) when the server sends no Content-Length.
+              guard totalBytesExpectedToWrite > 0 else { return }
+              onProgress(Double(totalBytesWritten) / Double(totalBytesExpectedToWrite))
+          }
+
+          func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask,
+                          didFinishDownloadingTo location: URL) {
+              // The temporary file is deleted when this method returns: move it now.
+              let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+              let destination = documents.appendingPathComponent("episode.mp3")
+              try? FileManager.default.removeItem(at: destination)
+              try? FileManager.default.moveItem(at: location, to: destination)
+          }
+      }
+      ```
+
+      Delegate callbacks arrive on the session's delegate queue, so hop to the main actor before touching UI.
+
+      Two alternatives:
+      - Every task has a `progress` property (`Progress`, iOS 11+). You can observe `fractionCompleted` or hand it straight to a `UIProgressView.observedProgress`.
+      - `URLSession.bytes(for:)` (iOS 15+) gives you an async sequence of bytes plus the response's `expectedContentLength`. It works for streaming text like server-sent lines, but iterating byte by byte into memory is the wrong tool for a 500 MB file.
+
+      Handle the unknown-length case in the UI: show an indeterminate spinner instead of a bar stuck at zero.
+    keyPoints:
+      - Download task plus URLSessionDownloadDelegate's didWriteData callback.
+      - Handles an unknown expected size (-1).
+      - Moves the file before didFinishDownloadingTo returns.
+      - Updates UI on the main actor.
+      - Knows task.progress and bytes(for:) as alternatives and their limits.
+    followUps:
+      - question: Can the user pause and resume the download?
+        answer: |
+          Yes, if the server supports it. `cancel(byProducingResumeData:)` gives you resume data, and `downloadTask(withResumeData:)` continues from there. The server needs to support range requests and the resource must not have changed, so you still need a fallback that restarts from zero. After a failure, the error's `userInfo` can also include resume data under `NSURLSessionDownloadTaskResumeData`.
+    writesCode: true
+    related: [m30]
+
+  - id: q-net-background-download
+    category: networking
+    difficulty: hard
+    question: A podcast app needs downloads to finish even if the user leaves the app. How do you build that?
+    answer: |
+      With a **background `URLSession`**. The transfer runs in a system process, so it continues while the app is suspended, and if the system terminates the app, it relaunches it in the background when the transfer finishes.
+
+      The pieces:
+      1. Create the session with `URLSessionConfiguration.background(withIdentifier:)`, a fixed identifier, and a **delegate**. Background sessions need the delegate API; results don't come back through completion handlers or async/await.
+      2. Use download tasks (or upload tasks from a file). Set `isDiscretionary = true` for downloads that can wait for Wi-Fi and power.
+      3. When the transfers finish while the app is in the background, iOS calls `application(_:handleEventsForBackgroundURLSession:completionHandler:)`. Store that completion handler.
+      4. Recreate the session with the **same identifier** at launch so the system can reconnect pending tasks to it.
+      5. Move each file in `urlSession(_:downloadTask:didFinishDownloadingTo:)`.
+      6. In `urlSessionDidFinishEvents(forBackgroundURLSession:)`, call the stored handler on the main queue. That tells iOS you're done and it can take a new snapshot of your UI.
+
+      There's no 30-second limit on the transfer itself: the request can take as long as the session's `timeoutIntervalForResource` allows, which defaults to seven days.
+
+      Limits worth saying out loud: if the user **force-quits** the app from the app switcher, the system cancels its background transfers and won't relaunch it. And the system rate-limits apps that start a new download each time they're woken, so queue many tasks in one session instead of chaining them one after another.
+    keyPoints:
+      - Background configuration with a stable identifier and a delegate.
+      - Download tasks or upload-from-file only.
+      - The handleEventsForBackgroundURLSession completion handler and when to call it.
+      - Recreating the session at launch so tasks reconnect.
+      - Force-quit cancels transfers; chained downloads get delayed by the rate limiter.
+    followUps:
+      - question: Do you need a background session for every request made while the app is in the background?
+        answer: |
+          No. A background session is for transfers that must survive suspension. If the app already has background time, for example from a `BGAppRefreshTask` or a background push, a short request on a normal session is fine as long as it finishes before that time runs out.
+      - question: How do you test it?
+        answer: |
+          On a real device, not only in the simulator, and also without the debugger attached, since it keeps the app from being suspended normally. Start a large download, leave the app, and check that the file lands where it should and the completion handler is called. Don't force-quit the app to simulate termination: that cancels the transfers by design. Apple also offers a Background Networking logging profile for devices that shows how the system schedules the transfers.
+    related: [m30, m21]
+
+  - id: q-net-async-await
+    category: networking
+    difficulty: easy
+    question: How do you make a network request with async/await, and what changes compared with a completion handler?
+    answer: |
+      Since iOS 15, `URLSession` has async methods: `data(for:)`, `upload(for:from:)`, `download(for:)` and `bytes(for:)`.
+
+      ```swift
+      func loadProfile() async throws -> Profile {
+          let (data, response) = try await URLSession.shared.data(for: request)
+          guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+              throw APIError.badStatus
+          }
+          return try JSONDecoder().decode(Profile.self, from: data)
+      }
+      ```
+
+      What changes:
+      - **Errors** come through `throws` instead of an optional `Error` next to optional `Data`, so you can't forget to call the completion handler or call it twice.
+      - **The response status isn't an error.** A 404 or 500 still returns normally; you check `statusCode` yourself. That's the same as before, and it's the most common bug in answers to this question.
+      - **Cancellation** follows the Swift task. Cancelling the task that's awaiting the request cancels the request.
+      - **Threading**: you don't call `DispatchQueue.main.async`. If the calling code is `@MainActor` (a view model, for example), it resumes on the main actor after the `await`.
+    keyPoints:
+      - The async URLSession APIs need iOS 15.
+      - Checks the HTTP status code; non-2xx isn't thrown.
+      - Errors through throws, no double or missing callbacks.
+      - Task cancellation cancels the request.
+      - Main actor isolation replaces manual dispatch to the main queue.
+    followUps:
+      - question: Does the decoding run on the main thread if the caller is on the main actor?
+        answer: |
+          The network wait doesn't block anything, but the synchronous code after the `await`, including `JSONDecoder().decode`, runs on whatever the function is isolated to. If the function is `@MainActor`, a large decode happens on the main thread. For big payloads, put the request and decode in a nonisolated function or a separate type and only hand the result to the main actor.
+    writesCode: true
+    related: [m30, m29]
+
+  - id: q-net-decoding-errors
+    category: networking
+    difficulty: easy
+    question: Your JSON decoding fails in production. How do you find out why?
+    answer: |
+      Catch `DecodingError` and log its case and **coding path** instead of printing `error.localizedDescription`, which hides the useful part. There are four cases:
+
+      ```swift
+      do {
+          let user = try JSONDecoder().decode(User.self, from: data)
+      } catch let DecodingError.keyNotFound(key, context) {
+          log("missing key \(key.stringValue) at \(context.codingPath)")
+      } catch let DecodingError.typeMismatch(type, context) {
+          log("expected \(type) at \(context.codingPath)")       // "1" where Int was expected
+      } catch let DecodingError.valueNotFound(type, context) {
+          log("null for non-optional \(type) at \(context.codingPath)")
+      } catch let DecodingError.dataCorrupted(context) {
+          log("bad data: \(context.debugDescription)")           // not valid JSON at all
+      }
+      ```
+
+      The usual causes are the backend sending `null` for something you declared non-optional, a number arriving as a string, a renamed key, or an HTML error page instead of JSON (that one shows up as `dataCorrupted`, and the real fix is checking the status code and `Content-Type` first).
+
+      Then decide what the model should tolerate. Making a field optional or giving it a default in a custom `init(from:)` is reasonable for something cosmetic. For fields the screen can't work without, failing loudly is better than showing half a record.
+    keyPoints:
+      - Names the four DecodingError cases.
+      - Uses the coding path to locate the field.
+      - Checks status code and content type before decoding.
+      - Decides per field between optional/default and failing.
+    followUps:
+      - question: One bad item in an array of 200 makes the whole decode fail. What can you do?
+        answer: |
+          Decode each element on its own so one failure doesn't sink the rest. A common pattern is a small wrapper whose `init(from:)` tries to decode the element and stores `nil` (or the error) if it fails, then `compactMap` the results. Log the failures so the backend team can fix the data instead of the app hiding it forever.
+    writesCode: true
+    related: [m30, m12]
+
+  - id: q-net-http-caching
+    category: networking
+    difficulty: medium
+    question: How does HTTP caching work with URLSession, and how would you control it?
+    answer: |
+      `URLSession` has a built-in HTTP cache, `URLCache`, with a memory part and a disk part. With the default request policy, `.useProtocolCachePolicy`, it follows the server's headers:
+      - `Cache-Control: max-age=…` or `Expires` decide whether a cached response is still fresh. If it is, the request never hits the network.
+      - If it's stale and the response had an `ETag` or `Last-Modified`, the system revalidates with the server. A `304 Not Modified` means the cached body is reused.
+      - `Cache-Control: no-store` keeps the response out of the cache.
+
+      So the best lever is usually **the backend's headers**. On the client you can:
+      - Give the session a bigger cache: `configuration.urlCache = URLCache(memoryCapacity:diskCapacity:)`. A response is only cached if it's small relative to the cache; Apple's docs say about 5% of the disk cache size at most.
+      - Change the policy per request: `.reloadIgnoringLocalCacheData` for pull-to-refresh, `.returnCacheDataElseLoad` for an offline-first screen that accepts stale data.
+      - Implement `urlSession(_:dataTask:willCacheResponse:completionHandler:)` to refuse caching specific responses.
+
+      For anything sensitive (account balances, personal data), I'd send `no-store` from the server or use an ephemeral session, since the disk cache isn't where that data should end up.
+    keyPoints:
+      - URLCache with memory and disk storage.
+      - Cache-Control, ETag/Last-Modified and 304 revalidation.
+      - The server headers are the main control.
+      - Request cache policies and when to use them.
+      - Keeps sensitive responses out of the disk cache.
+    followUps:
+      - question: When would you build your own cache instead of relying on URLCache?
+        answer: |
+          When the data has to survive and be queryable offline, not just be a copy of the last HTTP response. For an offline-first app I'd store decoded models in a database (SwiftData, Core Data or SQLite) and treat the network as a way to refresh it. For images, an in-memory `NSCache` of decoded images on top of `URLCache` avoids decoding the same bytes again.
+    related: [m30]
+
+  - id: q-net-retry-backoff
+    category: networking
+    difficulty: hard
+    question: Write a retry helper for network calls. What should it retry, and how long should it wait?
+    answer: |
+      Retry only **transient** failures, back off **exponentially**, add **jitter** so thousands of clients don't retry in lockstep, and cap the attempts:
+
+      ```swift
+      func withRetry<T: Sendable>(
+          maxAttempts: Int = 3,
+          baseDelay: Duration = .milliseconds(200),
+          shouldRetry: (any Error) -> Bool,
+          operation: @Sendable () async throws -> T
+      ) async throws -> T {
+          var attempt = 1
+          while true {
+              do {
+                  return try await operation()
+              } catch {
+                  guard attempt < maxAttempts, shouldRetry(error) else { throw error }
+                  let backoff = baseDelay * (1 << (attempt - 1))      // 200ms, 400ms, 800ms…
+                  let jitter = backoff * Double.random(in: 0...0.5)   // spread clients out
+                  try await Task.sleep(for: backoff + jitter)
+                  attempt += 1
+              }
+          }
+      }
+
+      func isTransient(_ error: any Error) -> Bool {
+          if let urlError = error as? URLError {
+              return [.timedOut, .networkConnectionLost, .notConnectedToInternet].contains(urlError.code)
+          }
+          if case APIError.status(let code) = error { return code == 429 || (500...599).contains(code) }
+          return false
+      }
+      ```
+
+      What not to retry: 4xx client errors (except 429), decoding errors, and `URLError.cancelled`. `Task.sleep` throws when the task is cancelled, so a cancelled screen stops retrying instead of sleeping on.
+
+      The bigger question is **idempotency**. Retrying a GET is safe. Retrying a POST that creates a payment can charge twice if the first request reached the server and only the response was lost. For those, the client sends an idempotency key the server uses to deduplicate, or you don't retry automatically. If the server sends `Retry-After` with a 429 or 503, respect it instead of your own schedule.
+    keyPoints:
+      - Retries only transient errors; not 4xx, decoding or cancellation.
+      - Exponential backoff with jitter and a cap.
+      - Respects cancellation while waiting.
+      - Idempotency and idempotency keys for non-safe requests.
+      - Honors Retry-After.
+    followUps:
+      - question: Should the app retry automatically when the device is offline?
+        answer: |
+          Not by burning attempts on a timer. Set `waitsForConnectivity = true` on the session configuration (iOS 11+) so the task waits until a connection is available, or queue the work and resume it when connectivity comes back. Retries with backoff are for flaky servers and dropped connections, not for a phone in airplane mode.
+    writesCode: true
+    related: [m30, m29, m12]
+
+  - id: q-net-connectivity
+    category: networking
+    difficulty: medium
+    question: How do you detect whether the device is online, and should you check before every request?
+    answer: |
+      Use **`NWPathMonitor`** from the Network framework (iOS 12+). It reports the current path: `status` (`.satisfied`, `.unsatisfied`, `.requiresConnection`), which interfaces are in use, `isExpensive` (cellular or Personal Hotspot) and `isConstrained` (Low Data Mode, iOS 13+). Start it on a queue and handle `pathUpdateHandler`; since iOS 17 you can also iterate it as an async sequence.
+
+      But **don't use it as a gate before each request.** A "satisfied" path doesn't mean your server is reachable, and an "unsatisfied" one can change a moment later. Apple's guidance is to just try the request. Use the monitor for:
+      - Showing an offline banner.
+      - Pausing big transfers on expensive or constrained paths, or asking first.
+      - Triggering a sync when the connection comes back.
+
+      For the request itself, `waitsForConnectivity = true` makes a task wait for a usable connection instead of failing immediately with `.notConnectedToInternet`, and `allowsExpensiveNetworkAccess` / `allowsConstrainedNetworkAccess` on the configuration respect the user's data settings without manual checks.
+    keyPoints:
+      - NWPathMonitor and its status, isExpensive and isConstrained.
+      - No preflight reachability check; send the request and handle errors.
+      - Uses the monitor for UI and policy, not as a gate.
+      - waitsForConnectivity and the expensive/constrained configuration flags.
+    followUps:
+      - question: What about the old Reachability class?
+        answer: |
+          It was Apple sample code built on `SCNetworkReachability`, copied into many projects. The `SCNetworkReachability` functions are deprecated as of iOS 17.4, so in new code I'd use `NWPathMonitor` and leave Reachability for legacy code I'm migrating.
+    related: [m30]
+
+  - id: q-net-pagination
+    category: networking
+    difficulty: medium
+    question: How would you paginate a feed coming from an API?
+    answer: |
+      Prefer **cursor-based** pagination over offset-based when you have a say in the API.
+
+      - **Offset/limit** (`?offset=40&limit=20`): simple, and it allows jumping to page 7. But if new items are inserted at the top while the user scrolls, every offset shifts, so you get duplicates or skip items.
+      - **Cursor** (`?after=abc123&limit=20`): the server returns an opaque `nextCursor` that points after the last item you saw. Inserts don't shift it. The response's `nextCursor == nil` tells you there are no more pages.
+
+      On the client:
+      - Keep `items`, `nextCursor`, `hasMore` and an `isLoading` flag, and **refuse to start a second load** while one is in flight. Scroll callbacks fire many times, and without the guard you request the same page twice.
+      - **Deduplicate by id** when appending, because even cursor APIs can return an item twice around edits.
+      - Pull-to-refresh resets the cursor and replaces the list; it doesn't append.
+      - Show a footer state: loading, error with retry, or end of list.
+    keyPoints:
+      - Offset vs cursor and why offsets break with inserts.
+      - Stops when the server says there's no next page.
+      - Guards against duplicate in-flight page loads.
+      - Deduplicates by id.
+      - Refresh resets the cursor; footer shows loading, error and end states.
+    followUps:
+      - question: What if the list is also cached offline?
+        answer: |
+          Then the database becomes the source the UI reads from, and pages from the network are upserted into it by id. You store the cursor alongside the cached data, and on refresh you decide whether to clear old items or keep them and mark them stale. Mixing an in-memory paginated array with a separate offline cache tends to produce two lists that disagree.
+    related: [m30, m48]
+
+  - id: q-net-cancel-requests
+    category: networking
+    difficulty: medium
+    question: The user types in a search field and every keystroke fires a request. How do you cancel the requests you no longer need?
+    answer: |
+      Keep a reference to the in-flight work and cancel it when a new query arrives. With Swift Concurrency, cancelling the `Task` cancels the `URLSession` request it's awaiting:
+
+      ```swift
+      @MainActor
+      final class SearchModel {
+          private(set) var results: [String] = []
+          private var searchTask: Task<Void, Never>?
+          private let search: @Sendable (String) async throws -> [String]
+
+          init(search: @escaping @Sendable (String) async throws -> [String]) { self.search = search }
+
+          func queryChanged(_ query: String) {
+              searchTask?.cancel()                        // drop the previous request
+              searchTask = Task {
+                  do {
+                      try await Task.sleep(for: .milliseconds(300))   // debounce; throws if cancelled
+                      let found = try await search(query)
+                      guard !Task.isCancelled else { return }         // a newer query won
+                      results = found
+                  } catch {
+                      // CancellationError or URLError(.cancelled): nothing to show
+                  }
+              }
+          }
+      }
+      ```
+
+      Details that matter:
+      - The **debounce** sleep avoids most requests in the first place.
+      - A cancelled `URLSession` call usually throws `URLError(.cancelled)`, not `CancellationError`. Don't show either one as an error to the user.
+      - The `Task.isCancelled` check after the await prevents a slow, older response from overwriting newer results.
+      - In SwiftUI, `.task(id: query)` does the cancel-and-restart for you when `query` changes.
+
+      With completion handlers, the same idea: keep the `URLSessionDataTask` and call `cancel()` on it; the completion handler then receives an `NSURLErrorCancelled` error.
+    keyPoints:
+      - Cancels the previous task before starting a new one.
+      - Debounces input.
+      - Treats URLError.cancelled and CancellationError as non-errors.
+      - Guards against stale responses overwriting newer results.
+      - Knows .task(id:) in SwiftUI.
+    followUps:
+      - question: Is cancelling the request enough to save server work?
+        answer: |
+          No. Cancelling closes the request on the client, but the server may already be processing it. It saves bandwidth, battery and wasted decoding on the device. If the server work is expensive, rate limiting on the client (debounce, minimum query length) matters more than cancellation.
+    writesCode: true
+    related: [m30, m29]
+
+  - id: q-net-testable-layer
+    category: networking
+    difficulty: medium
+    question: How do you design a networking layer you can unit test without hitting the network?
+    answer: |
+      Make the code depend on a small protocol instead of `URLSession` directly, and inject it:
+
+      ```swift
+      protocol HTTPClient: Sendable {
+          func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse)
+      }
+
+      extension URLSession: HTTPClient {
+          func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+              let (data, response) = try await data(for: request)
+              guard let http = response as? HTTPURLResponse else { throw APIError.notHTTP }
+              return (data, http)
+          }
+      }
+
+      struct ArticleAPI {
+          let client: any HTTPClient
+          let baseURL: URL
+
+          func article(id: Int) async throws -> Article {
+              let request = URLRequest(url: baseURL.appendingPathComponent("articles/\(id)"))
+              let (data, response) = try await client.send(request)
+              guard (200..<300).contains(response.statusCode) else {
+                  throw APIError.status(response.statusCode)
+              }
+              return try JSONDecoder().decode(Article.self, from: data)
+          }
+      }
+
+      // In the test target
+      struct StubClient: HTTPClient {
+          let statusCode: Int
+          let body: Data
+          func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+              let response = HTTPURLResponse(url: request.url!, statusCode: statusCode,
+                                             httpVersion: nil, headerFields: nil)!
+              return (body, response)
+          }
+      }
+      ```
+
+      Now tests cover the logic that actually breaks: request building, status handling, decoding, error mapping. The stub can also record the requests it received so you can assert on paths, headers and bodies.
+
+      The other option is a custom **`URLProtocol`** subclass registered in a session's `protocolClasses`. It intercepts requests below `URLSession`, so the real session code runs. It's useful when you can't change the code to inject a protocol, or when you want to test caching and redirects.
+    keyPoints:
+      - Depends on a protocol, injected, not URLSession.shared directly.
+      - URLSession conforms through a thin adapter.
+      - Tests cover request building, status codes, decoding and error mapping.
+      - Knows URLProtocol stubbing as an alternative.
+    followUps:
+      - question: Would you also test against the real backend?
+        answer: |
+          A few contract or integration tests, yes, run separately from the unit tests, because they're slower and flaky by nature. They catch the backend changing a field name, which no stub ever will. Recording real responses as JSON fixtures and decoding them in unit tests is a cheap middle ground.
+    writesCode: true
+    related: [m30, m33]

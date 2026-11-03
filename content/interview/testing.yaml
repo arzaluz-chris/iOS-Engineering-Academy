@@ -20,3 +20,379 @@ questions:
       - question: What's the risk of overusing mocks?
         answer: The tests end up checking **how** the code is implemented instead of **what** result it produces. Any refactor breaks them even when the behavior doesn't change. I'd rather check observable results, and keep interaction checks for effects that have no other visible result, like sending an analytics event.
     related: [m33]
+
+  - id: q-test-pyramid
+    category: testing
+    difficulty: easy
+    question: How do you split an iOS app's tests between unit, integration and UI tests?
+    answer: |
+      Most of the tests should be **unit tests**, a smaller layer of integration tests sits on top, and a handful of UI tests cover the flows that would hurt most if they broke. That's the test pyramid, and the reason is cost: the higher you go, the slower, flakier and more expensive to maintain the test gets.
+
+      - **Unit tests** check one type or function with its dependencies replaced: a view model's state transitions, a parser, a pricing rule. They run in milliseconds and tell you exactly what broke.
+      - **Integration tests** check that real pieces work together: the repository with a real SQLite or SwiftData store in memory, the API client against stubbed HTTP responses, the decoding of a real JSON fixture.
+      - **UI tests** (XCUITest) launch the app in a separate process and drive it like a user. I keep them for critical paths, like sign-in, the main purchase or transfer flow, and onboarding.
+
+      The pyramid is a guideline, not a law. In a thin app that mostly shows server data, integration tests around the networking and persistence layer often catch more real bugs than unit tests of trivial view models. What I avoid is the inverted shape: hundreds of UI tests and almost no unit tests, which gives you a slow, flaky suite nobody trusts.
+    keyPoints:
+      - Many fast unit tests, fewer integration tests, few UI tests.
+      - The reason is cost, speed and how precisely a failure points at the bug.
+      - A concrete example of what belongs in each layer.
+      - UI tests reserved for critical user flows.
+      - Treats the shape as a guideline that depends on the app.
+    followUps:
+      - question: Why are UI tests slower and flakier?
+        answer: |
+          They run the whole app in another process, wait on animations, real layout and sometimes the network, and find elements through the accessibility tree. Any timing difference, a system alert, or a changed label can break them. You reduce flakiness with accessibility identifiers, launch arguments that put the app in a known state with stubbed data, and waiting for elements instead of sleeping.
+    writesCode: false
+    related: [m33]
+
+  - id: q-test-swift-testing-vs-xctest
+    category: testing
+    difficulty: medium
+    question: What does Swift Testing change compared with XCTest, and would you migrate an existing suite?
+    answer: |
+      Swift Testing is the newer framework that ships with the Swift toolchain and Xcode 16 and later. The main differences:
+
+      - **Declaring tests:** any function marked `@Test`, with any name. Suites are plain types, and Apple recommends structs or actors over classes. You get a fresh suite instance for each test, so `init` replaces `setUp`.
+      - **Assertions:** two macros instead of ~40 `XCTAssert` functions. `#expect` records a failure and keeps going; `#require` throws and stops the test, and also unwraps optionals (`try #require(user)` replaces `XCTUnwrap`). On failure, the macros show the values of the subexpressions.
+      - **Parameterized tests:** `@Test(arguments:)` runs one function per input, and each case is reported separately.
+      - **Traits:** `.disabled`, `.enabled(if:)`, `.bug`, `.tags`, `.timeLimit`, `.serialized` attach behavior and metadata to tests and suites.
+      - **Parallel by default,** in the same process, with task groups.
+
+      Would I migrate? Incrementally. Both frameworks can live in the same test target, so new tests go in Swift Testing and old ones move when I touch them. UI tests and performance tests stay in XCTest: Swift Testing doesn't replace XCUITest or `measure`.
+
+      The parallelism is the real migration risk. Tests that share a singleton, `UserDefaults.standard` or a static stub pass serially in XCTest and start failing at random in Swift Testing.
+    keyPoints:
+      - "@Test and suites as structs, with a new instance per test."
+      - "#expect versus #require, and #require for unwrapping."
+      - Parameterized tests and traits.
+      - Tests run in parallel by default, which exposes shared state.
+      - Incremental migration in the same target; UI and performance tests stay in XCTest.
+    followUps:
+      - question: How do you write teardown logic in Swift Testing?
+        answer: |
+          Make the suite a class or an actor and put the cleanup in `deinit`; a struct has no `deinit`. For resources tied to a single test, I'd rather scope them inside the test, for example a temporary directory with a unique name per test.
+      - question: Is there an equivalent of XCTAssertEqual with accuracy for floating-point values?
+        answer: |
+          Not built in. Apple's migration guide points to `isApproximatelyEqual` from the swift-numerics package, used inside `#expect`.
+    writesCode: false
+    related: [m33]
+
+  - id: q-test-parameterized
+    category: testing
+    difficulty: easy
+    question: You have five copies of the same test with different inputs. How would you clean that up?
+    answer: |
+      With a **parameterized test** in Swift Testing. You pass a collection to `arguments:` and the function runs once per element. Each case shows up as its own result, so you see exactly which input failed:
+
+      ```swift
+      @Test("Rejects invalid usernames", arguments: ["", "ab", "has space", String(repeating: "x", count: 31)])
+      func rejectsInvalidUsername(_ username: String) {
+          #expect(!UsernameValidator.isValid(username))
+      }
+      ```
+
+      For input and expected output pairs, `zip` the two collections:
+
+      ```swift
+      @Test(arguments: zip(["ana", "christian_dev"], [true, true]))
+      func validatesUsername(_ username: String, expected: Bool) {
+          #expect(UsernameValidator.isValid(username) == expected)
+      }
+      ```
+
+      Two collections without `zip` give you **every combination** (a Cartesian product), which is rarely what you want for input/output pairs and can explode the number of cases.
+
+      In XCTest you'd loop over an array inside one test, but then the first failure hides the rest unless you write good messages, and you can't rerun a single case. That's the practical win here.
+    keyPoints:
+      - Uses @Test(arguments:) instead of copy-pasted tests.
+      - Each argument is reported and can be rerun as a separate case.
+      - zip for pairs, and knows two collections without zip give all combinations.
+      - Picks inputs at the boundaries (empty, minimum, maximum, invalid characters).
+    followUps:
+      - question: Do parameterized cases run in parallel?
+        answer: |
+          Yes, by default. If the cases share state that can't be isolated, add the `.serialized` trait to that test; it then runs its cases one after another. It doesn't change how the test runs relative to other, unrelated tests.
+    writesCode: true
+    related: [m33]
+
+  - id: q-test-xctest-interop
+    category: testing
+    difficulty: hard
+    question: Your team is halfway through moving from XCTest to Swift Testing, and shared helpers still call XCTAssert. What can go wrong, and what changed in Swift 6.4?
+    answer: |
+      Before Swift 6.4, the two frameworks ignored each other. An `XCTAssertEqual` inside a helper called from a `@Test` function **failed silently**: the test passed. The same happened the other way with `#expect` inside an `XCTestCase`. So a half-migrated suite could lose coverage without anyone noticing.
+
+      **ST-0021 (Targeted Interoperability between Swift Testing and XCTest), implemented in Swift 6.4,** fixes that:
+
+      - `XCTAssert*` and `XCTFail` called from a Swift Testing test now record the failure, plus a runtime warning telling you to adopt the Swift Testing equivalent.
+      - `#expect`, `#require` and `Issue.record()` called from an XCTest test now fail it.
+      - `XCTestExpectation` and `XCTWaiter` are **not** supported in Swift Testing; the proposal says to move to async/await, continuations or `confirmation`.
+      - Traits don't carry over to XCTest.
+
+      The behavior depends on a mode, set with the `SWIFT_TESTING_XCTEST_INTEROP_MODE` environment variable: `none`, `limited` (old silent failures become warnings), `complete` (they become failures; the default) and `strict` (any XCTest API inside a Swift Testing test is a `fatalError`). For packages, a `swift-tools-version` of 6.4 or later gets `complete`; older ones get `limited`.
+
+      In practice I'd rewrite shared helpers with `#expect`, since those now work from both kinds of test, and turn on `strict` in CI once the migration is done so nobody reintroduces XCTest calls. One caveat: the proposal is written against the open source swift-corelibs-xctest. I'd confirm how Xcode's own XCTest behaves on my Xcode version before relying on it.
+    keyPoints:
+      - Knows that cross-framework assertions used to be silently ignored.
+      - "ST-0021 in Swift 6.4: XCTAssert fails Swift Testing tests, #expect fails XCTest tests."
+      - XCTestExpectation is not bridged; use confirmation or async/await.
+      - The interop modes and that complete is the default for new tools versions.
+      - A migration plan that uses strict mode once the move is done.
+    followUps:
+      - question: Why would an older package suddenly show new warnings after upgrading the toolchain but not new failures?
+        answer: |
+          Packages whose `swift-tools-version` is older than the version that introduced interop default to `limited` mode, where the previously ignored failures show up as warnings instead of failures. Bumping the tools version moves the package to `complete`, and then those warnings become real failures.
+    writesCode: false
+    related: [m33]
+
+  - id: q-test-async
+    category: testing
+    difficulty: medium
+    question: How do you test code that's asynchronous, both async/await and callback-based?
+    answer: |
+      For **async/await**, mark the test `async` and await the call. No expectations, no waiting:
+
+      ```swift
+      @MainActor
+      @Test func tracksEventAfterLoadingProfile() async {
+          let spy = AnalyticsSpy()
+          let model = ProfileModel(loader: StubLoader(result: .success("Christian")), analytics: spy)
+          await model.load(id: "42")
+          #expect(model.name == "Christian")
+          #expect(await spy.events == ["profile_loaded"])
+      }
+      ```
+
+      For **callbacks or delegates**, Swift Testing has `confirmation`. The closure has to call `confirm()` the expected number of times before `confirmation` returns; it doesn't wait or poll:
+
+      ```swift
+      @Test func uploaderCallsCompletionOnce() async {
+          await confirmation("upload finished", expectedCount: 1) { finished in
+              let uploader = Uploader { success in
+                  if success { finished() }
+              }
+              await uploader.start()
+          }
+      }
+      ```
+
+      That last point matters: if the callback fires later on another queue, after the closure returns, the confirmation fails. In that case I wrap the callback API in `withCheckedContinuation` and await it. In XCTest the equivalent is `XCTestExpectation` with `fulfillment(of:timeout:)` in async tests.
+
+      What I avoid is `Task.sleep` or a fixed delay to "let the work finish". It makes the test slow on a fast machine and flaky on a slow CI runner. If the code under test starts its own unstructured `Task`, I change the design so the test can await it, for example by returning the task or making the method `async`.
+    keyPoints:
+      - async test functions that await the code under test.
+      - confirmation for callbacks, and knows it doesn't wait after the closure returns.
+      - Continuations to bridge callback APIs.
+      - No sleeps; makes fire-and-forget work awaitable.
+      - Main actor isolation when the code under test is @MainActor.
+    followUps:
+      - question: The view model calls Task { await load() } inside a button handler. How do you test it?
+        answer: |
+          The test has no handle on that task, so it can only sleep and hope. I'd move the work into an `async` method the test can call directly, and keep the `Task { }` in the view, where it's trivial. If the type must own the task, expose it (for example store it in a property) so the test can `await task.value`.
+    writesCode: true
+    related: [m33, m29]
+
+  - id: q-test-dependency-injection
+    category: testing
+    difficulty: medium
+    question: A class reads Date(), calls URLSession.shared and writes to UserDefaults.standard. How do you make it testable?
+    answer: |
+      Turn each of those hidden dependencies into a **parameter** the test can replace. Initializer injection is the default: the type receives what it needs, and production code passes the real thing.
+
+      For something as small as the current time, a closure is enough:
+
+      ```swift
+      struct SessionPolicy {
+          let now: @Sendable () -> Date
+          init(now: @escaping @Sendable () -> Date = Date.init) { self.now = now }
+
+          func needsRefresh(_ token: Token) -> Bool {
+              token.expiresAt.timeIntervalSince(now()) < 60
+          }
+      }
+
+      @Test func refreshesTokenCloseToExpiry() {
+          let fixedNow = Date(timeIntervalSince1970: 1_000_000)
+          let policy = SessionPolicy(now: { fixedNow })
+          #expect(policy.needsRefresh(Token(expiresAt: fixedNow.addingTimeInterval(30))))
+      }
+      ```
+
+      For the network, a small protocol (`ProfileLoading`) with a stub in tests. For storage, either a protocol or a `UserDefaults(suiteName:)` instance created per test and removed afterward, so tests don't share state.
+
+      Two things I watch for. First, don't build a protocol for every type "just in case"; inject what the test actually needs to control: time, randomness, network, storage, and anything with side effects. Second, avoid a global service locator. It makes dependencies invisible again and brings back shared state between parallel tests.
+    keyPoints:
+      - Identifies time, network and storage as hidden dependencies.
+      - Initializer injection with production defaults.
+      - Closures for small dependencies, protocols for larger ones.
+      - Per-test isolated storage instead of the shared instance.
+      - Doesn't create protocols for everything; avoids service locators.
+    followUps:
+      - question: How would you check that an analytics event is sent only on success?
+        answer: |
+          Inject a spy that records events, for example an actor with an `events` array. One test stubs a successful load and expects `["profile_loaded"]`; another stubs a failure and expects the array to be empty. Checking the interaction is fine here because sending the event has no other observable result.
+    writesCode: true
+    related: [m33, m32]
+
+  - id: q-test-network-urlprotocol
+    category: testing
+    difficulty: hard
+    question: How do you test your networking layer without hitting the real network?
+    answer: |
+      Two levels, and I use both.
+
+      **Above the client**, the rest of the app depends on a protocol (`UserFetching`) and tests pass a stub. That covers view models and repositories, but it never runs the real request building and decoding.
+
+      **For the client itself**, I keep a real `URLSession` and intercept requests with a `URLProtocol` subclass registered in the session configuration. The client's code runs unchanged: URL building, headers, status code handling and decoding all get exercised.
+
+      ```swift
+      final class StubURLProtocol: URLProtocol, @unchecked Sendable {
+          nonisolated(unsafe) static var handler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
+
+          override class func canInit(with request: URLRequest) -> Bool { true }
+          override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+
+          override func startLoading() {
+              guard let handler = Self.handler else { return }
+              do {
+                  let (response, data) = try handler(request)
+                  client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+                  client?.urlProtocol(self, didLoad: data)
+                  client?.urlProtocolDidFinishLoading(self)
+              } catch {
+                  client?.urlProtocol(self, didFailWithError: error)
+              }
+          }
+          override func stopLoading() {}
+      }
+
+      let config = URLSessionConfiguration.ephemeral
+      config.protocolClasses = [StubURLProtocol.self]
+      let client = APIClient(session: URLSession(configuration: config), baseURL: baseURL)
+      ```
+
+      The handler can assert on the request (path, method, headers, body) and return a fixture, a 500, or throw `URLError(.notConnectedToInternet)` to test offline handling.
+
+      The weak spot is the **static handler**: it's global state. Swift Testing runs tests in parallel, and `.serialized` only orders tests inside that suite, not against other suites. If several suites use the stub, I key handlers by something per test, like a header with a test id or a per-session lookup, instead of one static variable.
+    keyPoints:
+      - Protocol stubs above the client, URLProtocol for the client itself.
+      - URLProtocol keeps the real URLSession and the client's code path.
+      - Asserts on the outgoing request and simulates errors and status codes.
+      - Registers the protocol through URLSessionConfiguration.protocolClasses.
+      - Recognizes the shared static handler as a parallelism hazard.
+    followUps:
+      - question: Why not test against a staging server?
+        answer: |
+          Those are useful contract or end-to-end tests, but they're slow, depend on the server's data and uptime, and fail for reasons that have nothing to do with the change you made. I keep a few of them in a separate scheduled job, and the main suite stays hermetic.
+      - question: Does this work with background sessions?
+        answer: |
+          I wouldn't rely on it. Background transfers run in a separate system process, so I test the request building and the response handling separately and keep the background session configuration thin.
+    writesCode: true
+    related: [m33, m30]
+
+  - id: q-test-flaky
+    category: testing
+    difficulty: medium
+    question: A test fails about one run in twenty on CI. How do you track it down and fix it?
+    answer: |
+      First I make it reproducible: run that test repeatedly (Xcode can repeat a test until failure, and so can a loop on `xcodebuild test` or `swift test --filter`), on a slower machine if needed, and with the other tests in the suite, since some flakes only appear in parallel.
+
+      Then I check the usual causes:
+
+      - **Timing:** sleeps, fixed timeouts, or work started in an unstructured `Task` that the test doesn't await. Fix: make the work awaitable.
+      - **Shared state:** singletons, `UserDefaults.standard`, files in a fixed path, static stubs. Fine serially, broken in parallel. Fix: inject per-test instances.
+      - **Order dependence:** a test that only passes if another ran first. Fix: each test builds its own state.
+      - **Real time and environment:** `Date()`, the time zone, the locale, the simulator's language, a test that breaks near midnight or on the 31st. Fix: inject a clock and a fixed locale or time zone.
+      - **Randomness:** unseeded random data.
+      - **UI tests:** animations, missing waits, system alerts.
+
+      While I work on the fix, I don't leave it failing at random. I disable it with a reason and a ticket (in Swift Testing, `.disabled("…")` plus `.bug(…)`), because a suite that's red for no reason teaches the team to ignore red.
+    keyPoints:
+      - Reproduces by running the test repeatedly, alone and with the suite.
+      - Lists concrete causes, timing and shared state first.
+      - Fixes the cause instead of adding retries or longer timeouts.
+      - Injects clock, locale and time zone.
+      - Quarantines the test with a tracked reason instead of ignoring it.
+    followUps:
+      - question: Is automatically retrying failed tests on CI a good fix?
+        answer: |
+          As a temporary measure it keeps the pipeline moving, but it hides real race conditions, and some of those are bugs in the app, not the test. If I use retries, I also track which tests needed them and treat that list as work to do.
+    writesCode: false
+    related: [m33]
+
+  - id: q-test-coverage
+    category: testing
+    difficulty: easy
+    question: Your manager wants 90% code coverage. What do you think of that target?
+    answer: |
+      Coverage tells you which lines ran during the tests. It **doesn't** tell you whether anything checked the result. A test that calls every method and asserts nothing reaches high coverage and catches nothing.
+
+      So I find it useful in one direction: **low coverage in an area is a real signal** that code isn't tested. High coverage proves much less. I use the coverage report (enabled in the scheme's test plan, or `swift test --enable-code-coverage` for packages) to find untested branches in code that matters, like payments, auth, data migrations and parsers.
+
+      A hard global number has side effects. People write tests for trivial getters and generated code to hit it, and skip the hard-to-test parts because those don't move the number much. I'd rather agree on targets per module (high for business logic, lower for UI glue), require tests for bug fixes, and review the tests in code review like any other code.
+    keyPoints:
+      - Coverage measures executed lines, not verified behavior.
+      - Low coverage is a useful signal; high coverage isn't proof.
+      - A global target invites tests that game the number.
+      - Prefers targets per area and tests for every bug fix.
+    followUps:
+      - question: Is there a way to measure whether tests actually check anything?
+        answer: |
+          Mutation testing: a tool changes the code (flips a condition, removes a line) and checks whether some test fails. Surviving mutants show code that runs under test but isn't verified. It's slow, so I'd run it on critical modules rather than the whole app.
+    writesCode: false
+    related: [m33]
+
+  - id: q-test-snapshot
+    category: testing
+    difficulty: medium
+    question: Would you use snapshot tests for your UI? What are the tradeoffs?
+    answer: |
+      For some screens, yes. A snapshot test renders a view and compares it with a reference image (or a text dump of the hierarchy) stored in the repo. The usual tool is Point-Free's swift-snapshot-testing library; Xcode doesn't ship one.
+
+      **What they're good at:** catching visual regressions that no assertion would, like a broken constraint, a clipped label in German, or a dark mode color that went wrong. They're also cheap to write for a matrix of states: loading, empty, error, long text, large Dynamic Type sizes, right-to-left.
+
+      **What they cost:**
+      - They depend on the rendering environment. Different simulator models, OS versions or Xcode versions produce slightly different pixels, so the team and CI have to pin the same simulator.
+      - Reference images bloat the repository.
+      - A shared component change can fail dozens of snapshots at once, and people get used to re-recording them without looking. Then the tests verify nothing.
+      - They don't test behavior: tapping, navigation, logic.
+
+      My approach: snapshot the reusable design system components and a few key screens in their important states, keep logic in unit-tested view models, and review re-recorded images in the pull request as carefully as code.
+    keyPoints:
+      - Explains what a snapshot test compares.
+      - Good for visual regressions and state matrices like Dynamic Type and dark mode.
+      - Environment sensitivity, repository size and re-recording fatigue.
+      - Doesn't replace behavior tests.
+      - A scoped strategy, not snapshotting every screen.
+    followUps:
+      - question: CI fails snapshots that pass locally. Why?
+        answer: |
+          Almost always a different rendering environment: another simulator model, OS runtime, scale factor, or fonts. Pin the device and OS for recording and comparing in both places. Some teams also allow a small per-pixel tolerance, but too much tolerance hides real changes.
+    writesCode: false
+    related: [m33]
+
+  - id: q-test-tdd
+    category: testing
+    difficulty: easy
+    question: Do you practice TDD? Walk me through how you'd use it on a real feature.
+    answer: |
+      I use it where it pays off most: logic with clear inputs and outputs, and bug fixes. The cycle is short: write a failing test for the next small behavior, write the minimum code to pass it, then refactor with the tests green.
+
+      Example: a transfer form validator. First test: an empty amount is invalid. Make it pass. Next: an amount above the balance is invalid. Then: more than two decimal places. Each step adds one rule, and the tests document the rules for whoever reads the code next.
+
+      For **bug fixes**, I almost always start with a test that reproduces the bug. It proves I understood the cause, and it stops the bug from coming back.
+
+      Where I don't force it: exploratory UI work and code that's mostly calling Apple frameworks. There I write the code first, then add tests around the logic once the design settles. The honest benefit of TDD isn't "more tests"; it's that writing the test first pushes you toward small types with injected dependencies, because otherwise the test is painful to write.
+    keyPoints:
+      - Describes red, green, refactor with small steps.
+      - A concrete example on business logic.
+      - Writes a failing test before fixing a bug.
+      - Knows where it's less useful and says so.
+      - TDD as a design pressure toward testable code.
+    followUps:
+      - question: Doesn't writing tests first slow you down?
+        answer: |
+          At the start of a feature, a bit. It usually pays back in less debugging and safer refactors later. On a throwaway prototype I'd skip it, and say so, but prototypes have a habit of shipping.
+    writesCode: false
+    related: [m33]

@@ -1,0 +1,285 @@
+questions:
+  - id: q-perf-table-vs-collection
+    category: performance
+    difficulty: easy
+    question: What's the difference between UITableView and UICollectionView, in usage and in performance?
+    answer: |
+      **Usage:** a table view is a single scrolling column of rows with sections, swipe actions and editing built in. A collection view separates data from layout: the same items can be a grid, a carousel, a waterfall or a list, depending on the layout object.
+
+      Since iOS 13 and 14 the gap narrowed. `UICollectionViewCompositionalLayout` (iOS 13) builds complex layouts declaratively, and `UICollectionLayoutListConfiguration` (iOS 14) gives collection views table-style lists with swipe actions and separators. For new screens, a collection view with compositional layout and a diffable data source covers everything a table does and more.
+
+      **Performance:** both work the same way at their core. They **reuse cells**, so only the visible ones (plus a few) exist, and both support prefetching (`prefetchDataSource`, iOS 10+). Neither is inherently faster. What makes a list slow is almost always what you do per cell: synchronous image decoding, expensive Auto Layout, work in `cellForRowAt` that belongs somewhere else, or reloading the whole list instead of applying a diff.
+
+      Where a difference does show up is in complex custom layouts: a badly written `UICollectionViewLayout` subclass that recomputes every attribute on each scroll can be slow, which compositional layout mostly avoids.
+    keyPoints:
+      - Table is a single-column list; collection separates data from layout.
+      - Compositional layout and list configuration make collection views a full replacement.
+      - Both reuse cells and support prefetching.
+      - Per-cell work, not the class, decides scrolling performance.
+    followUps:
+      - question: Why use a diffable data source instead of reloadData()?
+        answer: |
+          `reloadData()` throws away every visible cell and loses animations. A diffable data source (iOS 13+) takes a snapshot of identifiers, computes the difference from the previous one, and applies only the inserts, deletes and moves, animated. It also removes the classic crash where the data and the number of rows disagree during a batch update.
+    related: [m24, m43]
+
+  - id: q-perf-final-keyword
+    category: performance
+    difficulty: easy
+    question: What does the final keyword do, and does it affect run-time performance?
+    answer: |
+      `final` on a class means it can't be subclassed. On a method or property, it can't be overridden.
+
+      It can make code faster because of how class methods are called. A normal class method uses **dynamic dispatch**: the call goes through the class's vtable at runtime, since a subclass might have overridden it. When the compiler knows nothing can override it, it can call the function directly, and a direct call can be **inlined** and optimized further. Swift's own optimization guide recommends `final` for declarations that don't need overriding for exactly this reason.
+
+      Two honest caveats:
+      - The compiler can often infer it. `private` and `fileprivate` declarations can only be overridden within the file, and with whole-module optimization (the default for Release builds in new Xcode projects) `internal` declarations get the same treatment. So adding `final` to an internal class in a WMO build may change nothing measurable.
+      - The win is small per call. It matters in hot loops, not in a view controller's `viewDidLoad`.
+
+      I mark classes `final` by default anyway, mainly because it states the design: this class wasn't built for inheritance.
+    keyPoints:
+      - Prevents subclassing or overriding.
+      - Allows static dispatch and inlining instead of vtable calls.
+      - private, fileprivate and WMO let the compiler infer it.
+      - The gain matters in hot paths; the design signal matters everywhere.
+    followUps:
+      - question: Do structs need final?
+        answer: |
+          No. Structs and enums can't be subclassed, so their methods are always dispatched statically unless called through a protocol existential or generic context that isn't specialized.
+    related: [m10, m43]
+
+  - id: q-perf-dispatch
+    category: performance
+    difficulty: medium
+    question: Explain static and dynamic dispatch in Swift. What does this code print?
+    answer: |
+      ```swift
+      protocol Greeter { func greet() -> String }
+      extension Greeter {
+          func greet() -> String { "default greet" }
+          func farewell() -> String { "default farewell" }  // not a requirement
+      }
+      struct Friendly: Greeter {
+          func greet() -> String { "hi" }
+          func farewell() -> String { "bye" }
+      }
+      let existential: any Greeter = Friendly()
+      print(existential.greet(), existential.farewell())
+      ```
+
+      It prints **`hi default farewell`**.
+
+      **Static dispatch** means the compiler knows which function to call at compile time and emits a direct call, which it can also inline. That's what you get for structs, enums, `final` and `private` members, and protocol extension methods that **aren't requirements**.
+
+      **Dynamic dispatch** picks the implementation at runtime:
+      - Class methods go through a **vtable**, because a subclass might override them.
+      - Protocol requirements called on an existential (`any Greeter`) or unspecialized generic go through a **witness table**.
+      - `@objc dynamic` members use Objective-C **message sending**, the slowest and most flexible (needed for KVO and swizzling).
+
+      In the example, `greet()` is a requirement, so the call goes through the witness table and finds `Friendly`'s version. `farewell()` exists only in the extension, so the call is resolved statically by the variable's type, `any Greeter`, and the extension version runs. On a variable typed `Friendly`, both calls print the struct's versions.
+    keyPoints:
+      - Static means resolved at compile time; dynamic means at runtime.
+      - Vtables for classes, witness tables for protocols, message sending for @objc dynamic.
+      - Protocol extension methods that aren't requirements are statically dispatched.
+      - Predicts the output and explains why.
+    followUps:
+      - question: How do you fix the farewell bug?
+        answer: |
+          Declare `farewell()` in the protocol. Then the extension version becomes a default implementation and conforming types' versions are found through the witness table.
+      - question: Are generics dispatched dynamically too?
+        answer: |
+          Unspecialized generic code calls protocol requirements through witness tables. When the optimizer can see the concrete type, it **specializes** the generic function for that type and the calls become direct. Whole-module optimization helps here by letting it specialize across files.
+    writesCode: true
+    related: [m10, m11]
+
+  - id: q-perf-swift-class-optimizations
+    category: performance
+    difficulty: hard
+    question: A profile shows a hot loop spending time on method calls in your model classes. How do you make Swift classes faster?
+    answer: |
+      First confirm it with Time Profiler in a **Release** build, since Debug builds aren't optimized and give misleading profiles. Then reduce the dynamism the compiler can't see through:
+      - **`final`** on classes and members that aren't overridden, so calls become direct and inlinable.
+      - **`private`/`fileprivate`** where possible: the compiler then knows every possible override and can infer `final`.
+      - **Whole-module optimization** (`-wmo`, the "Compilation Mode: Whole Module" setting). It compiles the module as one unit, so internal declarations with no overrides are devirtualized, and generics are specialized across files.
+      - Avoid `@objc dynamic` unless you need KVO or swizzling, because it forces message sending.
+      - Consider whether it should be a **struct**. Value types avoid dynamic dispatch and reference counting for their own instances, and can stay on the stack or inline in arrays.
+      - Watch for **existentials** (`any Protocol`) in hot paths. They add indirection and can box values; generics with `some`/`<T: P>` usually specialize better.
+      - Look at **ARC traffic**: retain/release pairs on class references in tight loops show up in profiles. Fewer class references in the loop body, or value types, reduce them.
+
+      Then measure again. These changes are cheap, but I only keep the ones that move the numbers.
+    keyPoints:
+      - Profiles a Release build first.
+      - final, private and WMO for devirtualization.
+      - Avoids @objc dynamic in hot paths.
+      - Structs, generics over existentials, and ARC overhead.
+      - Measures after each change.
+    followUps:
+      - question: Why not turn on WMO for Debug builds too?
+        answer: |
+          WMO recompiles the whole module as a unit, so incremental builds get slower, which hurts the edit-build-run loop. Debug builds also use `-Onone`, so most of the optimizations WMO enables wouldn't run anyway. New Xcode projects use incremental compilation for Debug and whole-module for Release for that reason.
+    related: [m43, m13]
+
+  - id: q-perf-infinite-scroll
+    category: performance
+    difficulty: medium
+    question: How would you implement infinite scrolling in a list?
+    answer: |
+      Load the next page **before** the user reaches the end, and make sure the trigger can't fire twice for the same page.
+
+      Keep the paging state in one place:
+
+      ```swift
+      @MainActor
+      final class FeedPaginator<Item: Sendable> {
+          private(set) var items: [Item] = []
+          private var nextCursor: String?
+          private var hasMore = true
+          private var isLoading = false
+          private let fetchPage: @Sendable (String?) async throws -> Page<Item>
+
+          init(fetchPage: @escaping @Sendable (String?) async throws -> Page<Item>) {
+              self.fetchPage = fetchPage
+          }
+
+          /// Call when the row at `index` is about to appear.
+          func loadMoreIfNeeded(at index: Int, threshold: Int = 5) async throws {
+              guard index >= items.count - threshold, hasMore, !isLoading else { return }
+              isLoading = true
+              defer { isLoading = false }
+              let page = try await fetchPage(nextCursor)
+              items += page.items
+              nextCursor = page.nextCursor
+              hasMore = page.nextCursor != nil
+          }
+      }
+      ```
+
+      Because the class is on the main actor and `isLoading` is set before the `await`, two rows appearing at the same time produce one request, not two.
+
+      Where to call it:
+      - **UIKit:** `collectionView(_:willDisplay:forItemAt:)`, or the prefetching data source, which also tells you about rows coming soon. Apply new items with a diffable snapshot so existing cells aren't reloaded.
+      - **SwiftUI:** `.onAppear` or `.task` on rows in a `LazyVStack` or `List`.
+
+      Also show a footer cell for loading and errors with a retry button, and cap memory: for feeds that can grow to thousands of rows with images, the images (not the models) are what you need to evict.
+    keyPoints:
+      - Triggers ahead of the end with a threshold.
+      - Guards against duplicate in-flight requests.
+      - Stops when there are no more pages.
+      - willDisplay/prefetching in UIKit, onAppear/task in SwiftUI.
+      - Applies updates with diffing and shows loading and error footers.
+    followUps:
+      - question: Scroll position jumps when the new page is appended. Why?
+        answer: |
+          Usually because the whole list was reloaded or because estimated cell heights differ a lot from the real ones, so content size changes as cells are measured. Appending through a diffable snapshot instead of `reloadData()` and giving reasonable size estimates fixes most cases.
+    writesCode: true
+    related: [m24, m30]
+
+  - id: q-perf-janky-scrolling
+    category: performance
+    difficulty: medium
+    question: Scrolling in a feed with images stutters. What are the likely causes and how do you fix them?
+    answer: |
+      Stutter means frames are late: at 120 Hz each frame has about 8.3 ms, at 60 Hz about 16.7 ms. The usual causes, roughly in order of how often I see them:
+
+      1. **Main-thread work while configuring cells:** synchronous network or disk reads, JSON parsing, date formatting with a new `DateFormatter` per cell. Move it off the main thread or precompute it in the view model.
+      2. **Image decoding:** assigning a large JPEG to an image view decodes it on the main thread when it's first drawn. Downsample to the display size off the main thread, with `preparingThumbnail(of:)` or `prepareForDisplay` (both iOS 15+) or ImageIO, and cache the decoded result.
+      3. **Expensive layout:** deep Auto Layout hierarchies, constraints changed on every configure, self-sizing cells whose height is measured repeatedly. Flatten the hierarchy and cache sizes when content doesn't change.
+      4. **Rendering cost:** shadows without a `shadowPath` (Core Animation has to derive the shape from the layer's alpha), masks, and corner clipping on many layers can cause render hitches. Set `shadowPath`, and prefer `cornerRadius` with `cornerCurve` over masks.
+      5. **Reloading too much:** `reloadData()` on every small change instead of diffable snapshots or `reconfigureItems`.
+
+      Fix it in that order: **measure first** with the Animation Hitches template in Instruments on a real, older device, find which phase (commit or render) is late, then change one thing and measure again.
+    keyPoints:
+      - Frame budget at 60 and 120 Hz.
+      - Main-thread work during cell configuration.
+      - Image decoding and downsampling off the main thread.
+      - Layout cost and offscreen rendering such as shadows without shadowPath.
+      - Measures with Instruments on a real device before changing code.
+    followUps:
+      - question: What's the difference between a hitch and a hang?
+        answer: |
+          A **hitch** is a late frame during motion, like scrolling or an animation, and can be a few milliseconds. A **hang** is the main thread not responding to input for a noticeable time, typically hundreds of milliseconds, after a tap for example. Both often come from blocking the main thread, but hitches can also come from the render server doing too much work.
+    related: [m43, m24]
+
+  - id: q-perf-instruments-ui
+    category: performance
+    difficulty: hard
+    question: Users say a screen "feels slow". How do you find the cause and improve UI performance?
+    answer: |
+      Turn "feels slow" into something measurable, then use the tool that matches the symptom. Always profile a **Release build on a real device**, ideally an older one.
+
+      - **Slow to respond to taps or freezes:** that's a hang. **Time Profiler** shows where the main thread spends its time; Instruments also flags hangs on the timeline. Look for heavy calls under the main thread: synchronous I/O, big JSON decoding, layout passes.
+      - **Stutters while scrolling or animating:** the **Animation Hitches** template shows each hitch and whether the commit (your main-thread work) or the render phase (the render server) was late.
+      - **Memory climbs or the app gets killed:** **Allocations** with generations (mark, repeat an action, mark again) shows what keeps growing. **Leaks** finds unreachable cycles, and Xcode's **Memory Graph Debugger** shows who holds a reference.
+      - **Layout looks wrong or there are too many views:** Xcode's **View Debugger** shows the 3D hierarchy, ambiguous constraints and hidden views stacked on top of each other.
+      - **Custom code you want on the timeline:** add `os_signpost` intervals and they show up in Points of Interest, aligned with everything else.
+
+      In production, Xcode Organizer reports hang rate, hitch rate and launch time from real users, and **MetricKit** delivers those metrics and diagnostics to your app. That's how you know which screens to look at first and whether a fix worked.
+    keyPoints:
+      - Measures a Release build on a real device.
+      - Time Profiler for hangs and main-thread work.
+      - Animation Hitches for scrolling and animation stutter.
+      - Allocations, Leaks and the Memory Graph Debugger for memory.
+      - View Debugger for hierarchy and constraint issues.
+      - Signposts, Organizer and MetricKit for real-world data.
+    followUps:
+      - question: Time Profiler shows nothing heavy on the main thread, but scrolling still hitches. What next?
+        answer: |
+          Then the render phase is the likely culprit, not your code. The Animation Hitches instrument will show render hitches. Look at what the render server has to do: offscreen passes from masks and shadows without paths, many overlapping translucent layers, huge images being scaled every frame. Simplifying the layer tree usually fixes it.
+    related: [m43, m33]
+
+  - id: q-perf-launch-time
+    category: performance
+    difficulty: hard
+    question: How would you reduce your app's launch time?
+    answer: |
+      First measure it the way Apple does: launch time is from the tap on the icon to the **first frame** drawn by your app. The Launch Time pane in Xcode Organizer shows field data by device and percentile, MetricKit reports time to first draw, and the **App Launch** template in Instruments shows what happens during a launch you reproduce.
+
+      Then work through the phases.
+
+      **Before `main()` (pre-main):**
+      - `dyld` loads your executable and every dynamic framework it links, then binds symbols. Each third-party dynamic framework adds work, so fewer frameworks, or linking them **statically**, helps. Xcode 15+ **mergeable libraries** give near-static launch times in Release while keeping dynamic linking in Debug.
+      - Static initializers run before `main()`: Objective-C `+load` methods, C++ static constructors, `__attribute__((constructor))` functions. Remove them or move the work later.
+
+      **After `main()`:**
+      - Keep `application(_:didFinishLaunchingWithOptions:)` and the first scene's setup minimal. Analytics SDKs, feature flag fetches, database migrations and prewarming caches are the usual offenders.
+      - **Defer** non-UI setup until first use, and refresh data from the network after the first frame, showing cached content meanwhile.
+      - Make the first screen cheap to render: simple hierarchy, no synchronous loading of large images.
+
+      Watch out for a trap: work you push after the first frame doesn't count in the metric but still delays a usable app if the user has to wait for it. Signposts around that work keep it honest. And on iOS, the watchdog terminates apps that take too long to launch, so this isn't only about polish.
+    keyPoints:
+      - Launch measured to first frame, with Organizer, MetricKit and the App Launch template.
+      - Pre-main costs from dyld, dynamic frameworks and static initializers.
+      - Static linking or mergeable libraries.
+      - Minimal work in launch callbacks; defer and lazy-initialize.
+      - Cold vs warm launches and the watchdog.
+    followUps:
+      - question: What's the difference between a cold and a warm launch?
+        answer: |
+          A cold launch happens when the app and much of what it depends on aren't in memory, for example after a reboot or after a memory-hungry app evicted it. A warm launch still starts a new process, but parts of the app and its dependencies are already cached. A resume isn't a launch at all: the process was alive and suspended. Test across that range, because users see all of them.
+    related: [m43, m21]
+
+  - id: q-perf-main-factors
+    category: performance
+    difficulty: easy
+    question: What are the main factors that determine an iOS app's overall performance?
+    answer: |
+      From the user's side, performance is a few things they notice:
+      - **Launch time:** how fast the first screen appears.
+      - **Responsiveness:** no hangs when tapping. The main thread must stay free, so blocking work (disk, network, heavy parsing) goes elsewhere.
+      - **Smoothness:** no hitches while scrolling or animating, which means each frame is ready in time.
+      - **Memory:** staying within limits. Exceeding them gets the app terminated, often in the background, which users see as "it lost my place".
+      - **Battery and network:** unnecessary location updates, polling, timers and large downloads on cellular drain the battery and data plan.
+      - **Disk and app size:** large binaries and caches that never shrink affect downloads and storage.
+
+      Behind those, the common technical causes are main-thread work, image handling (decoding and size), excessive view or layout complexity, retain cycles that leak memory, and chatty networking.
+
+      I'd say performance work is driven by data: Organizer and MetricKit for field metrics (launch, hangs, hitches, memory, battery), Instruments to find causes, and a regression check before each release.
+    keyPoints:
+      - Launch, responsiveness, smoothness, memory, energy and size.
+      - Keeps the main thread free.
+      - Images, layout complexity, leaks and networking as frequent causes.
+      - Field metrics plus Instruments to find and confirm fixes.
+    followUps:
+      - question: Which of these would you watch first in a new job?
+        answer: |
+          Crash and termination rates, then hang rate and launch time from Organizer, because they're the ones users feel most and they're already being collected. They tell me where to point Instruments instead of guessing.
+    related: [m43]

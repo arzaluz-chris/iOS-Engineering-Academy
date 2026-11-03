@@ -363,3 +363,102 @@ resources:
     why: The function to reach for when a nil really means a bug, instead of a bare force unwrap.
     status: unverified
     verifiedAt: null
+  - id: swift-book-protocols
+    title: Protocols (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/protocols/
+    kind: official
+    topic: Requirements, conformance, protocol extensions and composition
+    why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-access-control
+    title: Access Control (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/accesscontrol/
+    kind: official
+    topic: private, fileprivate, internal, package, public and open
+    why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-inheritance
+    title: Inheritance (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/inheritance/
+    kind: official
+    topic: Subclassing, overriding and preventing overrides with final
+    why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-opaque-types
+    title: Opaque and Boxed Protocol Types (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/opaquetypes/
+    kind: official
+    topic: some vs any and when each fits
+    why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-extensions
+    title: Extensions (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/extensions/
+    kind: official
+    topic: Adding functionality to existing types
+    why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-methods
+    title: Methods (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/methods/
+    kind: official
+    topic: Instance methods, mutating methods and type methods
+    why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-structures-classes
+    title: Structures and Classes (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/classesandstructures/
+    kind: official
+    topic: Structs vs classes, value vs reference types
+    why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-initialization
+    title: Initialization (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/initialization/
+    kind: official
+    topic: Initializers, failable initializers and two-phase class initialization
+    why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-properties
+    title: Properties (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/properties/
+    kind: official
+    topic: Stored, computed, lazy and type properties, and property observers
+    why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-enumerations
+    title: Enumerations (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/enumerations/
+    kind: official
+    topic: Enums, raw values, associated values and indirect cases
+    why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-generics
+    title: Generics (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/generics/
+    kind: official
+    topic: Generic functions and types, constraints and associated types
+    why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
+    status: unverified
+    verifiedAt: null

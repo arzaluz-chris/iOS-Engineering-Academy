@@ -28,3 +28,555 @@ questions:
       - question: When would you use @State with a plain value instead of a model?
         answer: For **local, short-lived view state**, like whether a panel is expanded, a field's text before it's submitted, or the selected tab. If another part of the app needs that data, it's no longer local and it moves into a model.
     related: [m36]
+
+  - id: q-swiftui-view-as-function-of-state
+    category: swiftui
+    difficulty: easy
+    question: What does it mean that in SwiftUI "the view is a function of its state"? How is that different from UIKit?
+    answer: |
+      In SwiftUI you don't change views. You describe what the UI should look like for the current state, in `body`, and when the state changes SwiftUI calls `body` again and works out what to update on screen.
+
+      In UIKit it's imperative: you create a label once and later run `label.text = …` and `button.isEnabled = …` every time something changes. The bugs come from the paths you forgot, where the screen and the data drift apart.
+
+      Practical consequences:
+
+      - **Views are cheap value types.** A `View` struct is a description, not the thing on screen. SwiftUI creates and discards them constantly, so they shouldn't hold work or long-lived objects outside of `@State`.
+      - **`body` can run often**, so it has to be fast and free of side effects. No network calls or heavy formatting in `body`; that work goes in `.task`, a model, or an event handler.
+      - **Every piece of data has one source of truth** (`@State`, a model, the environment), and the rest of the views read it or get a binding to it.
+    keyPoints:
+      - Declarative description of the UI for a given state.
+      - SwiftUI reruns body and diffs; UIKit updates views by hand.
+      - Views are lightweight values, not long-lived objects.
+      - body must be fast and without side effects.
+      - One source of truth per piece of data.
+    followUps:
+      - question: If View structs are recreated all the time, where does @State live?
+        answer: In storage that SwiftUI manages, tied to the view's **identity** in the hierarchy, not to the struct instance. The struct is recreated, but as long as the identity stays the same, SwiftUI hands it the same state.
+    related: [m34]
+
+  - id: q-swiftui-state-vs-binding
+    category: swiftui
+    difficulty: easy
+    question: What's the difference between @State and @Binding?
+    answer: |
+      **`@State` owns a value; `@Binding` borrows one.**
+
+      - `@State` declares a source of truth stored by SwiftUI. You give it an initial value, the view can read and write it, and when it changes, the views that depend on it update. Apple recommends declaring it `private` in the highest view that needs it.
+      - `@Binding` is a reference to state owned by someone else. It has no storage of its own; reading and writing go to the owner. A child gets it with the `$` prefix: `Toggle("Notifications", isOn: $notificationsOn)` or `PlayButton(isPlaying: $isPlaying)`.
+
+      If you pass a plain value instead of a binding, the child sees updates but can't change the value. If you give the child its own `@State` initialized from the parent's value, you've made a second source of truth, and they'll get out of sync. That last one is the bug I see most.
+
+      `@State` is meant for local view state: is the panel expanded, what's in the search field. Data other parts of the app care about goes in a model.
+    keyPoints:
+      - "@State owns the value; @Binding reads and writes someone else's."
+      - The $ prefix creates a binding from state.
+      - "@State private, in the highest view that needs it."
+      - Copying a parent's value into child @State creates two sources of truth.
+    followUps:
+      - question: Why should @State be private?
+        answer: Because SwiftUI manages its storage. If a caller can set it through the memberwise initializer, it looks like you're passing a new value, but after the first time SwiftUI keeps the stored one and ignores what you passed. Making it `private` makes that misuse impossible.
+    related: [m36]
+
+  - id: q-swiftui-identity
+    category: swiftui
+    difficulty: hard
+    question: What is view identity in SwiftUI, and how can it cause state to reset or animations to look wrong?
+    answer: |
+      SwiftUI needs to know whether a view in the new `body` is **the same view** as one in the previous update, or a different one. That's identity, and it decides how long `@State` lives, whether `.task` restarts, and whether a change animates as a modification or as a removal plus an insertion.
+
+      - **Structural identity**: the view's type and its position in the hierarchy. The two branches of an `if`/`else` are different identities, even if they contain the same type.
+      - **Explicit identity**: an ID you provide. `ForEach` uses each element's `id`, and the `.id(_:)` modifier ties a view to a value; when that value changes, SwiftUI treats it as a new view and resets its state.
+
+      A typical bug:
+
+      ```swift
+      if isHighlighted {
+          CounterView().background(Color.yellow)
+      } else {
+          CounterView()
+      }
+      ```
+
+      Toggling `isHighlighted` swaps one view for another: the counter's `@State` resets, and you get a fade transition instead of a color animation. Keeping one identity fixes both:
+
+      ```swift
+      CounterView()
+          .background(isHighlighted ? Color.yellow : Color.clear)
+      ```
+
+      Other sources of the same problem: `ForEach` with `id: \.self` over values that aren't unique, or over indices when items get inserted, and IDs generated fresh in `body` (`UUID()`), which make every update look like a new view.
+    keyPoints:
+      - Identity decides state lifetime, task restarts and transitions.
+      - Structural identity from type and position; if/else branches are different views.
+      - Explicit identity from ForEach IDs and .id(_:).
+      - Prefer modifiers with conditional values over branching when it's the same view.
+      - Unstable or duplicated IDs reset state and break animations.
+    followUps:
+      - question: When would you change a view's .id on purpose?
+        answer: To reset a subtree's state deliberately, for example a form that should start blank when the user switches to a different account, or to restart a `.task` keyed to that view. `.id(account.id)` does it in one line, but it also recreates everything below it, so I use it on purpose and not as a fix for a refresh I don't understand.
+      - question: How does AnyView affect identity?
+        answer: '`AnyView` erases the type, so SwiftUI can''t use the type to tell views apart. When the wrapped type changes, the view is replaced. Using `@ViewBuilder` and `some View` keeps the type information. `AnyView` isn''t forbidden, but I don''t use it to paper over branches.'
+    related: [m36, m39]
+
+  - id: q-swiftui-lifecycle-task
+    category: swiftui
+    difficulty: medium
+    question: Where do you start loading data for a SwiftUI screen, and what's the difference between onAppear and task?
+    answer: |
+      I start it in **`.task`**, because the task's lifetime is tied to the view.
+
+      - `.onAppear` runs a synchronous closure before the view appears. If you start a `Task { }` inside it, nobody cancels that task when the view goes away.
+      - `.task` (iOS 15+) runs an async closure before the view appears, and **SwiftUI cancels it** if it hasn't finished when the view is removed or its identity changes. A loop like `for await` over a stream stops on its own when the user leaves.
+      - `.task(id:)` also cancels and restarts the task whenever the `id` value changes, which fits "reload when the selected filter changes".
+
+      ```swift
+      List(viewModel.transactions) { TransactionRow(transaction: $0) }
+          .task(id: selectedAccountID) {
+              await viewModel.load(accountID: selectedAccountID)
+          }
+      ```
+
+      Two things to keep in mind: appearing isn't the same as being created, so `onAppear` and `.task` can run again when the user comes back to a screen in a navigation stack or switches tabs; and cancellation is cooperative, so the loading code has to check for it or use APIs that throw `CancellationError` (like `URLSession`'s async methods).
+    keyPoints:
+      - ".task ties the async work to the view's lifetime."
+      - SwiftUI cancels it on removal or identity change.
+      - task(id:) restarts when the value changes.
+      - onAppear with an unmanaged Task leaks work.
+      - Appearance can happen many times; cancellation is cooperative.
+    followUps:
+      - question: How do you avoid reloading every time the user navigates back to the screen?
+        answer: Keep the data in a model that outlives the view's appearances (owned by a parent or the `@State` of a view that stays in the hierarchy), and have `load` return early if the data is fresh. The decision about when to reload belongs to the model, not to how often the view appears.
+    related: [m36, m37]
+
+  - id: q-swiftui-observable-migration
+    category: swiftui
+    difficulty: medium
+    question: You're moving a screen from ObservableObject to @Observable. What changes in the code, and what can go wrong?
+    answer: |
+      The mechanical part, with an iOS 17 deployment target as the minimum:
+
+      | Before | After |
+      | --- | --- |
+      | `class Model: ObservableObject` with `@Published var` | `@Observable class Model` with plain `var` |
+      | `@StateObject private var model = Model()` | `@State private var model = Model()` |
+      | `@ObservedObject var model: Model` | `let model: Model`, or `@Bindable var model: Model` if you need `$model.field` |
+      | `.environmentObject(model)` + `@EnvironmentObject` | `.environment(model)` + `@Environment(Model.self)` |
+
+      Properties you don't want tracked get `@ObservationIgnored`.
+
+      What can go wrong:
+
+      - **Initial value of `@State`.** Apple's docs say that the `@State` *property wrapper* evaluates its default value every time SwiftUI creates the view struct, unlike `@StateObject`, whose initializer runs once. With a heavy `init`, that's wasted work on every parent update. Building with Xcode 27, `@State` becomes a macro that creates the default value only the first time. With older toolchains, keep `init` cheap or create the model in `.task`.
+      - **Mixing wrappers.** An `ObservableObject` stored in `@State` only updates the view when the reference changes, not when its `@Published` properties do.
+      - **Behavior change that's actually a fix**: views only update for properties they read in `body`, so some redraws you relied on by accident disappear.
+    keyPoints:
+      - Wrapper mapping from the old API to the new one.
+      - "@ObservationIgnored for untracked properties."
+      - The @State default value is re-evaluated on each init with the property wrapper; the Xcode 27 macro changes that.
+      - Don't store an ObservableObject in @State.
+      - Updates become per property read in body.
+    followUps:
+      - question: Can a project mix both systems during the migration?
+        answer: Yes. They coexist screen by screen, as long as each model uses the wrappers that match it. A common approach is to migrate leaf models first and keep the deployment target in mind, since `@Observable` needs iOS 17.
+    related: [m36]
+
+  - id: q-swiftui-environment-preferences
+    category: swiftui
+    difficulty: medium
+    question: How do the environment and preferences differ in SwiftUI, and when would you use each?
+    answer: |
+      They carry data in **opposite directions**.
+
+      - **Environment flows down.** A value set with `.environment(…)` on a view is visible to every descendant that reads it with `@Environment`. The system uses it for color scheme, locale, Dynamic Type size and `dismiss`. You use it for dependencies that many distant views need, like an `@Observable` session model or a service. Custom keys are one line with the `@Entry` macro:
+
+        ```swift
+        extension EnvironmentValues {
+            @Entry var currencyCode: String = "USD"
+        }
+        ```
+
+      - **Preferences flow up.** A child sets a value with `.preference(key:value:)`; a `PreferenceKey` defines how values from several children are combined (`reduce`), and an ancestor reads the result with `.onPreferenceChange`. Typical uses: a child reporting its measured height, or a screen telling its container which title to show. `navigationTitle` works this way.
+
+      The rule I follow is environment for configuration and dependencies, and preferences for the rare case where a parent needs information that only exists in a child. If you're passing data up for business logic, a binding or a model is usually clearer.
+    keyPoints:
+      - Environment flows from ancestors to descendants.
+      - Preferences flow from children to ancestors and get reduced.
+      - "@Entry to declare environment keys."
+      - Environment for dependencies and configuration; preferences for layout or metadata from children.
+    followUps:
+      - question: What's the risk of putting a lot in the environment?
+        answer: |
+          Dependencies become implicit. Per Apple's docs, reading `@Environment(Session.self)` when no ancestor provided it throws an exception at runtime, and the compiler can't warn you (the optional form, `@Environment(Session.self) private var session: Session?`, returns `nil` instead). For required dependencies of a single screen, I'd rather pass them through the initializer.
+    related: [m36, m39]
+
+  - id: q-swiftui-navigation-stack
+    category: swiftui
+    difficulty: medium
+    question: How does value-based navigation with NavigationStack work, and how would you handle a deep link?
+    answer: |
+      `NavigationStack` (iOS 16+) separates **what** is pushed from **how** it's shown.
+
+      - `NavigationLink(value:)` pushes a `Hashable` value instead of building the destination view.
+      - `.navigationDestination(for: Type.self)` maps each type of value to a view.
+      - The stack can be driven by a binding to a path: an array of one type, or a `NavigationPath` for mixed types.
+
+      ```swift
+      @State private var path: [Route] = []
+
+      NavigationStack(path: $path) {
+          AccountsList()
+              .navigationDestination(for: Route.self) { route in
+                  switch route {
+                  case .account(let id): AccountDetail(accountID: id)
+                  case .transfer(let id): TransferDetail(transferID: id)
+                  }
+              }
+      }
+      ```
+
+      Because the stack is just data, a **deep link** becomes "parse the URL into routes and assign them": `path = [.account(id), .transfer(transferID)]`. Going back to the root is `path.removeAll()`. The same path can be saved and restored; `NavigationPath` has a `codable` representation when its values are `Codable`.
+
+      A pitfall from Apple's docs: don't put `navigationDestination` inside a lazy container like `List` or `LazyVStack`, because the stack might not see it. Put it on a view outside those containers.
+    keyPoints:
+      - NavigationLink(value:) plus navigationDestination(for:).
+      - A path binding (array or NavigationPath) makes navigation state data.
+      - Deep links become building the path.
+      - NavigationPath codable for state restoration.
+      - navigationDestination outside lazy containers.
+    followUps:
+      - question: Who should own the path?
+        answer: Whoever decides navigation. In a small app it's `@State` in the root view; in a larger one, a router or coordinator object (an `@Observable` per tab) owns it, so deep link handling and tests can change navigation without touching views. NavigationView is deprecated, so new code shouldn't use it.
+    related: [m35]
+
+  - id: q-swiftui-list-performance
+    category: swiftui
+    difficulty: hard
+    question: A SwiftUI list with thousands of rows scrolls badly and its rows update more than they should. How do you investigate and fix it?
+    answer: |
+      **Measure.** I profile on a device with Instruments' SwiftUI template and the Time Profiler, to see which view bodies run, how often, and how long they take. During development, `let _ = Self._printChanges()` inside a `body` prints what triggered the update; it's an underscored debugging helper, not something to ship.
+
+      **Common causes:**
+
+      - **Unstable identity.** `id: \.self` over values that aren't unique, `UUID()` created in `body`, or `ForEach` over indices while the array changes. SwiftUI sees new views and rebuilds rows. Use a stable ID from the model.
+      - **Broad dependencies.** With `ObservableObject`, any `@Published` change invalidates every observing view. With `@Observable`, only the bodies that read the changed property update, so reading less in each row helps. Passing a whole large model to each row when it needs two fields has the same effect.
+      - **Expensive work in `body`**: creating formatters, sorting or filtering the array, decoding images. Precompute in the model, or cache.
+      - **Non-lazy containers.** A `VStack` inside a `ScrollView` builds every row up front. `List`, `LazyVStack` and `LazyVGrid` create rows as they're needed.
+
+      **Fix in small steps**: extract rows into their own view types with narrow inputs, so SwiftUI can skip the ones whose inputs didn't change, and measure again after each change.
+    keyPoints:
+      - Profile with Instruments; _printChanges for debugging only.
+      - Stable, unique identity from the model.
+      - Narrow dependencies; Observation updates per property read.
+      - No expensive work in body.
+      - Lazy containers; small row views with narrow inputs.
+    followUps:
+      - question: What does EquatableView or .equatable() do, and when does it help?
+        answer: It lets SwiftUI compare a view's new value with the old one using your `==` and skip updating its content if they're equal. It helps for a costly view whose inputs SwiftUI can't compare well on its own. Most of the time, narrowing the view's inputs gets you the same result with less code.
+    related: [m34, m39]
+
+  - id: q-swiftui-layout-process
+    category: swiftui
+    difficulty: hard
+    question: How does SwiftUI's layout system decide the size and position of a view?
+    answer: |
+      In three steps that go down and back up the tree:
+
+      1. **The parent proposes a size** to the child.
+      2. **The child chooses its own size**, using the proposal as input. It can ignore it: `Text` takes what it needs for its string, `Color` takes everything offered, an `Image` without `.resizable()` takes its natural size.
+      3. **The parent places the child** in its own coordinate space; the child can't move itself.
+
+      Modifiers are views too, so they take part. `.frame(width: 100)` proposes 100 to its child, then reports 100 to its own parent whatever the child chose. `.padding()` proposes a smaller size and reports a bigger one. That's why modifier order matters: `.padding().background(.blue)` and `.background(.blue).padding()` look different.
+
+      Layout containers measure their children with special proposals. Apple's docs describe zero (minimum size), infinity (maximum size) and unspecified (ideal size). An `HStack` uses those answers to decide which children are flexible and how to split the space. `.layoutPriority` changes the order. `.fixedSize()` gives the child an unspecified proposal, so it takes its ideal size.
+
+      When the stacks aren't enough, a custom `Layout` (iOS 16+) implements `sizeThatFits` and `placeSubviews` with the same model. `ViewThatFits` picks the first child whose ideal size fits.
+    keyPoints:
+      - Parent proposes, child chooses, parent places.
+      - Views can ignore the proposal.
+      - Modifiers are views; order matters.
+      - Zero, infinity and unspecified proposals measure flexibility.
+      - Custom Layout with sizeThatFits and placeSubviews.
+    followUps:
+      - question: Why is GeometryReader often a problem?
+        answer: It accepts whatever size it's offered and returns a flexible size to its parent, so wrapping content in it changes the layout around it, often making it expand. And reading geometry to set state causes extra layout passes. I reach for alignment, `containerRelativeFrame`, `ViewThatFits` or a custom `Layout` first.
+    related: [m34, m39]
+
+  - id: q-swiftui-animations
+    category: swiftui
+    difficulty: medium
+    question: What's the difference between an implicit and an explicit animation in SwiftUI, and what is a transaction?
+    answer: |
+      In SwiftUI you don't animate views; you animate **state changes**. When the state changes, SwiftUI interpolates the animatable properties between the old and the new layout.
+
+      - **Explicit**: `withAnimation(.spring) { isExpanded.toggle() }`. Every view affected by that change animates. It's the clearest when the animation belongs to a user action.
+      - **Implicit**: `.animation(.easeInOut, value: isExpanded)` on a view. That view animates whenever `isExpanded` changes, no matter who changed it. The `value:` version (iOS 15+) is the one to use; it limits the animation to changes of that value.
+
+      A **transaction** is the context of one state update, and the animation travels in it. `withAnimation` sets the animation on the root transaction, and views can read or change it with `.transaction { }`, for example to disable animations for one subtree.
+
+      **Transitions** are different: they describe how a view enters or leaves the hierarchy (`.transition(.move(edge: .bottom))`), so they only run when identity changes, like an `if` that adds or removes a view, and only inside an animated change.
+    keyPoints:
+      - SwiftUI animates state changes, not views.
+      - withAnimation is explicit; .animation(_:value:) is implicit and scoped to a value.
+      - The transaction carries the animation for an update.
+      - Transitions apply to insertion and removal.
+    followUps:
+      - question: How do you respect Reduce Motion?
+        answer: Read `@Environment(\.accessibilityReduceMotion)` and swap large movements for a fade or no animation when it's on. It's a small change that matters for people with vestibular disorders.
+    related: [m38]
+
+  - id: q-swiftui-when-uikit
+    category: swiftui
+    difficulty: easy
+    question: When would you drop down to UIKit in a SwiftUI app?
+    answer: |
+      When SwiftUI doesn't offer the control or the level of control I need, and I've checked that the current iOS version doesn't either. Common cases:
+
+      - **A component that has no SwiftUI equivalent** in my deployment target, or one where I need the delegate-level hooks of the UIKit version: some text editing behaviors in `UITextView`, a camera preview layer, a third-party SDK that hands you a `UIView`.
+      - **A screen that already exists in UIKit** and works. Wrapping it is cheaper and safer than rewriting it.
+      - **Very fine control of scrolling or layout** in a complex screen, where a `UICollectionView` with a compositional layout is more predictable.
+
+      The tools are `UIViewRepresentable` and `UIViewControllerRepresentable` to bring UIKit into SwiftUI, and `UIHostingController` the other way.
+
+      What I avoid is dropping down by habit. Each bridge adds code that has to sync state both ways, and SwiftUI picks up new capabilities every year, so I check the current docs before deciding a missing feature is really missing.
+    keyPoints:
+      - Missing components or missing hooks in the deployment target.
+      - Reusing existing UIKit screens.
+      - Fine-grained scroll or layout control.
+      - Representables and UIHostingController as the bridges.
+      - The cost of each bridge; check current SwiftUI first.
+    followUps:
+      - question: What's the main cost of a representable?
+        answer: You now keep two worlds in sync by hand. SwiftUI state goes into the UIKit view in `updateUIView`, and UIKit changes come back through a coordinator. Mistakes there show up as loops or stale values.
+    related: [m40]
+
+  - id: q-swiftui-representable
+    category: swiftui
+    difficulty: medium
+    question: How does UIViewRepresentable work? Walk through wrapping a UIKit view that has a delegate.
+    writesCode: true
+    answer: |
+      SwiftUI calls `makeUIView(context:)` **once** to create the view, `updateUIView(_:context:)` **every time** the representable's inputs change, and `dismantleUIView(_:coordinator:)` when it's removed. Delegate and target-action callbacks go to a **coordinator**, created by `makeCoordinator()` and available as `context.coordinator`.
+
+      ```swift
+      struct SearchField: UIViewRepresentable {
+          @Binding var text: String
+
+          func makeCoordinator() -> Coordinator { Coordinator(text: $text) }
+
+          func makeUIView(context: Context) -> UISearchBar {
+              let searchBar = UISearchBar()
+              searchBar.delegate = context.coordinator
+              return searchBar
+          }
+
+          func updateUIView(_ searchBar: UISearchBar, context: Context) {
+              context.coordinator.text = $text
+              if searchBar.text != text { searchBar.text = text }
+          }
+
+          final class Coordinator: NSObject, UISearchBarDelegate {
+              var text: Binding<String>
+              init(text: Binding<String>) { self.text = text }
+
+              func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+                  text.wrappedValue = searchText
+              }
+          }
+      }
+      ```
+
+      Details that matter: `updateUIView` should only touch what changed (the `if` avoids resetting the text and cursor while the user types); configuration that never changes goes in `makeUIView`; and SwiftUI owns the view's frame, bounds, center and transform, so you don't set them. For custom sizing, `sizeThatFits(_:uiView:context:)` (iOS 16+) answers SwiftUI's size proposal.
+    keyPoints:
+      - makeUIView once, updateUIView on every input change.
+      - The coordinator handles delegate and target-action callbacks.
+      - updateUIView only applies differences.
+      - Refresh the coordinator's binding in updateUIView.
+      - SwiftUI controls the frame; sizeThatFits for custom sizing.
+    followUps:
+      - question: Why update the coordinator's binding in updateUIView?
+        answer: The coordinator is created once, but the representable struct is recreated with each update. Refreshing the binding keeps the coordinator pointing at the current source of truth.
+    related: [m40]
+
+  - id: q-swiftui-sheet-item
+    category: swiftui
+    difficulty: easy
+    question: How do you present a sheet for a selected item in SwiftUI, and why is sheet(item:) often better than sheet(isPresented:)?
+    answer: |
+      `sheet(item:)` takes a binding to an optional `Identifiable` value. Setting it to a value presents the sheet with that value; the sheet sets it back to `nil` when it's dismissed.
+
+      ```swift
+      @State private var selectedTransaction: Transaction?
+
+      List(transactions) { transaction in
+          Button(transaction.title) { selectedTransaction = transaction }
+      }
+      .sheet(item: $selectedTransaction) { transaction in
+          TransactionDetail(transaction: transaction)
+      }
+      ```
+
+      With `sheet(isPresented:)` plus a separate selected item, you have two pieces of state that have to agree: "is it showing" and "what is it showing". It's easy to set them in the wrong order or forget to clear one, and you end up with a sheet that shows stale or empty data. With `item:`, presentation and content are the same piece of state, so they can't disagree.
+
+      `isPresented:` is fine when the sheet doesn't depend on a selection, like a settings screen. Inside the sheet, `@Environment(\.dismiss)` closes it.
+    keyPoints:
+      - sheet(item:) uses an optional Identifiable binding.
+      - One piece of state for presentation and content.
+      - isPresented plus a separate selection can drift apart.
+      - dismiss from the environment to close it.
+    followUps:
+      - question: How do you prevent the user from swiping a sheet away while a form has unsaved changes?
+        answer: Apply `.interactiveDismissDisabled(hasUnsavedChanges)` to the sheet's content and give the user explicit Save and Cancel buttons.
+    related: [m35]
+
+  - id: q-swiftui-observation-debugging
+    category: swiftui
+    difficulty: medium
+    question: A view that reads an @Observable model doesn't update when you expect it to. What do you check?
+    answer: |
+      Observation tracks the properties a view **reads in `body`**, on instances it can see. So I check where that chain breaks:
+
+      - **The property isn't read in `body`.** If the value is only read in a closure that runs later (a button action) or in `init`, that view isn't subscribed to it. It updates when something it does read changes.
+      - **The model is a copy, not the shared instance.** A struct model, or a fresh `Model()` created in a child view, means the child is watching a different object from the one being changed.
+      - **The class isn't `@Observable`**, or the property is marked `@ObservationIgnored`, or it's a computed property that reads storage outside the model (like `UserDefaults`), which Observation can't see.
+      - **A child stores a passed-in model in its own `@State`.** SwiftUI keeps the first instance and ignores the ones passed in later, so when the parent switches to a different model, the child keeps showing the old one. A model you receive is a plain property (or `@Bindable`), not `@State`.
+      - **An `ObservableObject` stored in `@State`**: it only updates when the reference changes.
+
+      I confirm with `Self._printChanges()` in `body` during debugging, or with Instruments.
+    keyPoints:
+      - Only properties read in body are tracked.
+      - Watching a copy or a different instance.
+      - Missing @Observable, @ObservationIgnored, or state outside the model.
+      - A received model stored in @State keeps the first instance.
+      - ObservableObject in @State only tracks the reference.
+    followUps:
+      - question: Does Observation track changes inside an array of observable objects?
+        answer: It tracks what you read. If a row reads `item.title`, it updates when that item's `title` changes. The parent that reads `model.items` updates when the array itself changes (insertions, removals), not when a property of an element changes.
+    related: [m36]
+
+  - id: q-swiftui-stateobject-vs-observedobject
+    category: swiftui
+    difficulty: medium
+    question: In a codebase that uses ObservableObject, what's the difference between @StateObject and @ObservedObject, and what does @Published do?
+    answer: |
+      `ObservableObject` is a **protocol** (from Combine), not a property wrapper. A conforming class gets an `objectWillChange` publisher, and each `@Published` property makes it emit **before** the property changes (on `willSet`). SwiftUI listens to that publisher and schedules an update of the views observing the object.
+
+      The two wrappers differ in **ownership**, not in what you can do with the object:
+
+      - **`@StateObject`**: the view **owns** the object. SwiftUI creates it once (its initializer is an autoclosure) and keeps it alive for the lifetime of the view's identity, across redraws.
+      - **`@ObservedObject`**: the view **observes an object someone else owns**, usually passed in from a parent's `@StateObject`. It's fully mutable, and `$model.name` gives you bindings, same as with `@StateObject`.
+
+      The classic bug is `@ObservedObject var model = Model()`. Nothing owns it, so each time the parent rebuilds this view, a new model is created and the state is lost. The rule: create with `@StateObject`, receive with `@ObservedObject`.
+
+      Since iOS 17, `@Observable` with `@State`, `@Bindable` and `@Environment` is the default for new code. The `ObservableObject` path is legacy but not deprecated, so you'll keep reading it in existing apps and in code that supports iOS 16.
+    keyPoints:
+      - ObservableObject is a protocol; objectWillChange fires before changes.
+      - "@Published triggers objectWillChange on willSet."
+      - "@StateObject owns and keeps the object; @ObservedObject only observes."
+      - Both allow mutation and $ bindings.
+      - Creating an object in @ObservedObject loses state; legacy but not deprecated.
+    followUps:
+      - question: Why does it matter that objectWillChange fires before the change?
+        answer: SwiftUI uses it to know a change is coming and schedules an update; when it reads the properties during the update, they already hold the new values. If you subscribe to `objectWillChange` yourself and read the property inside the sink, you get the old value, which surprises people.
+    related: [m36]
+
+  - id: q-swiftui-lifecycle-vs-uikit
+    category: swiftui
+    difficulty: medium
+    question: How does a SwiftUI view's lifecycle compare with a UIViewController's? Where's the viewDidLoad equivalent?
+    answer: |
+      There isn't a direct one, because a SwiftUI `View` isn't a long-lived object. The struct is created and thrown away many times; `init` can run on every parent update, so it isn't a place for setup. What lives on is the view's **identity**, and the state attached to it.
+
+      Rough equivalents:
+
+      | UIKit | SwiftUI |
+      | --- | --- |
+      | `viewDidLoad` (one-time setup) | `@State` initial values; one-time loading in `.task` with a guard, or in the model |
+      | `viewWillAppear` / `viewDidAppear` | `.onAppear`, `.task` |
+      | `viewDidDisappear` | `.onDisappear`; `.task` is cancelled automatically |
+      | `traitCollectionDidChange` | reading `@Environment` values; the body reruns |
+      | `deinit` | none for the view; state is released when the identity goes away |
+
+      The key difference: in UIKit you react to lifecycle events and update views by hand. In SwiftUI, most of what you'd do in those callbacks becomes "derive it from state in `body`", and the callbacks you still need are for side effects like loading data or starting a timer.
+
+      `onAppear` can fire more than once: when coming back to a screen in a stack, switching tabs, or as lazy rows scroll in and out.
+    keyPoints:
+      - View structs are short-lived; identity and state persist.
+      - init isn't a setup hook.
+      - onAppear, task and onDisappear as the side-effect hooks.
+      - Much of UIKit's callback work becomes deriving UI from state.
+      - onAppear can run several times.
+    followUps:
+      - question: Where would you start a timer or a stream subscription that should stop when the user leaves?
+        answer: In `.task`, as a `for await` loop over an `AsyncSequence` or a `Task.sleep` loop. SwiftUI cancels the task when the view disappears, which ends the loop without a manual `onDisappear`.
+    related: [m34, m36]
+
+  - id: q-swiftui-pros-limits
+    category: swiftui
+    difficulty: easy
+    question: What are SwiftUI's strengths and its limits compared with UIKit?
+    answer: |
+      **Strengths:**
+
+      - **Less code for the same UI**, and no state-to-view syncing by hand, so a whole class of "the screen shows stale data" bugs goes away.
+      - **Previews** for fast iteration on layout and states.
+      - **Built-in adaptivity**: Dynamic Type, dark mode, localization and accessibility labels mostly work by default.
+      - **Multi-platform**: the same views run on iOS, iPadOS, macOS, watchOS and visionOS with adjustments.
+      - New Apple APIs (widgets, Live Activities, many visionOS features) are SwiftUI-first or SwiftUI-only.
+
+      **Limits:**
+
+      - **Less control** when you need precise behavior in complex scrolling, text editing or custom transitions; some of it requires newer OS versions or UIKit.
+      - **Features depend on the iOS version.** `NavigationStack` needs iOS 16, Observation iOS 17, so a low deployment target restricts what you can use.
+      - **Performance problems are less visible**: excessive body updates from broad dependencies or unstable identity need profiling to find.
+      - **Debugging is harder** when the framework decides when things update.
+
+      In practice most teams mix both: SwiftUI by default, UIKit through representables where it's needed.
+    keyPoints:
+      - Less code and no manual syncing of state and views.
+      - Previews, built-in adaptivity, multi-platform, new APIs.
+      - Less fine-grained control in complex cases.
+      - Features tied to OS versions.
+      - Performance and debugging need different tools; mixing both is normal.
+    followUps:
+      - question: How does the deployment target affect a SwiftUI project?
+        answer: It decides which APIs you can use without availability checks. With iOS 17 as the minimum you get Observation and `NavigationStack` everywhere; with iOS 15 you'd need `ObservableObject` and fallbacks for navigation, which adds code and testing on old versions.
+    related: [m34, m40]
+
+  - id: q-swiftui-availability
+    category: swiftui
+    difficulty: medium
+    question: Your app supports iOS 17, but you want to use an API introduced in iOS 18. How do you do it, and how do you keep it from spreading everywhere?
+    answer: |
+      With an **availability check** and a fallback.
+
+      - `if #available(iOS 18, *) { … } else { … }` checks at runtime and lets the compiler accept the newer API inside the first branch. `if #unavailable(iOS 18)` (Swift 5.6, SE-0290) is the inverse.
+      - `@available(iOS 18, *)` on a type or function marks the whole declaration, so callers must check before using it.
+
+      In SwiftUI, `if #available` works inside a view builder. To keep checks from spreading, I wrap them in one place, usually a view modifier:
+
+      ```swift
+      extension View {
+          @ViewBuilder
+          func compatibleFeature() -> some View {
+              if #available(iOS 18, *) {
+                  self.newerModifier()
+              } else {
+                  self.olderFallback()
+              }
+          }
+      }
+      ```
+
+      Here `newerModifier()` and `olderFallback()` stand for the real APIs. Call sites use `.compatibleFeature()` and don't know about versions. When the deployment target goes up, you delete the check in one place.
+
+      Every fallback is code you have to test on an older simulator, so I keep fallbacks simple, often just "the feature isn't shown".
+    keyPoints:
+      - "#available for runtime checks; @available on declarations."
+      - "#unavailable for the inverse."
+      - Wrap checks in one modifier or helper.
+      - Fallbacks must be tested on older OS versions.
+      - Remove checks when the deployment target rises.
+    followUps:
+      - question: What's the difference between #available and a compile-time check like #if swift(>=6.0)?
+        answer: '`#available` is a runtime check of the OS the app is running on; the binary contains both paths. `#if swift(>=…)` or `#if canImport(…)` are compile-time conditions on the compiler or the SDK, and the code that doesn''t match isn''t compiled at all. An SDK check doesn''t protect you from running on an older OS.'
+    related: [m34, m43]

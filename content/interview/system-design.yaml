@@ -27,3 +27,502 @@ questions:
       - question: How do you test this design?
         answer: I'd test the repository with a fake network client and in-memory persistence, covering the order states are emitted in, errors, and pagination. The view gets tested with fixed screen states and, if it makes sense, snapshots.
     related: [m48]
+
+  - id: q-sd-pagination
+    category: system-design
+    difficulty: easy
+    question: The feed API returns pages with ?page=3. What problems does that cause on mobile, and what would you ask the backend for instead?
+    answer: |
+      **Offset pagination** (`page` or `offset` plus `limit`) breaks when the list changes while the user scrolls. If five new posts are inserted at the top between page 1 and page 2, page 2 now starts five items earlier: the user sees duplicates. If items are deleted, some are skipped and never shown. Large offsets also get slow on many databases, because the server still has to walk past every skipped row.
+
+      I'd ask for **cursor-based pagination**: each response includes the items and an opaque `nextCursor`, and the next request sends it back.
+
+      ```json
+      { "items": [ … ], "nextCursor": "eyJpZCI6IDk4NzY1fQ" }
+      ```
+
+      The cursor encodes a position (for example "after post 98765, sorted by creation time"), so inserts at the top don't shift what comes next. When `nextCursor` is null, the list is complete. For pull-to-refresh, I either reload from the start or ask for items newer than the first one I have.
+
+      On the client: dedupe by stable id anyway, as a safety net; start loading the next page a few rows before the end; never fire two requests for the same cursor; and keep a separate "loading more failed, tap to retry" state at the bottom instead of replacing the whole list with an error.
+    keyPoints:
+      - Explains duplicates and skipped items with offset pagination.
+      - Cursor pagination with an opaque nextCursor.
+      - How refresh and end of list work.
+      - Client-side dedupe, prefetching and avoiding duplicate requests.
+      - A footer error state instead of a full-screen error.
+    followUps:
+      - question: When is offset pagination fine?
+        answer: |
+          When the data doesn't change while the user browses it, or when the user needs to jump to an arbitrary page, like search results with page numbers or an admin table. For an infinite feed that updates constantly, cursors are the better fit.
+    writesCode: false
+    related: [m48, m30]
+
+  - id: q-sd-image-cache
+    category: system-design
+    difficulty: medium
+    question: Design an image loading and caching layer for an app with long scrolling lists of remote images.
+    answer: |
+      **Requirements:** images load fast while scrolling, aren't downloaded twice, memory stays bounded, and cells don't show the wrong image after reuse.
+
+      **Components:**
+      1. **Memory cache** of decoded images, keyed by URL plus target size. `NSCache` fits: it's thread-safe and evicts under memory pressure. I set a cost limit based on decoded byte size, since a decoded image is width × height × 4 bytes, not the file size.
+      2. **Disk cache** of the downloaded data in the Caches directory, with a size limit and LRU eviction. `URLCache` can cover this if the server sends good cache headers; otherwise a custom store.
+      3. **Loader** that coalesces requests: if ten cells ask for the same URL at once, one download happens.
+
+      ```swift
+      actor ImageLoader {
+          private var cache: [URL: Data] = [:]
+          private var inFlight: [URL: Task<Data, Error>] = [:]
+          private let fetch: @Sendable (URL) async throws -> Data
+
+          init(fetch: @escaping @Sendable (URL) async throws -> Data) { self.fetch = fetch }
+
+          func data(for url: URL) async throws -> Data {
+              if let cached = cache[url] { return cached }
+              if let running = inFlight[url] { return try await running.value }
+
+              let task = Task { try await fetch(url) }
+              inFlight[url] = task
+              defer { inFlight[url] = nil }
+
+              let data = try await task.value
+              cache[url] = data
+              return data
+          }
+      }
+      ```
+
+      (The dictionary stands in for the real memory cache here.) The in-flight entry is stored **before** the first `await`, so the actor's reentrancy can't start a second download.
+
+      4. **Decoding and downsampling** off the main thread to the size actually displayed. Decoding a 4000-pixel photo for a 100-point thumbnail is the classic memory spike.
+      5. **Cell reuse:** cancel the load when the cell is reused (or let SwiftUI's `.task` cancel it), and check the cell still wants that URL before setting the image.
+
+      **What I'd measure:** cache hit rate, memory peak while scrolling, dropped frames, and bytes downloaded per session.
+    keyPoints:
+      - Memory and disk tiers with bounded size and eviction.
+      - Coalesces duplicate in-flight requests.
+      - Downsamples and decodes off the main thread.
+      - Handles cell reuse and cancellation.
+      - Measures hit rate, memory and scrolling performance.
+    followUps:
+      - question: Why might the deduplication fail if you registered the task after awaiting something?
+        answer: |
+          Actors are reentrant. If the method awaited anything before writing `inFlight[url]`, a second call could run during that suspension, find no entry, and start its own download. Checking and inserting without a suspension point in between is what makes it safe.
+      - question: Would you use a third-party library instead?
+        answer: |
+          In many apps, yes: Kingfisher or Nuke solve this well. I'd still want to understand the design so I can configure the limits and debug memory issues. Building it myself makes sense when I need tight control or can't take the dependency.
+    writesCode: true
+    related: [m48, m29, m43]
+
+  - id: q-sd-networking-layer
+    category: system-design
+    difficulty: medium
+    question: Design the networking layer for a mid-sized app with about 40 endpoints.
+    answer: |
+      **Goals:** endpoints are cheap to add, auth and errors are handled in one place, and everything is testable without a server.
+
+      **Pieces:**
+      - **Endpoint description:** a value that knows its path, method, query, body and response type, for example `Endpoint<User>`. Adding an endpoint means adding one of these, not a new method with copied `URLSession` code.
+      - **API client:** one type that turns an endpoint into a `URLRequest`, sends it with an injected `URLSession`, checks the status code, and decodes. It exposes `async throws` methods.
+      - **Interceptors or middleware:** add the auth header, a request id, the app version, and log (without secrets).
+      - **Auth refresh:** on a 401, refresh the token once and retry. Concurrent requests that hit 401 at the same time must share **one** refresh. An actor holding the in-flight refresh task does that cleanly. If the refresh fails, sign the user out.
+      - **Typed errors:** map transport errors, HTTP status and decoding failures to an app error the UI can act on: offline, unauthorized, server error, invalid data.
+      - **Retries:** only for idempotent requests (GET, or POST with an idempotency key), only for transient failures (timeouts, 503), with exponential backoff and jitter, and a cap.
+
+      **Testing:** stub the endpoint protocol above the client, and use a `URLProtocol` stub to test the client itself.
+
+      **Tradeoffs:** I wouldn't build a big generic framework on day one. A thin client plus endpoint values covers most apps. If the backend has an OpenAPI spec, generating the client (for example with Apple's swift-openapi-generator) removes a whole class of mismatches.
+    keyPoints:
+      - Endpoints as values, one client for transport.
+      - Central auth with a single shared token refresh.
+      - Typed errors the UI can act on.
+      - Retries only for idempotent and transient failures, with backoff and jitter.
+      - Testability with protocols and URLProtocol.
+    followUps:
+      - question: What does "exponential backoff with jitter" mean, and why the jitter?
+        answer: |
+          Wait longer after each failed attempt (0.5 s, 1 s, 2 s, 4 s… up to a cap), and pick a random delay up to that value instead of the exact value. Without jitter, thousands of clients that failed at the same moment, say during an outage, all retry at the same moments and hit the recovering server in waves.
+    writesCode: false
+    related: [m48, m30]
+
+  - id: q-sd-news-feed
+    category: system-design
+    difficulty: medium
+    question: Design the home feed of a social app, like a news feed with posts, images and likes.
+    answer: |
+      **Clarify first:** is the feed ranked or chronological? Does it need to work offline? Are likes and comment counts live? Expected scale of posts per session? I'll assume a ranked feed computed by the server, offline reading of the last session, and counts that can be a little stale.
+
+      **API:** `GET /feed?cursor=…` returns posts and a `nextCursor`. The server ranks; the client never re-sorts. Each post has a stable id, author, text, image URLs with sizes, and counts.
+
+      **Client components:**
+      - `FeedRepository`: fetches pages, writes them to a local store, exposes a stream of feed states.
+      - Local store: the last N posts (say a few hundred) in SwiftData, Core Data or SQLite, enough to show something instantly at launch and offline.
+      - Image pipeline with memory and disk caches and downsampling.
+      - The view: a lazy list (`UICollectionView` with a diffable data source, or `List`/`LazyVStack`), prefetching the next page near the end and images for upcoming rows.
+
+      **Data flow at launch:** show the cached feed immediately, fetch the first page in the background, then replace it. Insert new posts with a "new posts" pill instead of jumping the scroll position under the user's finger.
+
+      **Likes:** optimistic update. Change the UI immediately, send the request, and roll back with a message if it fails. Retry safely with an idempotent endpoint (`PUT /posts/{id}/like`).
+
+      **Failure modes:** no network (cached feed and a banner), a failed next page (retry footer), a deleted post (handle 404 on detail).
+
+      **Measure:** time to first post, scroll hitches, page load errors, images downloaded per session.
+    keyPoints:
+      - Asks clarifying questions about ranking, offline and freshness.
+      - Cursor pagination with server-side ranking.
+      - Cache-first launch and a non-disruptive way to insert new content.
+      - Optimistic likes with rollback and idempotent requests.
+      - Failure states and metrics.
+    followUps:
+      - question: How would you keep the like count fresh without polling every post?
+        answer: |
+          Refresh counts when posts come back on screen or on pull-to-refresh, and accept a little staleness. If the product really needs live counts, a WebSocket or server-sent events channel for visible post ids, but that's real cost on the backend for a small gain.
+    writesCode: false
+    related: [m48]
+
+  - id: q-sd-chat
+    category: system-design
+    difficulty: hard
+    question: Design a one-to-one and group chat feature for an iOS app.
+    answer: |
+      **Requirements:** send and receive text and images in real time, message history, delivery and read status, works with a flaky connection, notifications when the app isn't running. Out of scope unless asked: end-to-end encryption and calls.
+
+      **Transport:** a persistent connection while the app is in the foreground, a **WebSocket** (`URLSessionWebSocketTask`), for receiving messages in real time. Sending can go over the socket or a plain HTTPS POST. In the background the socket is gone, so **push notifications** carry new messages, and the app syncs when it comes back.
+
+      **Message model:** each message has a **client-generated id** (a UUID) and, once the server accepts it, a **server sequence number** per conversation. The client id makes sends idempotent: if a retry reaches the server twice, it's stored once. The sequence number gives one order for everyone, independent of device clocks.
+
+      **Sending (outbox):** write the message locally as `pending` and show it immediately, then send. On acknowledgment, store the sequence number and mark it `sent`. On failure, retry with backoff; after a while, show "not delivered, tap to retry". The outbox survives app restarts.
+
+      **Sync:** for each conversation, remember the last sequence number seen. After reconnecting, ask for everything after it. Gaps in sequence numbers tell you something was missed.
+
+      **Persistence:** a local database with conversations and messages, indexed by conversation and sequence; the UI reads from it, so everything works offline. Images upload separately and the message references the uploaded URL.
+
+      **Failure modes:** socket drops (reconnect with backoff, then sync), duplicates (dedupe by client id), out-of-order delivery (sort by sequence), and the user sending while offline (outbox).
+
+      **Measure:** send-to-delivered latency, failed sends, reconnect rate, time to show a conversation.
+    keyPoints:
+      - WebSocket in the foreground, push plus sync in the background.
+      - Client-generated ids for idempotency, server sequence numbers for ordering.
+      - A persistent outbox with optimistic UI and retry.
+      - Sync from the last seen sequence number after reconnecting.
+      - Local database as the source for the UI, and named failure modes.
+    followUps:
+      - question: Why not order messages by their timestamps?
+        answer: |
+          Device clocks are wrong or skewed, and two people can send at nearly the same moment. Ordering by a sequence the server assigns gives every participant the same order. The timestamp is still shown, but it doesn't decide the order.
+      - question: How do read receipts work without a flood of requests?
+        answer: |
+          Send one "read up to sequence N" per conversation, not one per message, and debounce it while the user scrolls. The server stores the highest value per participant.
+    writesCode: false
+    related: [m48, m30]
+
+  - id: q-sd-photo-upload
+    category: system-design
+    difficulty: hard
+    question: Users upload batches of high-resolution photos, often on bad connections. Design the upload flow.
+    answer: |
+      **Requirements:** uploads continue if the user leaves the app, survive bad networks, show progress, don't duplicate photos, and don't burn through cellular data unexpectedly.
+
+      **Flow:**
+      1. **Prepare locally.** When the user picks photos, export each one to a file in the app container: resized or recompressed if the product allows it, with location metadata stripped if it's not needed. Create a record in a local upload queue (`pending`, with a client-generated id).
+      2. **Get an upload target.** Ask the backend for a pre-signed URL per photo (to object storage), sending the client id. The server is idempotent on that id, so retries don't create duplicates.
+      3. **Upload with a background session.** `URLSessionConfiguration.background(withIdentifier:)` hands the transfers to a system process, so they continue while the app is suspended. Background sessions only support **upload tasks from a file**, which is why step 1 writes files. Use one session and start many tasks, rather than one session per photo.
+      4. **Finish.** When a task completes, the app is woken (relaunched if it was terminated by the system), recreates the session with the same identifier, and receives the delegate callbacks. It then tells the backend the upload is complete and marks the record done.
+
+      **Resuming:** since iOS 17, URLSession upload tasks can resume after interruption if the server supports the resumable upload protocol draft Apple described at WWDC23. Without that, large files need chunking on the API side.
+
+      **Failure modes:** if the user force-quits from the app switcher, the system **cancels** background transfers and doesn't relaunch the app, so the queue must restart pending items on next launch. Expired pre-signed URLs need a fresh one. Low storage: clean up exported files after success.
+
+      **Settings and UX:** a "cellular uploads" toggle (`allowsCellularAccess`), per-photo progress, and a clear failed state with retry.
+    keyPoints:
+      - Exports to files first because background sessions require file uploads.
+      - A persistent local queue with client ids for idempotency.
+      - Background URLSession behavior, including relaunch and reconnecting by identifier.
+      - Knows force-quit cancels background transfers.
+      - Pre-signed URLs, resumable uploads, cellular settings and progress.
+    followUps:
+      - question: Why upload directly to object storage with a pre-signed URL instead of to your API server?
+        answer: |
+          The API servers don't have to proxy large binary bodies, and object storage is built for exactly that load. The API only issues short-lived, scoped URLs and records the result, so it stays in control of who can upload what.
+    writesCode: false
+    related: [m48, m30]
+
+  - id: q-sd-offline-notes
+    category: system-design
+    difficulty: hard
+    question: Design an offline-first notes app that syncs across a user's devices.
+    answer: |
+      **Clarify:** single user on several devices, or shared notes with collaborators? Plain text or rich text? How likely are simultaneous edits? I'll assume one user, several devices, rich text, conflicts rare but possible.
+
+      **Principle:** the **local database is the source of truth for the UI**. Every edit writes locally first and the app never waits for the network to show or save anything. Sync runs in the background.
+
+      **Local model:** notes with a client-generated id, content, `updatedAt`, a `version` from the server, and a `dirty` flag (or a separate change log of pending operations). Deletions are **tombstones** (`deletedAt`), not row removals, so the deletion can be synced.
+
+      **Sync protocol:**
+      - **Push:** send pending changes, each with the base version it was edited from.
+      - **Pull:** ask for everything changed since my last sync token; the server returns changes and a new token.
+      - The server rejects a push whose base version is stale. That's a conflict.
+
+      **Conflict resolution**, from simplest to most complex:
+      1. **Last writer wins** per note. Simple, but silently loses an edit.
+      2. **Field-level merge:** title and body resolved separately.
+      3. **Keep both:** save the losing version as a "conflicted copy", like many file sync tools do. Honest and simple for notes.
+      4. **CRDTs or operational transforms** for real-time collaborative text. Correct, but a large investment.
+
+      For this app I'd pick field-level merge plus a conflicted copy when the body changed on both sides.
+
+      **Triggers:** sync at launch, on foreground, after edits (debounced), on reconnect (`NWPathMonitor`), and with background refresh. Retry with backoff.
+
+      **Alternative:** if it's Apple-only, CloudKit (or SwiftData with CloudKit sync) gives you much of this, with fewer conflict controls.
+
+      **Measure:** sync failures, conflict rate, time from edit to available on another device.
+    keyPoints:
+      - Local-first writes; the UI never waits for the network.
+      - Client ids, versions, dirty tracking and tombstones.
+      - A push and pull protocol with sync tokens.
+      - Compares conflict strategies and picks one with a reason.
+      - Sync triggers, CloudKit as an alternative, and metrics.
+    followUps:
+      - question: Why tombstones instead of deleting the row?
+        answer: |
+          If you delete the row, the next sync can't tell "deleted here" from "never existed here", and another device may push the note back. A tombstone syncs the deletion explicitly. You purge tombstones once every device has synced past them.
+    writesCode: false
+    related: [m48, m31]
+
+  - id: q-sd-push-flow
+    category: system-design
+    difficulty: medium
+    question: Walk me through how a push notification gets from your backend to the user's screen, and what you'd design around it.
+    answer: |
+      **Registration:**
+      1. The app asks for permission with `UNUserNotificationCenter.requestAuthorization(options:)` (alerts, sounds, badges).
+      2. It calls `registerForRemoteNotifications()`. APNs returns a **device token** through `application(_:didRegisterForRemoteNotificationsWithDeviceToken:)`.
+      3. The app sends the token to the backend, tied to the signed-in user and the device. The token can change (after a restore or a reinstall, for example), so the app registers on every launch and sends the current token. Apple's docs say not to cache it locally.
+
+      **Sending:** the backend sends an HTTP/2 request to APNs with the token, a JSON payload with an `aps` dictionary, and headers like `apns-push-type`. APNs delivers it to the device; if the device is offline, APNs can hold it and retry until the expiration the backend set with `apns-expiration`.
+
+      **On the device:**
+      - **Alert notifications** are shown by the system. When the user taps one, `userNotificationCenter(_:didReceive:withCompletionHandler:)` is called, and the app routes to the right screen (I reuse the deep link router).
+      - **Notification Service Extension:** with `"mutable-content": 1`, the extension can change the content before display, for example to download an image or decrypt the text. It has about 30 seconds.
+      - **Background notifications** (`content-available: 1`, push type `background`, priority 5) wake the app to refresh data. They're low priority, can be throttled, and aren't guaranteed. Apple says not to send more than two or three per hour.
+
+      **Design around it:** never put sensitive data in the payload in plain text; send an id and fetch the details (or encrypt and decrypt in the extension). Unregister the token on sign-out. Don't rely on background pushes for correctness: sync when the app opens anyway.
+    keyPoints:
+      - Permission, registration, device token sent to the backend.
+      - Knows the token can change and handles sign-out.
+      - Backend to APNs to device, with the aps payload.
+      - Service extension for rich or encrypted content.
+      - Background pushes are throttled and not guaranteed.
+    followUps:
+      - question: How would you handle a notification tap when the app was not running?
+        answer: |
+          The app launches and the notification center delegate still receives the response, so I set the delegate early in launch. The handler passes the payload to the same router used for deep links, which waits until the UI and the session are ready (for example after unlocking with biometrics) before navigating.
+    writesCode: false
+    related: [m48, m44]
+
+  - id: q-sd-deep-linking
+    category: system-design
+    difficulty: easy
+    question: How would you add deep links so that https://example.com/orders/123 opens the order in the app?
+    answer: |
+      Use a **universal link**, not a custom URL scheme.
+
+      **Setup:**
+      - Add the Associated Domains capability with `applinks:example.com`.
+      - Host an `apple-app-site-association` JSON file at `https://example.com/.well-known/apple-app-site-association`, served over HTTPS with a valid certificate and **no redirects**, listing the app id and the paths the app handles (`/orders/*`).
+      - Since iOS 14, devices fetch that file through an Apple-managed CDN, not from your server directly, so changes take time to propagate.
+
+      **Handling in the app:**
+      - SwiftUI: `.onOpenURL { url in … }` receives universal links and custom-scheme URLs.
+      - UIKit with scenes: a universal link arrives as an `NSUserActivity` of type `NSUserActivityTypeBrowsingWeb`, in `scene(_:continue:)` when the app is running, or in the connection options of `scene(_:willConnectTo:options:)` on a cold launch. That second case is easy to forget.
+
+      **Routing:** parse the URL into a typed route (`.order(id: "123")`) in one place, and let a router or coordinator navigate. The same route type serves push notification taps and Spotlight. If the user isn't signed in, keep the pending route and apply it after sign-in.
+
+      **Why not a custom scheme like `myapp://`:** any app can register the same scheme, there's no fallback when the app isn't installed, and the link isn't a normal web URL you can share. Universal links fall back to the website.
+    keyPoints:
+      - Universal links over custom schemes, with the reasons.
+      - Associated Domains entitlement and the AASA file requirements.
+      - Handling for both running and cold launch cases.
+      - Parsing into a typed route with central navigation.
+      - Pending routes when the user must sign in first.
+    followUps:
+      - question: Should the app trust the parameters in a deep link?
+        answer: |
+          No. A link is input from outside: anyone can craft one. Validate ids, never let a link perform a sensitive action directly (like confirming a payment), and still check authorization on the server when loading the order.
+    writesCode: false
+    related: [m48, m25]
+
+  - id: q-sd-feature-flags
+    category: system-design
+    difficulty: medium
+    question: Design a feature flag system for the iOS app.
+    answer: |
+      **Uses:** turn features on gradually (1%, 10%, 100%), run A/B tests, ship code dark and enable it later, and have **kill switches** to disable a broken feature without an App Store release.
+
+      **Client design:**
+      - A `FeatureFlags` type with **typed accessors** (`flags.isNewCheckoutEnabled`), not string lookups scattered through the code.
+      - **Defaults compiled into the app** for every flag, so a fresh install with no network behaves sensibly.
+      - Fetch the remote config at launch and on foreground, and **persist the last known values** to disk.
+      - **Read values at a stable point**, typically at launch or the start of a session, and keep them for the session. A flag that flips while the user is in the middle of checkout produces weird half-states.
+      - Targeting (country, app version, user cohort) happens on the server, which returns already-evaluated values for this user. That keeps the rules out of the app and lets you change them without a release.
+
+      **Safety:**
+      - Flags never grant security: the server must enforce anything a flag hides, because a modified client can turn any flag on.
+      - A kill switch has to fail toward "off" if it can't be fetched, or it's useless when you need it.
+
+      **Lifecycle:** every flag has an owner and an expiry. Once a feature is at 100% and stable, remove the flag and the old code path. Old flags pile up into untested combinations.
+
+      **Testing:** inject `FeatureFlags` so tests can set any combination, and test both paths of each live flag.
+    keyPoints:
+      - Rollouts, experiments and kill switches as use cases.
+      - Typed access, compiled defaults and cached remote values.
+      - Stable values within a session.
+      - Server-side targeting and server-side enforcement.
+      - Flag cleanup and testing both paths.
+    followUps:
+      - question: Build it or buy it?
+        answer: |
+          For most teams, use an existing service (Firebase Remote Config, LaunchDarkly or similar) behind my own `FeatureFlags` protocol so I can swap it. Building makes sense if there are strict data rules, like a bank that can't send user attributes to a third party.
+    writesCode: false
+    related: [m48, m41]
+
+  - id: q-sd-analytics
+    category: system-design
+    difficulty: medium
+    question: Design the client side of an analytics pipeline. Events must not be lost, and the app must stay fast.
+    answer: |
+      **Requirements:** record events from anywhere in the app cheaply, deliver them reliably even across crashes and offline periods, respect user consent, and not hurt battery or performance.
+
+      **Components:**
+      - **Typed events:** an enum or structs (`.checkoutStarted(cartValue:)`) instead of free-form strings, so names and properties stay consistent. A schema shared with the data team.
+      - **`track()` is fire-and-forget** and cheap: it stamps the event with an id (UUID), timestamp, session id and app version, and hands it to a background queue or actor.
+      - **Persistent queue:** events are appended to disk (a small SQLite table or an append-only file) before anything else, so a crash or kill doesn't lose them.
+      - **Batching:** flush when the batch reaches N events, every M seconds, and when the app goes to the background. One request with 50 events is much cheaper for battery and radio than 50 requests.
+      - **Delivery:** on success, delete the batch; on failure, keep it and retry with backoff. The server **dedupes by event id**, so retries can't double-count.
+      - **Limits:** cap the queue size and drop the oldest low-priority events if the device is offline for weeks.
+
+      **Privacy:** check consent before recording; no PII in properties (or hash it); declare data collection in the privacy manifest and App Store privacy details. Tracking across other companies' apps needs App Tracking Transparency permission.
+
+      **Measure the pipeline itself:** queue size, flush failures, and the gap between event time and arrival time.
+    keyPoints:
+      - Typed events with a shared schema.
+      - Cheap track call, persisted queue, batching.
+      - Flush triggers including going to the background.
+      - Retries with server-side dedupe by event id.
+      - Consent, PII and privacy declarations.
+    followUps:
+      - question: Why put an event id on each event if you already have timestamps?
+        answer: |
+          Retries mean the same batch can arrive twice: the request succeeded but the response was lost. With a unique id per event, the server can drop duplicates. Timestamps don't work for that because two real events can share one.
+    writesCode: false
+    related: [m48]
+
+  - id: q-sd-startup-budget
+    category: system-design
+    difficulty: hard
+    question: Launch time has crept up release after release. How do you bring it down and keep it down?
+    answer: |
+      **Measure first, with real-world data:**
+      - The Xcode Organizer's **Launch Time** pane shows field data from users' devices (time from tap to first frame), with typical (50th percentile) and long (90th percentile) values per release. The **Launches** pane lists the functions that take the most launch time.
+      - **MetricKit** gives daily launch and resume histograms to send to your own backend.
+      - Locally, the Instruments **App Launch** template, on a real device, testing both warm and cold launches.
+
+      **Common causes and fixes:**
+      - **Work before the first frame:** SDK initialization, database migrations, config fetches, reading large files in the app delegate. Move it after the first frame, make it lazy, or move it off the main thread. Ask for each SDK: does this have to start before the user sees anything?
+      - **Too many dynamic frameworks:** each one adds loading and linking work. Link static libraries, or use mergeable libraries (Xcode 15+).
+      - **Static initializers and Objective-C `+load`** run before `main`.
+      - **A heavy first screen:** show a lightweight shell with cached content, then load the rest.
+      - **Synchronous network calls** at launch. Never.
+
+      **Keep it down:**
+      - A **budget** per release, for example the 90th percentile launch time can't regress more than a set amount.
+      - An automated launch test in CI (`XCTApplicationLaunchMetric` in a performance test) on a fixed device, to catch regressions before release.
+      - A review rule: new launch-path work needs a reason.
+
+      App size goes in the same budget conversation: it affects download conversion and update times. Check the App Thinning Size Report, compress or remove assets, and audit large dependencies.
+
+      On iOS, the watchdog kills an app that takes too long to launch, so a slow launch can also become a crash.
+    keyPoints:
+      - Field data from the Organizer and MetricKit, plus Instruments locally.
+      - Defers work until after the first frame.
+      - Dynamic frameworks, static initializers and the first screen as causes.
+      - A budget with automated regression tests in CI.
+      - Connects app size and mentions the watchdog.
+    followUps:
+      - question: Why test on a real device instead of the Simulator?
+        answer: |
+          The Simulator runs on the Mac's CPU, memory and storage, so its timings don't reflect a phone, especially an older one. Launch work is sensitive to disk and memory, so I'd profile on the oldest supported device I can get.
+    writesCode: false
+    related: [m48, m43]
+
+  - id: q-sd-approach
+    category: system-design
+    difficulty: easy
+    question: How do you approach an iOS system design interview? Walk me through how you'd use the 45 minutes.
+    answer: |
+      I run the same process every time and say out loud which step I'm on, so the interviewer can steer.
+
+      1. **Clarify (about 5 minutes).** Who uses it and what are the three or four core actions? Then the non-functional side: offline, real time, scale (items per screen, media size), minimum iOS version, sensitive data. I write the answers down as a short list and state assumptions: "I'll assume a chronological feed and offline reading of the last session; tell me if you'd rather focus elsewhere." Then I say what's out of scope.
+      2. **API and data model (5 minutes).** The endpoints the client needs, the shape of the main entities, and pagination (cursors). The backend is a black box with a contract.
+      3. **Components and data flow (10–15 minutes).** A box diagram: views, view models, a repository per domain, network client, local store, background work. Then I trace the main path end to end, like "launch, show cache, fetch page one, merge, render".
+      4. **Deep dive (10 minutes).** One or two hard parts, ideally the ones the interviewer cares about: sync and conflicts, caching, the upload queue.
+      5. **Failure modes and quality (5–8 minutes).** No network, partial failure, retries and idempotency, app killed mid-operation, security of stored data, metrics I'd ship (time to first content, error rates), how I'd test it.
+      6. **Wrap up (2 minutes).** The main tradeoffs I made and what I'd do next with more time.
+
+      The questions in this bank like the offline banking feed, chat and photo upload all follow this shape.
+
+      Common mistakes: drawing for ten minutes in silence, naming libraries instead of responsibilities ("Alamofire" says nothing; "a client that retries idempotent requests" does), and spending half the time on requirements. If the interviewer pushes on something, that's where the points are, so I follow them there.
+    keyPoints:
+      - Clarifies functional and non-functional requirements and states assumptions and scope.
+      - API contract and data model before components.
+      - A component diagram plus one traced data flow.
+      - A deep dive on the hard part, guided by the interviewer.
+      - Failure modes, offline, security, observability and testing.
+      - Watches the clock and closes with tradeoffs.
+    followUps:
+      - question: The interviewer gives you almost no requirements and says "you decide". What do you do?
+        answer: Make the decisions explicitly and quickly. Pick a reasonable scope, say why ("offline matters for a commuter app, so I'll design for it"), and move on. They want to see you make tradeoffs, not wait for a spec.
+      - question: How deep should you go into the backend?
+        answer: Only as far as the client depends on it. The API shape, pagination, idempotency keys, push payloads and error contracts matter because they change the client design. Database sharding and server caching usually don't, unless the interviewer asks.
+    writesCode: false
+    related: [m48]
+
+  - id: q-sd-video-downloads
+    category: system-design
+    difficulty: hard
+    question: Design offline downloads for a video streaming app. Users can start, pause, resume, cancel and delete downloads, and the content is DRM-protected.
+    answer: |
+      **Clarify:** on-demand titles only (HLS live streams can't be saved), FairPlay-protected, a quality choice, audio and subtitle languages, a per-account download limit and license rules like "expires 30 days after download". I'll assume all of those.
+
+      **Components:**
+      - `DownloadManager` owns one `AVAssetDownloadURLSession` (iOS 9) created with a **background** `URLSessionConfiguration` and a fixed identifier.
+      - `DownloadStore`, a local database: title id, state, saved location, expiry, size.
+      - `KeyManager` wraps an `AVContentKeySession` (iOS 10.3) for FairPlay.
+
+      **Starting:** build an `AVAssetDownloadConfiguration(asset:title:)` (iOS 15), set `variantQualifiers` on its `primaryContentConfiguration` to pick a bitrate, add `auxiliaryContentConfigurations` for extra languages, and call `makeAssetDownloadTask(downloadConfiguration:)` (iOS 15). That's the current API: the iOS 27 SDK deprecates `AVAggregateAssetDownloadTask` and the older task factory methods in its favor. Save the location from `urlSession(_:assetDownloadTask:willDownloadTo:)` (iOS 18), which replaces the deprecated `didFinishDownloadingTo`, and show progress from the task's `progress` (the time-range callbacks are deprecated in iOS 27).
+
+      **Keys:** add the asset as a content key recipient. In the key request callback call `respondByRequestingPersistableContentKeyRequest()` (throwing version, iOS 11.2), send the request data to the key server, turn the reply into a key with `persistableContentKey(fromKeyVendorResponse:options:)`, and write it to a file with Data Protection. Offline playback answers key requests from that file with `AVContentKeyResponse(fairPlayStreamingKeyResponseData:)`. The expiry lives in the key the server issued.
+
+      **Pause and resume** are `suspend()` and `resume()`. **Cancel** is `cancel()` plus deleting partial data. **Delete** removes the files and calls `invalidatePersistableContentKey(_:options:completionHandler:)` (iOS 12.2), whose proof the server uses to free a slot in the download limit.
+
+      **Background:** downloads run out of process. If the system terminates the app, it relaunches it with `application(_:handleEventsForBackgroundURLSession:completionHandler:)`; recreate the session with the same identifier. A **force-quit cancels every download** and the app isn't relaunched, so on launch I reconcile the store against `getAllTasks` and offer "Resume".
+
+      **Storage:** check `volumeAvailableCapacityForImportantUsage` before starting, set eviction policies with `AVAssetDownloadStorageManager` (`.important`, `expirationDate`), and on launch drop records whose asset is gone (`assetCache?.isPlayableOffline`).
+
+      **Analytics:** started, completed, failed (with error domain and code), time to complete, bytes, offline plays and key failures, queued locally until online.
+    keyPoints:
+      - Background AVAssetDownloadURLSession; the force-quit behavior and reconciling on launch.
+      - "AVAssetDownloadConfiguration with makeAssetDownloadTask(downloadConfiguration:) (iOS 15) as the current API, knowing the aggregate task is deprecated in iOS 27."
+      - FairPlay persistable keys through AVContentKeySession, stored and used offline.
+      - Pause, resume, cancel and delete map to task and file operations, plus key invalidation.
+      - Storage checks, eviction policy, and expiry enforced by the key.
+      - Progress from task.progress and download analytics.
+    followUps:
+      - question: Should downloads start over cellular?
+        answer: Make it a user setting, defaulting to Wi-Fi only for video. Set `allowsExpensiveNetworkAccess` (iOS 13) or `allowsCellularAccess` on the background configuration from that setting. For automatic downloads, like the next episode, use a discretionary session so the system waits for good conditions; Apple's docs note non-discretionary asset downloads can only start while the app is in the foreground.
+      - question: How do you enforce "expires 48 hours after the first play"?
+        answer: On the key server, not in the app. The persistable key carries the rental rules, and the app can't extend them. The app also stores the expiry it got from the API so it can show "expires in 2 days" and clean up expired titles, but that's display, not enforcement.
+      - question: Where do the files live, and how do you find them again?
+        answer: The system picks the location and reports it in `willDownloadTo`. I'd persist it as bookmark data or a path relative to the app's home directory rather than an absolute path, then rebuild the `AVURLAsset` from it for playback and deletion.
+    writesCode: false
+    related: [m48, m45]

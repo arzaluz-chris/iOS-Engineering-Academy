@@ -129,7 +129,7 @@ Rules: prediction output must be verified (the tests do it); blanks must match `
 
 ## Interview questions
 
-In `content/interview/<category>.yaml`, category one of `swift`, `uikit`, `swiftui`, `concurrency`, `architecture`, `memory`, `testing`, `security`, `system-design`. Fields: `id`, `category`, `difficulty`, `question`, `answer` (Markdown), `keyPoints` (the rubric), `followUps` [{question, answer}], `writesCode`, `related`.
+In `content/interview/<category>.yaml`, category one of `swift`, `uikit`, `swiftui`, `concurrency`, `architecture`, `memory`, `testing`, `security`, `networking`, `persistence`, `performance`, `tooling`, `platform`, `system-design`. Fields: `id`, `category`, `difficulty`, `question`, `answer` (Markdown), `keyPoints` (the rubric), `followUps` [{question, answer}], `writesCode`, `related`.
 
 ## Projects
 

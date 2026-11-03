@@ -169,7 +169,22 @@ export const challengeMetaSchema = z.object({
 
 // ---------- Interviews ----------
 
-export const interviewCategory = z.enum(['swift', 'uikit', 'swiftui', 'concurrency', 'architecture', 'memory', 'testing', 'security', 'system-design'])
+export const interviewCategory = z.enum([
+  'swift',
+  'uikit',
+  'swiftui',
+  'concurrency',
+  'architecture',
+  'memory',
+  'testing',
+  'security',
+  'networking',
+  'persistence',
+  'performance',
+  'tooling',
+  'platform',
+  'system-design',
+])
 
 export const interviewQuestionSchema = z.object({
   id,
