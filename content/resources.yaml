@@ -264,3 +264,12 @@ resources:
     why: Referencia de los comandos del depurador que usa Xcode por debajo, como breakpoint, frame variable y expression.
     status: no-verificado
     verifiedAt: null
+  - id: swift-book-strings
+    title: Strings and Characters (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/stringsandcharacters/
+    kind: oficial
+    topic: String, Character, interpolación y literales de varias líneas
+    why: Referencia oficial de la interpolación, las secuencias de escape, los literales de varias líneas y los literales sin procesar.
+    status: no-verificado
+    verifiedAt: null

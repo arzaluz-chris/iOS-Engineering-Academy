@@ -184,7 +184,7 @@ Esto no compila:
 print("Total: " + 5)
 ```
 
-El `+` entre un `String` y un `Int` no está definido. Otros lenguajes convierten el número a texto automáticamente; Swift no, porque esas conversiones silenciosas son fuente de errores. En la siguiente lección aprenderás la forma correcta de combinar texto y números, la **interpolación**. Por ahora, `print` con varios valores resuelve el caso:
+El `+` entre un `String` y un `Int` no está definido. Otros lenguajes convierten el número a texto automáticamente; Swift no, porque esas conversiones silenciosas son fuente de errores. Al final de este módulo aprenderás la forma correcta de combinar texto y números, la **interpolación**. Por ahora, `print` con varios valores resuelve el caso:
 
 ```swift
 print("Total:", 5)
