@@ -1,13 +1,13 @@
-# Compila y prueba las soluciones de los retos (Swift Testing) en macOS.
+# Compila y prueba las soluciones de los retos y ejecuta los fragmentos de las lecciones (Swift Testing) en macOS.
 # El repositorio es público: los runners estándar no consumen minutos.
 name: Swift · pruebas de los retos
 
 on:
   push:
     branches: [main]
-    paths: ['swift/**', '.github/workflows/swift.yml']
+    paths: ['swift/**', 'content/lessons/**', '.github/workflows/swift.yml']
   pull_request:
-    paths: ['swift/**', '.github/workflows/swift.yml']
+    paths: ['swift/**', 'content/lessons/**', '.github/workflows/swift.yml']
   workflow_dispatch:
 
 permissions:

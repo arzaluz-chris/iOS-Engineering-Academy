@@ -12,5 +12,7 @@ let package = Package(
     targets: [
         .target(name: "Challenges"),
         .testTarget(name: "ChallengesTests", dependencies: ["Challenges"]),
+        // Compila y ejecuta los fragmentos de content/lessons/ y compara su salida.
+        .testTarget(name: "LessonSnippetsTests"),
     ]
 )

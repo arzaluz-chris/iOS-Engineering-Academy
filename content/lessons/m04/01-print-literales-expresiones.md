@@ -7,7 +7,7 @@ order: 1
 level: inicial
 minutes: 50
 prerequisites: [m01-l02]
-codeStatus: revisado
+codeStatus: probado
 swiftVersion: "6.4"
 objectives:
   - Usar print con uno o varios valores, separator y terminator.
@@ -180,7 +180,7 @@ Regla práctica profesional: si una persona tiene que pensar en la precedencia p
 
 Esto no compila:
 
-```swift
+```swift no-compila binary operator '+' cannot be applied to operands of type 'String' and 'Int'
 print("Total: " + 5)
 ```
 

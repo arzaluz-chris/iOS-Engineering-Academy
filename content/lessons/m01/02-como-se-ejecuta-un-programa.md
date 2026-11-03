@@ -7,7 +7,7 @@ order: 2
 level: inicial
 minutes: 40
 prerequisites: [m01-l01]
-codeStatus: ilustrativo
+codeStatus: probado
 swiftVersion: "6.4"
 objectives:
   - Distinguir código fuente de código máquina.
