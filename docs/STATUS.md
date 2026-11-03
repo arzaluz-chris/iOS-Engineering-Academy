@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: November 3, 2026.
+Last updated: November 3, 2026 (after Module 10 and the interview bank).
 
 ## Done
 
@@ -17,16 +17,18 @@ Last updated: November 3, 2026.
 | Type | Written | Planning target |
 | --- | --- | --- |
 | Stages | 15 (full map) | 12–16 |
-| Modules | 49 on the map; 4 with lessons (M1 to M4) | — |
-| Lessons | 19 (M1: 3, M2: 5, M3: 5, M4: 6) | more than 100 |
-| Lesson exercises | 92 (comprehension 27, prediction 17, solve 16, explain 8, find-errors 8, fill-in 7, design 5, refactor 4) | at least 100 |
-| Review cards | 74 | — |
+| Modules | 49 on the map; 10 with lessons (M1 to M10) | — |
+| Lessons | 55 (M1: 3, M2: 5, M3: 5, M4–M10: 6 each); 53 `tested`, 2 `no-code` | more than 100 |
+| Lesson exercises | 311 (comprehension 64, prediction 56, solve 53, fill-in 40, find-errors 36, explain 26, refactor 21, design 15) | at least 100 |
+| Review cards | 237 | — |
 | Coding challenges | 5, with Swift solutions and tests | at least 100 |
-| Interview questions | 17 across 9 categories, including security | a broad bank |
+| Interview questions | 210 across 14 categories (swift 35, uikit 22, concurrency 20, swiftui 19, architecture 17, system-design 15, security 13, testing 12, networking 11, platform 10, memory 9, performance 9, persistence 9, tooling 9) | a broad bank |
 | Projects | 8 specified with milestones | 8 |
-| Resources | 30; 20 verified and 10 new ones with `status: unverified` (all 30 returned 200 to `npm run check-links` on 3 Nov 2026) | — |
+| Resources | 51; 20 verified, 31 with `status: unverified` (each returned 200 when added) | — |
 
-Stage 1 (M1–M3) and all of Module 4 in stage 2 are written.
+Stages 1 and 2 (M1–M8) are complete, and Stage 3 has M9 (Data Modeling) and M10 (OOP and Protocols). The snippet tests run 56 predictions and 617 Swift blocks; all pass on Swift 6.3.3 (Linux container) and in CI on macOS.
+
+**Interview bank (3 Nov 2026):** questions were chosen from what real iOS interviews ask (interview write-ups, prep guides, articles) and cover every topic in the table of contents of a popular interview-prep book the owner provided. Nothing was copied from any source: every answer was written for this course and checked against primary sources (Swift Evolution, The Swift Programming Language, Apple documentation); Swift code in answers was compiled and run in the container. A private fact-check of that book (errors, outdated claims, broken code) was given to the owner and is not in the repository.
 
 **Lesson code:** 17 of 19 lessons have `codeStatus: tested`; the other two (m01-l01 and m01-l03) are `no-code`. No lesson is left at `reviewed`. "Tested" means the `swift/Tests/LessonSnippetsTests` target compiles and runs every Swift block in the lesson and in its exercise solutions, and compares the output with what the text claims. Every prediction exercise, in any lesson, is run and its `output` compared exactly; for pseudocode predictions (`lang: pseudo`, Module 2) the Swift translation is what runs. The tests also check the compiler errors (`swift no-compile`), warnings (`swift warning`) and runtime errors (`swift runtime-error`) the lessons quote. What isn't run: blocks marked `swift illustrative` (the `Package.swift` manifest, a package's `@main` template and the declaration of `print` in m03; the `@main` solution in m03-l03-e4), terminal commands, and what's described about the Xcode UI, which was taken from Apple's documentation and couldn't be checked in Xcode from the build environment.
 
@@ -52,11 +54,13 @@ Stage 1 (M1–M3) and all of Module 4 in stage 2 are written.
 
 ## Next step
 
-1. Module 5, Control flow (`if`, `switch`, `guard` in its basic form, `for-in`, `while`, `repeat-while`, `break`, `continue`), with at least 6 lessons. Pick up what M4 promised: the ternary operator, `if` to choose "year" or "years", the loop in the leap-year solution.
-2. Modules 6 to 8 (functions, collections, optionals), closing stage 2.
-3. Array and hashing challenges alongside M7.
-4. Check Module 3's Xcode UI instructions in Xcode 27 and, if they match, note it here.
-5. If the links workflow confirms the 10 new resources, change their `status` to `verified` with a date.
+1. Modules 11 (Generics and Functional Programming) and 12 (Error Handling) are being written; then Stage 3 continues with M13 onward, in curriculum order.
+2. Coding challenges for the array and hashing patterns, now that M7 is in place.
+3. Check Module 3's Xcode UI instructions in Xcode 27 and, if they match, note it here.
+4. When the links workflow confirms the 31 unverified resources, change their `status` to `verified` with a date.
+5. `docs/RESEARCH.md` lists UIKit's automatic observation tracking as unverified; Apple's docs now document it (opt-in on iOS 18 via `UIObservationTrackingEnabled`, on by default from iOS 26, `updateProperties()` from iOS 26). Update that note.
+
+How a module is produced: one agent per module with a fixed list of lesson ids and titles, following `docs/CONTENT.md`; every code block and prediction must pass `LessonSnippetsTests` before the module is accepted. Each module is then verified on a clean checkout of `main` containing only that module (`npm run validate`, `tsc`, `vitest`, `vite build`, `swift test`) and committed on its own.
 
 For each batch: write the lessons, run `cd swift && swift test` (or the `swift:6.3` container), set `codeStatus` according to what the tests ran, `npm run validate && npm test && npm run build`, check in the browser, commit and push, and check the Swift workflow.
 
