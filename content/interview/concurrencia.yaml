@@ -1,0 +1,40 @@
+questions:
+  - id: q-conc-thread-vs-task
+    category: concurrencia
+    difficulty: medio
+    question: ¿Cuál es la diferencia entre un thread y una Task en Swift Concurrency?
+    answer: |
+      - Un **thread** es un recurso del sistema operativo: un flujo de ejecución con su propia pila, que el kernel planifica. Crear muchos es costoso y bloquear uno lo desperdicia.
+      - Una **Task** es una unidad de trabajo asíncrono del runtime de Swift. Las tareas se ejecutan sobre un conjunto limitado de threads (aproximadamente uno por núcleo en el ejecutor concurrente global). Cuando una tarea llega a un `await` y debe esperar, se **suspende** y libera el thread para otra tarea; luego puede reanudarse en otro thread.
+
+      Consecuencias: puedes tener miles de tareas sin miles de threads; no debes bloquear el thread dentro de una tarea (por ejemplo, con un semáforo esperando a otra tarea), porque el conjunto de threads es pequeño; y no debes suponer que el código antes y después de un `await` corre en el mismo thread, salvo que esté aislado a un actor como `@MainActor`, que garantiza el contexto de ejecución.
+    keyPoints:
+      - Thread es del sistema operativo; Task es del runtime de Swift.
+      - Las tareas se suspenden en await y liberan el thread.
+      - Conjunto de threads limitado y riesgo de bloquear.
+      - Tras un await puede cambiar el thread, salvo aislamiento a un actor.
+    followUps:
+      - question: ¿async significa que el código corre en paralelo?
+        answer: 'No. `async` significa que la función **puede suspenderse**. Si corre en paralelo con otra cosa depende de dónde se ejecute: dos llamadas con `await` seguidas corren una después de otra. El paralelismo aparece con `async let`, `TaskGroup` o tareas separadas sobre el ejecutor concurrente.'
+      - question: ¿Qué hace @MainActor?
+        answer: Aísla una función, propiedad o tipo al **main actor**, cuyo ejecutor es el hilo principal. El compilador obliga a que el acceso desde otros contextos sea con `await`, lo que garantiza que el estado de la interfaz solo se toque desde el hilo principal.
+    related: [m29]
+
+  - id: q-conc-data-race
+    category: concurrencia
+    difficulty: medio
+    question: ¿Qué es un data race, en qué se diferencia de una race condition y cómo lo evita Swift 6?
+    answer: |
+      - Un **data race** ocurre cuando dos threads acceden a la misma memoria al mismo tiempo, al menos uno escribe y no hay sincronización. El resultado es comportamiento indefinido.
+      - Una **race condition** es un error de lógica donde el resultado depende del orden en que ocurren eventos. Puede existir sin data race: por ejemplo, dos tareas que leen un saldo a través de un actor, cada una decide que alcanza y ambas lo descuentan.
+
+      En el modo de lenguaje Swift 6, el compilador verifica el **aislamiento de datos**: el estado mutable compartido debe estar protegido por un actor (o por `@MainActor`), y solo los valores `Sendable` pueden cruzar entre dominios de aislamiento. Así, los data races se detectan en compilación. Las race conditions lógicas no: hay que diseñar operaciones atómicas en el actor, por ejemplo un método `retirar(_:)` que verifica y descuenta sin un `await` de por medio.
+    keyPoints:
+      - Definición precisa de data race.
+      - Diferencia con race condition lógica, con un ejemplo.
+      - Actors, @MainActor y Sendable en Swift 6.
+      - Reentrancia de actors y por qué no hay que suspender a la mitad de un invariante.
+    followUps:
+      - question: ¿Qué es la reentrancia de un actor?
+        answer: Cuando un método de un actor hace `await`, el actor queda libre para ejecutar otros mensajes mientras tanto. Al reanudar, el estado pudo cambiar. Por eso se verifican invariantes de nuevo después de cada `await`, o se evita suspender en medio de una operación que debe ser atómica.
+    related: [m28, m29]

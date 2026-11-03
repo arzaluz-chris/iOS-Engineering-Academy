@@ -1,0 +1,45 @@
+questions:
+  - id: q-uikit-vc-lifecycle
+    category: uikit
+    difficulty: facil
+    question: Describe el ciclo de vida de un UIViewController y qué harías en cada método.
+    answer: |
+      - `loadView`: crea la vista raíz. Solo se sobrescribe para asignar una vista propia sin Storyboard; no se llama a `super` si la reemplazas por completo.
+      - `viewDidLoad`: una vez, cuando la vista está en memoria. Configuración inicial: subvistas, constraints, data sources, observación de datos.
+      - `viewWillAppear`: cada vez que la vista va a mostrarse. Refrescar datos que pudieron cambiar, ajustar la barra de navegación.
+      - `viewIsAppearing` (iOS 17 y posteriores, con back-deployment a iOS 13): la vista ya tiene trait collection y geometría correctas; buen lugar para trabajo que depende del tamaño.
+      - `viewWillLayoutSubviews` / `viewDidLayoutSubviews`: en cada pasada de layout. Ajustes que dependen de tamaños finales; deben ser baratos.
+      - `viewDidAppear`: la vista ya es visible. Iniciar animaciones, analítica de pantalla vista.
+      - `viewWillDisappear` / `viewDidDisappear`: detener trabajo, guardar estado, cancelar tareas que ya no tienen sentido.
+
+      `deinit` no es parte del ciclo de la vista, pero sirve para confirmar que el controller se libera al salir de la pantalla.
+    keyPoints:
+      - viewDidLoad ocurre una vez; viewWillAppear en cada aparición.
+      - Trabajo dependiente de geometría en layout o viewIsAppearing, no en viewDidLoad.
+      - Detener o cancelar trabajo al desaparecer.
+      - deinit para verificar que no hay fugas.
+    followUps:
+      - question: ¿Por qué no conviene leer view.bounds en viewDidLoad para calcular el layout?
+        answer: Porque en ese momento la vista aún no tiene su tamaño final en la jerarquía; puede tener el tamaño del Storyboard o cero. Auto Layout o los métodos de layout son el lugar correcto.
+    related: [m22]
+
+  - id: q-uikit-cell-reuse
+    category: uikit
+    difficulty: medio
+    question: ¿Cómo funciona la reutilización de celdas y qué errores provoca?
+    answer: |
+      `UITableView` y `UICollectionView` crean solo las celdas necesarias para llenar la pantalla más un pequeño margen. Al hacer scroll, las celdas que salen se ponen en una cola de reutilización y se entregan de nuevo al pedir `dequeueReusableCell`. Así una lista de 10,000 elementos usa unas pocas decenas de celdas.
+
+      Errores típicos:
+      - **Estado residual:** configurar una propiedad solo en algunos casos (por ejemplo, poner una insignia si el elemento es nuevo y no quitarla si no lo es). Cada configuración debe asignar todo el estado, o restablecerlo en `prepareForReuse`.
+      - **Imágenes en la celda equivocada:** una descarga asíncrona termina cuando la celda ya muestra otro elemento. Se resuelve cancelando la carga en `prepareForReuse` o verificando que el identificador del elemento siga siendo el mismo antes de asignar la imagen.
+      - Trabajo pesado en `cellForRowAt`, que se ejecuta en el hilo principal en cada scroll.
+    keyPoints:
+      - Pool de celdas y dequeue.
+      - Estado residual y prepareForReuse o configuración completa.
+      - Cargas asíncronas que llegan a la celda equivocada.
+      - No hacer trabajo pesado al configurar.
+    followUps:
+      - question: ¿Qué aportan los diffable data sources frente a reloadData?
+        answer: "Describes el estado deseado con un **snapshot** de identificadores y el data source calcula las diferencias y anima inserciones, borrados y movimientos. Evita las inconsistencias entre modelo y vista que provocan excepciones con `performBatchUpdates`. Requiere identificadores `Hashable` estables."
+    related: [m24]

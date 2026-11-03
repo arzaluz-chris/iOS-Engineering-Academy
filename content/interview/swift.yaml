@@ -1,0 +1,99 @@
+questions:
+  - id: q-swift-struct-vs-class
+    category: swift
+    difficulty: facil
+    question: ¿Cuál es la diferencia entre un struct y una class en Swift, y cómo decides cuál usar?
+    answer: |
+      - **Semántica:** un `struct` es un tipo por **valor**: asignarlo o pasarlo produce una copia independiente (en la práctica, colecciones como `Array` usan copy-on-write para no copiar hasta que alguien modifica). Una `class` es un tipo por **referencia**: varias variables apuntan a la misma instancia.
+      - **Identidad:** las instancias de clase tienen identidad (`===`); los structs no.
+      - **Herencia:** solo las clases heredan. Los structs comparten comportamiento con protocolos.
+      - **Memoria:** las clases se administran con ARC y pueden formar ciclos de retención; los structs no participan en el conteo de referencias por sí mismos.
+      - **Mutabilidad:** un struct declarado con `let` es inmutable por completo; los métodos que lo modifican se marcan `mutating`.
+
+      **Cómo decido:** struct por defecto, para modelos de datos y valores. Class cuando necesito identidad compartida (un objeto que varias partes observan o modifican), interoperar con Objective-C o APIs que exigen clases (por ejemplo, subclases de `UIViewController`), o controlar el ciclo de vida con `deinit`.
+    keyPoints:
+      - Valor frente a referencia, con un ejemplo de qué pasa al copiar.
+      - Identidad (===) solo en clases.
+      - Herencia solo en clases; protocolos para ambos.
+      - ARC y ciclos de retención afectan a clases.
+      - Un criterio claro de decisión, con struct como opción por defecto.
+    followUps:
+      - question: Si un struct contiene una propiedad de tipo class, ¿qué pasa al copiar el struct?
+        answer: Se copia la **referencia**, no el objeto. Las dos copias del struct comparten la misma instancia de la clase, así que mutarla desde una se ve en la otra. Es una fuente común de errores; si necesitas semántica de valor completa, hay que implementar copy-on-write o evitar la clase.
+      - question: ¿Copiar un Array de un millón de elementos es costoso?
+        answer: 'Asignarlo no lo es, gracias a **copy-on-write**: ambas variables comparten el almacenamiento hasta que una de ellas lo modifica. En ese momento se copia. Por eso mutar una copia sí puede costar O(n).'
+    related: [m10]
+
+  - id: q-swift-optionals
+    category: swift
+    difficulty: facil
+    question: ¿Qué es un Optional y cuáles son las formas seguras de obtener su valor?
+    answer: |
+      `Optional<Wrapped>` es un `enum` con dos casos: `.some(Wrapped)` y `.none` (que se escribe `nil`). Obliga a tratar la ausencia de valor en tiempo de compilación.
+
+      Formas seguras:
+      - `if let valor { … }` y `guard let valor else { return }` para desempaquetar.
+      - Optional chaining: `usuario?.direccion?.ciudad` produce un optional y se detiene en el primer `nil`.
+      - Nil-coalescing: `nombre ?? "Invitado"` para un valor por defecto.
+      - `switch` sobre `.some` y `.none`, o `map`/`flatMap`.
+
+      Force unwrapping (`!`) detiene el programa si el valor es `nil`. Solo es aceptable cuando un `nil` indica un error del programador que debe detectarse de inmediato, y aun así se prefiere un mensaje explícito con `guard … else { preconditionFailure("…") }`.
+    keyPoints:
+      - Optional es un enum con some y none.
+      - if let y guard let, con la diferencia de alcance.
+      - Optional chaining y nil-coalescing.
+      - El riesgo de force unwrapping y cuándo podría justificarse.
+    followUps:
+      - question: ¿Qué diferencia hay entre if let y guard let?
+        answer: "`if let` crea la variable solo dentro de su bloque. `guard let` la deja disponible en el resto del alcance y exige salir (`return`, `throw`, `break`) en el `else`. `guard` sirve para validar precondiciones al inicio y mantener el camino feliz sin anidar."
+      - question: ¿Qué es un implicitly unwrapped optional y dónde lo has visto?
+        answer: "Un tipo declarado como `T!`: se trata como optional pero se desempaqueta automáticamente al usarse, y falla si es `nil`. El caso clásico son los `@IBOutlet` en UIKit, que valen `nil` hasta que se carga la vista. Fuera de ese contexto conviene evitarlos."
+    related: [m08]
+
+  - id: q-swift-some-vs-any
+    category: swift
+    difficulty: medio
+    question: ¿Qué diferencia hay entre `some Protocolo` y `any Protocolo`?
+    answer: |
+      - `some P` es un **tipo opaco**: hay un tipo concreto específico que cumple `P`, lo conoce el compilador y queda fijo, aunque quien llama no sepa cuál es. Permite optimizaciones estáticas y conserva la información de tipo; por ejemplo, el `body` de una vista SwiftUI es `some View`.
+      - `any P` es un **tipo existencial**: una caja que puede contener *cualquier* valor que cumpla `P`, y cuyo tipo concreto puede cambiar en ejecución. Permite colecciones heterogéneas (`[any Shape]`), a cambio de indirección y despacho dinámico.
+
+      Regla práctica: usa `some` (o genéricos) cuando hay un solo tipo concreto; usa `any` cuando realmente necesitas mezclar tipos distintos. Desde Swift 5.6 se escribe `any` explícitamente para que ese costo sea visible.
+    keyPoints:
+      - some fija un tipo concreto conocido por el compilador.
+      - any es una caja que puede contener distintos tipos en ejecución.
+      - Ejemplo de cada uno (body de SwiftUI, colección heterogénea).
+      - Costo de rendimiento del existencial.
+    followUps:
+      - question: ¿Puede una función que devuelve `some Equatable` devolver un Int en una rama y un String en otra?
+        answer: No. Un tipo opaco exige que todas las rutas devuelvan el **mismo** tipo concreto. Para devolver tipos distintos necesitas `any Equatable`, un enum o un tipo envolvente.
+    related: [m10, m11]
+
+  - id: q-swift-closures-capture
+    category: swift
+    difficulty: medio
+    question: ¿Qué significa que un closure capture variables y para qué sirve una capture list?
+    writesCode: true
+    answer: |
+      Un closure **captura** las variables de su entorno: conserva una referencia a ellas, no una copia, así que ve los cambios posteriores y puede modificarlas.
+
+      ```swift
+      var contador = 0
+      let incrementar = { contador += 1 }
+      incrementar()
+      print(contador) // 1
+      ```
+
+      Una **capture list** (`[x]`, `[weak self]`, `[unowned self]`) define *cómo* se captura:
+      - `[x]` captura el valor de `x` en el momento de crear el closure.
+      - `[weak self]` captura una referencia débil; `self` se vuelve optional dentro del closure. Evita ciclos de retención cuando el objeto guarda el closure.
+      - `[unowned self]` captura sin retener ni volver optional; si el objeto ya se liberó, acceder a él detiene el programa.
+    keyPoints:
+      - La captura es por referencia por defecto.
+      - Capture list con valor fijado al crear el closure.
+      - weak frente a unowned y su riesgo.
+      - Relación con ciclos de retención en closures escapantes.
+    followUps:
+      - question: ¿Todo closure que usa self necesita [weak self]?
+        answer: No. Solo hace falta cuando hay riesgo de ciclo o de mantener vivo un objeto más de lo deseado, típicamente closures **escapantes** que el propio objeto guarda directa o indirectamente. Un closure no escapante, como el de `map`, termina antes de que la función retorne y no puede formar un ciclo.
+    related: [m11, m13]

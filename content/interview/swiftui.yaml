@@ -1,0 +1,30 @@
+questions:
+  - id: q-swiftui-state-ownership
+    category: swiftui
+    difficulty: medio
+    question: Tienes un modelo de perfil que una pantalla crea y varias subvistas leen y editan. ¿Qué property wrappers usas con Observation y cuáles usarías en un proyecto que debe soportar iOS 16?
+    answer: |
+      **Con Observation (iOS 17 o posterior):**
+      - El modelo es una clase marcada con `@Observable`.
+      - La vista que lo **crea y es dueña** lo guarda con `@State private var perfil = Perfil()`. `@State` conserva la instancia aunque la vista se reconstruya.
+      - Las subvistas que solo leen reciben el modelo como propiedad normal (`let perfil: Perfil`); SwiftUI rastrea qué propiedades leen en `body`.
+      - Las subvistas que necesitan *bindings* a sus propiedades usan `@Bindable var perfil: Perfil` para escribir `$perfil.nombre`.
+      - Si muchas vistas lejanas lo necesitan, se inyecta con `.environment(perfil)` y se lee con `@Environment(Perfil.self)`.
+
+      **Para iOS 16 (ObservableObject):**
+      - El modelo adopta `ObservableObject` y marca sus propiedades con `@Published`.
+      - El dueño usa `@StateObject`; quienes lo reciben usan `@ObservedObject`; en el entorno, `.environmentObject` y `@EnvironmentObject`.
+
+      El error clásico en el modelo antiguo es crear el objeto con `@ObservedObject var modelo = Modelo()`: se recrea cada vez que la vista padre se reconstruye y se pierde el estado.
+    keyPoints:
+      - El dueño guarda el modelo con @State (Observation) o @StateObject (heredado).
+      - Las subvistas reciben el modelo sin wrapper o con @Bindable si necesitan bindings.
+      - Inyección por entorno para dependencias lejanas.
+      - El error de crear un modelo con @ObservedObject.
+      - Disponibilidad por versión de iOS.
+    followUps:
+      - question: ¿Qué ventaja tiene Observation sobre ObservableObject en rendimiento?
+        answer: Con `ObservableObject`, cualquier cambio en una propiedad `@Published` notifica a todas las vistas que observan el objeto. Con `@Observable`, SwiftUI registra qué propiedades lee cada `body` y solo invalida las vistas que leyeron la propiedad que cambió.
+      - question: ¿Cuándo usarías @State con un valor y no con un modelo?
+        answer: 'Para estado **local y efímero de la vista**: si un panel está expandido, el texto de un campo antes de enviarlo, la pestaña seleccionada. Si otra parte de la app necesita ese dato, deja de ser local y se mueve a un modelo.'
+    related: [m36]

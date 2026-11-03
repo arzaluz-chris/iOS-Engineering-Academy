@@ -1,0 +1,52 @@
+questions:
+  - id: q-arch-mvvm-tradeoffs
+    category: arquitectura
+    difficulty: medio
+    question: ¿Qué problema resuelve MVVM frente a MVC en UIKit y cuándo sería complejidad innecesaria?
+    answer: |
+      En el MVC de UIKit, el view controller tiende a acumular todo: configuración de vistas, lógica de presentación, llamadas de red, navegación. El resultado es difícil de probar porque la lógica está atada a `UIViewController`.
+
+      MVVM saca la **lógica de presentación** a un ViewModel sin dependencias de UIKit: transforma datos de dominio en lo que la vista necesita (textos formateados, estados de carga, habilitar o no un botón) y expone acciones. Beneficios: se prueba con pruebas unitarias simples y el controller queda como capa delgada de vinculación.
+
+      Es complejidad innecesaria cuando la pantalla casi no tiene lógica (una pantalla estática de ajustes), cuando el ViewModel solo reenvía propiedades del modelo sin transformarlas, o cuando el equipo agrega capas por costumbre (ViewModel, Presenter, Interactor, UseCase) para una pantalla de un campo. En SwiftUI, una vista simple que lee un modelo `@Observable` a menudo no necesita un ViewModel adicional.
+    keyPoints:
+      - El problema del view controller masivo y su difícil prueba.
+      - Qué hace un ViewModel y qué no conoce (UIKit).
+      - Testabilidad como beneficio concreto.
+      - Ejemplos de cuándo es exceso de capas.
+    followUps:
+      - question: ¿Quién debe encargarse de la navegación en MVVM?
+        answer: El ViewModel no debería conocer `UIViewController`. Opciones comunes, un **coordinator** que recibe eventos del ViewModel (por closure o delegate) y decide qué presentar, o en SwiftUI un estado de navegación (`NavigationPath`) que el ViewModel modifica. La decisión depende del tamaño de la app.
+    related: [m32]
+
+  - id: q-arch-di
+    category: arquitectura
+    difficulty: facil
+    question: ¿Qué es la inyección de dependencias y cómo la harías sin frameworks en Swift?
+    writesCode: true
+    answer: |
+      Es **recibir** las dependencias en lugar de crearlas dentro. El tipo depende de una abstracción (un protocolo) y alguien de afuera le entrega la implementación. Así se puede sustituir por un doble de prueba y se reduce el acoplamiento.
+
+      ```swift
+      protocol AccountsService: Sendable {
+          func balance(for accountID: String) async throws -> Decimal
+      }
+
+      @MainActor
+      final class BalanceViewModel {
+          private let service: any AccountsService
+          init(service: any AccountsService) { self.service = service }
+      }
+      ```
+
+      Formas habituales: por inicializador (la más explícita y preferida), por propiedad, o por un contenedor/entorno (como `@Environment` en SwiftUI). La composición, es decir, decidir qué implementación concreta se usa, ocurre en un solo lugar cerca del arranque de la app.
+    keyPoints:
+      - Recibir dependencias en lugar de crearlas.
+      - Depender de un protocolo.
+      - Inyección por inicializador como opción preferida.
+      - Beneficio en pruebas con dobles.
+      - Raíz de composición en un solo lugar.
+    followUps:
+      - question: ¿Qué problema tiene usar singletons como `NetworkManager.shared` dentro de un ViewModel?
+        answer: Acopla el ViewModel a una implementación concreta global, impide sustituirla en pruebas y oculta la dependencia (no aparece en el inicializador). Además, el estado global compartido complica la concurrencia.
+    related: [m32, m33]

@@ -1,0 +1,185 @@
+# Registro de recursos externos. Sin videos.
+# status: verificado (con fecha) solo después de comprobar el enlace con `npm run check-links`
+# o manualmente. Los enlaces de developer.apple.com/documentation se comprueban contra su JSON de datos.
+
+resources:
+  - id: swift-book
+    title: The Swift Programming Language
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/
+    kind: oficial
+    topic: Lenguaje Swift
+    why: Es la referencia oficial del lenguaje. Cada capítulo del curso de Swift remite a la sección correspondiente.
+    status: no-verificado
+    verifiedAt: null
+  - id: swift-book-basics
+    title: The Basics (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/thebasics/
+    kind: oficial
+    topic: Constantes, variables, tipos e interpolación
+    why: Describe con precisión let, var, anotaciones de tipo, comentarios y print, que son el tema de tus primeros programas.
+    status: no-verificado
+    verifiedAt: null
+  - id: swift-book-basic-operators
+    title: Basic Operators (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/basicoperators/
+    kind: oficial
+    topic: Operadores
+    why: Lista oficial de operadores aritméticos, de comparación y lógicos, con las reglas que el compilador aplica.
+    status: no-verificado
+    verifiedAt: null
+  - id: swift-book-tour
+    title: A Swift Tour
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/guidedtour/
+    kind: oficial
+    topic: Panorama del lenguaje
+    why: Un recorrido corto por todo el lenguaje. Úsalo como mapa, no como lección; el curso desarrolla cada tema por separado.
+    status: no-verificado
+    verifiedAt: null
+  - id: swift-install
+    title: Install Swift
+    source: Swift.org
+    url: https://www.swift.org/install/
+    kind: oficial
+    topic: Instalación de la toolchain
+    why: Indica la versión estable actual y cómo instalar Swift fuera de Xcode, por ejemplo para usar `swift` desde la terminal en Linux.
+    status: no-verificado
+    verifiedAt: null
+  - id: swift-org
+    title: Swift.org
+    source: Swift.org
+    url: https://www.swift.org/
+    kind: oficial
+    topic: Proyecto Swift
+    why: Sitio del proyecto de código abierto; publica las versiones del lenguaje y su evolución.
+    status: no-verificado
+    verifiedAt: null
+  - id: swift-evolution
+    title: Swift Evolution
+    source: GitHub · swiftlang
+    url: https://github.com/swiftlang/swift-evolution
+    kind: referencia
+    topic: Evolución del lenguaje
+    why: Cada cambio del lenguaje se discute como una propuesta numerada (SE-xxxx). Sirve para saber en qué versión llegó una característica.
+    status: no-verificado
+    verifiedAt: null
+  - id: xcode-overview
+    title: Xcode
+    source: Apple Developer
+    url: https://developer.apple.com/xcode/
+    kind: oficial
+    topic: IDE
+    why: Página oficial de Xcode con sus componentes y enlace de descarga.
+    status: no-verificado
+    verifiedAt: null
+  - id: xcode-requirements
+    title: Xcode system requirements
+    source: Apple Developer
+    url: https://developer.apple.com/xcode/system-requirements/
+    kind: oficial
+    topic: Versiones de Xcode, macOS, SDK y deployment targets
+    why: Tabla oficial de qué macOS necesita cada Xcode, qué versión de Swift incluye y qué deployment targets admite.
+    status: no-verificado
+    verifiedAt: null
+  - id: apple-documentation
+    title: Apple Developer Documentation
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/
+    kind: oficial
+    topic: Documentación de frameworks
+    why: Punto de entrada a la documentación de todos los frameworks. Aprende a navegarla desde el principio.
+    status: no-verificado
+    verifiedAt: null
+  - id: develop-in-swift
+    title: Develop in Swift Tutorials
+    source: Apple Developer
+    url: https://developer.apple.com/tutorials/develop-in-swift
+    kind: tutorial
+    topic: Primeras apps con SwiftUI
+    why: Ruta introductoria de Apple. Complementa la etapa de SwiftUI con ejercicios guiados en Xcode.
+    status: no-verificado
+    verifiedAt: null
+  - id: swift-print
+    title: print(_:separator:terminator:)
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/swift/print(_:separator:terminator:)
+    kind: oficial
+    topic: print
+    why: Documenta los parámetros separator y terminator, que explican por qué cada print termina en un salto de línea.
+    status: no-verificado
+    verifiedAt: null
+  - id: tn3187-scenes
+    title: "TN3187: Migrating to the UIKit scene-based life cycle"
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/technotes/tn3187-migrating-to-the-uikit-scene-based-life-cycle
+    kind: oficial
+    topic: Ciclo de vida por escenas
+    why: Desde el SDK de iOS 27 las apps UIKit deben adoptar escenas; esta nota técnica explica la migración.
+    status: no-verificado
+    verifiedAt: null
+  - id: hig
+    title: Human Interface Guidelines
+    source: Apple Developer
+    url: https://developer.apple.com/design/human-interface-guidelines/
+    kind: oficial
+    topic: Diseño de interfaces
+    why: Criterios de diseño de Apple para cualquier plataforma; se citan en las etapas de UIKit y SwiftUI.
+    status: no-verificado
+    verifiedAt: null
+  - id: swift-testing-docs
+    title: Swift Testing
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/testing
+    kind: oficial
+    topic: Pruebas con @Test y #expect
+    why: Documentación del framework de pruebas que usan los retos de este curso.
+    status: no-verificado
+    verifiedAt: null
+  - id: owasp-masvs
+    title: OWASP MASVS
+    source: OWASP
+    url: https://mas.owasp.org/MASVS/
+    kind: referencia
+    topic: Estándar de seguridad de apps móviles
+    why: Estándar de requisitos de seguridad móvil que muchos bancos usan como base para auditorías.
+    status: no-verificado
+    verifiedAt: null
+  - id: owasp-mastg
+    title: OWASP MASTG
+    source: OWASP
+    url: https://mas.owasp.org/MASTG/
+    kind: referencia
+    topic: Pruebas de seguridad de apps móviles
+    why: Guía técnica que explica cómo se prueba cada control del MASVS en iOS.
+    status: no-verificado
+    verifiedAt: null
+  - id: apple-platform-security
+    title: Apple Platform Security
+    source: Apple Support
+    url: https://support.apple.com/guide/security/welcome/web
+    kind: oficial
+    topic: Seguridad de la plataforma
+    why: Explica Secure Enclave, Data Protection y Keychain desde el diseño del sistema.
+    status: no-verificado
+    verifiedAt: null
+  - id: keychain-services
+    title: Keychain services
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/security/keychain-services
+    kind: oficial
+    topic: Almacenamiento seguro de secretos
+    why: API oficial para guardar credenciales y llaves; base del módulo de desarrollo seguro.
+    status: no-verificado
+    verifiedAt: null
+  - id: app-review-guidelines
+    title: App Review Guidelines
+    source: Apple Developer
+    url: https://developer.apple.com/app-store/review/guidelines/
+    kind: oficial
+    topic: Revisión de App Store
+    why: Reglas con las que Apple revisa cada app; necesarias en la etapa de distribución.
+    status: no-verificado
+    verifiedAt: null

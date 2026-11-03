@@ -1,0 +1,34 @@
+# Compila y prueba las soluciones de los retos (Swift Testing) en macOS.
+# El repositorio es público: los runners estándar no consumen minutos.
+name: Swift · pruebas de los retos
+
+on:
+  push:
+    branches: [main]
+    paths: ['swift/**', '.github/workflows/swift.yml']
+  pull_request:
+    paths: ['swift/**', '.github/workflows/swift.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: swift-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: swift
+    steps:
+      - uses: actions/checkout@v4
+      - name: Versiones
+        run: |
+          xcodebuild -version
+          swift --version
+      - name: swift test
+        run: swift test

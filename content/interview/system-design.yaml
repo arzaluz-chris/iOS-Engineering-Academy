@@ -1,0 +1,29 @@
+questions:
+  - id: q-sd-feed-offline
+    category: system-design
+    difficulty: dificil
+    question: Diseña la pantalla de movimientos de una app bancaria que debe funcionar sin conexión y mostrar millones de movimientos históricos.
+    answer: |
+      Una estructura que funciona en 45 minutos:
+
+      1. **Requisitos.** Funcionales: listar movimientos por fecha, buscar, filtrar por cuenta, ver detalle. No funcionales: arranque rápido, uso sin conexión con datos recientes, datos sensibles protegidos, accesibilidad.
+      2. **API.** Paginación por **cursor** (no por número de página: los movimientos nuevos desplazarían las páginas). Respuesta con `items` y `nextCursor`. Para refrescar, pedir movimientos posteriores al más reciente que tengo.
+      3. **Modelo de datos local.** Persistencia (SwiftData o Core Data) con los movimientos de los últimos meses, indexados por cuenta y fecha. El histórico completo no se descarga: se pagina bajo demanda.
+      4. **Capas.** Vista → ViewModel/estado de pantalla → repositorio. El repositorio devuelve primero lo local y luego actualiza desde red (*stale-while-revalidate*), exponiendo un flujo de estados (`cargando`, `datos(local)`, `datos(actualizados)`, `error con datos locales`).
+      5. **Sin conexión.** Mostrar lo guardado con la hora de la última sincronización. Nada de pantallas en blanco.
+      6. **Seguridad.** Base local con Data Protection `complete`, borrado al cerrar sesión, nada de montos en logs, ocultar contenido en el app switcher.
+      7. **Rendimiento.** Lista perezosa, agrupación por día calculada fuera del hilo principal, prefetch al acercarse al final.
+      8. **Observabilidad.** Métricas de tiempo a primer contenido y tasa de errores de sincronización.
+    keyPoints:
+      - Aclaré requisitos funcionales y no funcionales primero.
+      - Elegí paginación por cursor y expliqué por qué.
+      - Estrategia local primero con actualización desde red.
+      - Estados de la pantalla incluyendo sin conexión.
+      - Protección de datos locales sensibles.
+      - Rendimiento de la lista y observabilidad.
+    followUps:
+      - question: ¿Qué haces si un movimiento local fue corregido en el servidor?
+        answer: El backend debe exponer versiones o una marca de actualización por movimiento, o un endpoint de cambios desde un punto de sincronización. El cliente aplica actualizaciones por identificador estable y el servidor siempre gana en datos financieros.
+      - question: ¿Cómo pruebas este diseño?
+        answer: El repositorio se prueba con un cliente de red falso y una persistencia en memoria, cubriendo orden de emisión de estados, errores y paginación. La vista se prueba con estados de pantalla fijos y, si aplica, con snapshots.
+    related: [m48]

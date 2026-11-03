@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+coverage/
+swift/.build/
+swift/.swiftpm/
+*.xcuserstate
+xcuserdata/

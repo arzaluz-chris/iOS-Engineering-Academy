@@ -1,0 +1,22 @@
+questions:
+  - id: q-test-doubles
+    category: testing
+    difficulty: facil
+    question: ¿Qué diferencia hay entre un stub, un mock y un fake?
+    answer: |
+      Son tipos de **dobles de prueba**, implementaciones que sustituyen una dependencia real:
+      - **Stub:** devuelve respuestas predefinidas. Sirve para controlar la entrada indirecta del código bajo prueba («el servicio responde con este saldo»).
+      - **Mock:** además registra cómo se usó y la prueba verifica esas interacciones («se llamó a `guardar` una vez con estos datos»).
+      - **Fake:** una implementación funcional pero simplificada, como un repositorio en memoria en lugar de una base de datos.
+      - **Spy** es un término cercano a mock: registra llamadas para inspeccionarlas después.
+
+      En Swift se crean sin frameworks: el código depende de un protocolo y la prueba entrega una implementación propia.
+    keyPoints:
+      - Stub controla respuestas.
+      - Mock verifica interacciones.
+      - Fake es una implementación simplificada funcional.
+      - En Swift se construyen con protocolos e inyección.
+    followUps:
+      - question: ¿Cuál es el riesgo de abusar de mocks?
+        answer: Las pruebas terminan verificando **cómo** está implementado el código y no **qué** resultado produce. Cualquier refactorización las rompe aunque el comportamiento no cambie. Conviene verificar resultados observables y reservar la verificación de interacciones para efectos que no tienen otro resultado visible, como enviar un evento de analítica.
+    related: [m33]
