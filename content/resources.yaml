@@ -291,3 +291,12 @@ resources:
     why: The reference for creating, reading and changing arrays, sets and dictionaries, and for iterating over them.
     status: unverified
     verifiedAt: null
+  - id: swift-api-design-guidelines
+    title: Swift API Design Guidelines
+    source: Swift.org
+    url: https://www.swift.org/documentation/api-design-guidelines/
+    kind: official
+    topic: Naming functions, parameters and argument labels
+    why: The official rules behind names like insert(_:at:) and remove(at:). Read it once you start writing your own functions; it explains why call sites should read like English phrases.
+    status: unverified
+    verifiedAt: null
