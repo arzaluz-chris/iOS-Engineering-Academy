@@ -300,3 +300,39 @@ resources:
     why: The official rules behind names like insert(_:at:) and remove(at:). Read it once you start writing your own functions; it explains why call sites should read like English phrases.
     status: unverified
     verifiedAt: null
+  - id: swift-array
+    title: Array
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/swift/array
+    kind: official
+    topic: Array API
+    why: Every Array method and property in one place, with the complexity of each operation noted where it matters.
+    status: unverified
+    verifiedAt: null
+  - id: swift-dictionary
+    title: Dictionary
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/swift/dictionary
+    kind: official
+    topic: Dictionary API
+    why: Lookups, the default-value subscript, updating and removing entries, and why iteration order isn't guaranteed.
+    status: unverified
+    verifiedAt: null
+  - id: swift-set
+    title: Set
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/swift/set
+    kind: official
+    topic: Set API
+    why: Membership, insertion and the set algebra operations (union, intersection, subtracting) with their exact behavior.
+    status: unverified
+    verifiedAt: null
+  - id: swift-dictionary-grouping
+    title: init(grouping:by:)
+    source: Apple Developer
+    url: https://developer.apple.com/documentation/swift/dictionary/init(grouping:by:)
+    kind: official
+    topic: Grouping values into a dictionary
+    why: The initializer behind the grouping examples in the collections module.
+    status: unverified
+    verifiedAt: null
