@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: November 3, 2026 (after Module 10 and the interview bank).
+Last updated: November 3, 2026 (after Module 15; Module 14 is being written).
 
 ## Done
 
@@ -17,16 +17,16 @@ Last updated: November 3, 2026 (after Module 10 and the interview bank).
 | Type | Written | Planning target |
 | --- | --- | --- |
 | Stages | 15 (full map) | 12–16 |
-| Modules | 49 on the map; 10 with lessons (M1 to M10) | — |
-| Lessons | 55 (M1: 3, M2: 5, M3: 5, M4–M10: 6 each); 53 `tested`, 2 `no-code` | more than 100 |
-| Lesson exercises | 311 (comprehension 64, prediction 56, solve 53, fill-in 40, find-errors 36, explain 26, refactor 21, design 15) | at least 100 |
-| Review cards | 237 | — |
+| Modules | 49 on the map; 14 with lessons (M1 to M13, M15) | — |
+| Lessons | 79 (M1: 3, M2: 5, M3: 5, M4–M13 and M15: 6 each); 77 `tested`, 2 `no-code` | more than 100 |
+| Lesson exercises | 454 (comprehension 89, prediction 83, solve 79, find-errors 57, fill-in 56, explain 40, refactor 27, design 23) | at least 100 |
+| Review cards | 348 | — |
 | Coding challenges | 5, with Swift solutions and tests | at least 100 |
 | Interview questions | 210 across 14 categories (swift 35, uikit 22, concurrency 20, swiftui 19, architecture 17, system-design 15, security 13, testing 12, networking 11, platform 10, memory 9, performance 9, persistence 9, tooling 9) | a broad bank |
 | Projects | 8 specified with milestones | 8 |
-| Resources | 51; 20 verified, 31 with `status: unverified` (each returned 200 when added) | — |
+| Resources | 58; 21 verified, 37 with `status: unverified` (each returned 200 when added) | — |
 
-Stages 1 and 2 (M1–M8) are complete, and Stage 3 has M9 (Data Modeling) and M10 (OOP and Protocols). The snippet tests run 56 predictions and 617 Swift blocks; all pass on Swift 6.3.3 (Linux container) and in CI on macOS.
+Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP and protocols, generics and functional programming, error handling, memory management), and Module 15 (Algorithmic Complexity) opens the algorithms stage. The snippet tests run 83 predictions and 881 Swift blocks; all pass on Swift 6.3.3 (Linux container) and in CI on macOS.
 
 **Interview bank (3 Nov 2026):** questions were chosen from what real iOS interviews ask (interview write-ups, prep guides, articles) and cover every topic in the table of contents of a popular interview-prep book the owner provided. Nothing was copied from any source: every answer was written for this course and checked against primary sources (Swift Evolution, The Swift Programming Language, Apple documentation); Swift code in answers was compiled and run in the container. A private fact-check of that book (errors, outdated claims, broken code) was given to the owner and is not in the repository.
 
@@ -54,10 +54,10 @@ Stages 1 and 2 (M1–M8) are complete, and Stage 3 has M9 (Data Modeling) and M1
 
 ## Next step
 
-1. Modules 11 (Generics and Functional Programming) and 12 (Error Handling) are being written; then Stage 3 continues with M13 onward, in curriculum order.
+1. Module 14 (Professional Tools) is being written; then Module 16 (Arrays, Hashing and Windows) and the rest in curriculum order.
 2. Coding challenges for the array and hashing patterns, now that M7 is in place.
 3. Check Module 3's Xcode UI instructions in Xcode 27 and, if they match, note it here.
-4. When the links workflow confirms the 31 unverified resources, change their `status` to `verified` with a date.
+4. When the links workflow confirms the 37 unverified resources, change their `status` to `verified` with a date.
 5. `docs/RESEARCH.md` lists UIKit's automatic observation tracking as unverified; Apple's docs now document it (opt-in on iOS 18 via `UIObservationTrackingEnabled`, on by default from iOS 26, `updateProperties()` from iOS 26). Update that note.
 
 How a module is produced: one agent per module with a fixed list of lesson ids and titles, following `docs/CONTENT.md`; every code block and prediction must pass `LessonSnippetsTests` before the module is accepted. Each module is then verified on a clean checkout of `main` containing only that module (`npm run validate`, `tsc`, `vitest`, `vite build`, `swift test`) and committed on its own.
