@@ -37,7 +37,7 @@ rubric:
   - Usé dos índices que convergen sin construir otra cadena limpia, o expliqué ese trade-off.
   - La cadena vacía devuelve true.
   - Expliqué por qué convertí a Array para indexar.
-codeStatus: revisado
+codeStatus: probado
 ---
 
 Una frase es palíndromo si, después de pasar todo a minúsculas y quitar lo que no sea letra ni dígito, se lee igual al derecho y al revés.

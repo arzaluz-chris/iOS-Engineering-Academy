@@ -38,7 +38,7 @@ rubric:
   - Usé un diccionario de valor a índice para buscar el complemento en O(1) promedio.
   - Busqué el complemento antes de insertar el valor actual, para no usar el mismo índice dos veces.
   - Manejé el caso sin solución.
-codeStatus: revisado
+codeStatus: probado
 ---
 
 Dada una lista de enteros `nums` y un entero `target`, devuelve los índices `[i, j]` de dos elementos **distintos** (`i ≠ j`) cuya suma es `target`, con `i < j`. Si no existen, devuelve `nil`.

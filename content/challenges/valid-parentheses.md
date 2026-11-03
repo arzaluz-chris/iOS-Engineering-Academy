@@ -35,7 +35,7 @@ rubric:
   - Rechacé un cierre cuando la pila está vacía.
   - Verifiqué que la pila quede vacía al final.
   - Di complejidad O(n) de tiempo y de espacio.
-codeStatus: revisado
+codeStatus: probado
 ---
 
 Dada una cadena formada por `(`, `)`, `[`, `]`, `{` y `}`, devuelve `true` si es válida:

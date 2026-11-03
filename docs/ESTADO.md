@@ -21,7 +21,11 @@
 
 **Pruebas ejecutadas en el entorno de construcción:** `npm run validate` (sin errores), `tsc --noEmit` (sin errores), `npm test` (32 pruebas, todas pasan), `vite build` (correcto), revisión visual en Chrome sin errores de consola en escritorio, móvil, claro y oscuro.
 
-**No ejecutado en el entorno de construcción:** `swift test` (no hay toolchain de Swift en ese entorno). Lo ejecuta el workflow `swift.yml` en macOS; hasta que pase, los retos dicen «código revisado estáticamente». `check-links` (sin red hacia Apple ni swift.org en ese entorno).
+**Swift:** el workflow `swift.yml` corrió `swift test` en macOS (runner con Xcode 26.6 y Swift 6.3.3): 18 pruebas en 5 suites, todas pasan. Los cinco retos están marcados como `probado`. El runner aún no usa Xcode 27 / Swift 6.4; el código no usa nada exclusivo de 6.4.
+
+**Publicado:** https://arzaluz-chris.github.io/iOS-Engineering-Academy/
+
+**No ejecutado:** `check-links` (el entorno de construcción no tenía red hacia Apple ni swift.org); corre con el workflow semanal `links.yml` o a mano desde Actions.
 
 ## Criterios de aceptación que todavía no se cumplen
 

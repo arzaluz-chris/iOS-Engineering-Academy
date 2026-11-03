@@ -35,7 +35,7 @@ rubric:
   - Propuse primero la solución de fuerza bruta y expliqué su costo O(n²).
   - Llegué a la solución con Set en O(n) tiempo y O(n) espacio.
   - Mencioné la alternativa de ordenar, O(n log n), y cuándo conviene.
-codeStatus: revisado
+codeStatus: probado
 ---
 
 Dada una lista de enteros `nums`, devuelve `true` si algún valor aparece al menos dos veces, y `false` si todos son distintos.

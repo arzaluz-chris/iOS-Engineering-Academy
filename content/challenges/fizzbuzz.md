@@ -34,7 +34,7 @@ rubric:
   - Los múltiplos de 15 producen FizzBuzz y no solo Fizz.
   - Manejé n menor que 1 sin fallar.
   - Mencioné la complejidad O(n).
-codeStatus: revisado
+codeStatus: probado
 ---
 
 Escribe una función que, dado un entero `n`, devuelva una lista de textos para cada número del 1 al `n`, ambos incluidos:
