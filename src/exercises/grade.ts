@@ -1,7 +1,7 @@
 /**
- * Calificación automática SOLO para respuestas estructuradas.
- * Nunca se califica código Swift escrito por el estudiante comparando texto:
- * eso se valida ejecutando tests en Xcode o con `swift test`.
+ * Automatic grading, ONLY for structured answers.
+ * Swift code written by the learner is never graded by comparing text:
+ * it's checked by running tests in Xcode or with `swift test`.
  */
 
 export function gradeChoices(selected: number[], correct: boolean[]): boolean {
@@ -17,7 +17,7 @@ const normalizeOutput = (s: string) =>
     .join('\n')
     .replace(/^\n+|\n+$/g, '')
 
-/** Compara la salida predicha con la esperada, línea por línea e ignorando espacios finales. */
+/** Compares the predicted output with the expected one, line by line, ignoring trailing spaces. */
 export function gradePrediction(answer: string, expected: string, accept: string[] = []): boolean {
   const a = normalizeOutput(answer)
   return [expected, ...accept].some((e) => normalizeOutput(e) === a)
@@ -25,7 +25,7 @@ export function gradePrediction(answer: string, expected: string, accept: string
 
 const normalizeToken = (s: string) => s.trim().replace(/\s+/g, ' ')
 
-/** Cada hueco acepta una lista cerrada de respuestas equivalentes (p. ej. `let` o `var`). */
+/** Each blank accepts a closed list of equivalent answers (e.g. `let` or `var`). */
 export function gradeBlanks(answers: Record<string, string>, blanks: { id: string; answers: string[] }[]): Record<string, boolean> {
   return Object.fromEntries(blanks.map((b) => [b.id, b.answers.map(normalizeToken).includes(normalizeToken(answers[b.id] ?? ''))]))
 }

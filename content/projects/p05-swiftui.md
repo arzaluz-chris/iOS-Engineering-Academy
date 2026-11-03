@@ -1,41 +1,41 @@
 ---
 id: p05
 number: 5
-title: La misma app en SwiftUI
-summary: Reimplementa el catálogo del proyecto 4 con SwiftUI y Observation, reutilizando la capa de datos. Identifica qué cambia y qué principios se conservan.
+title: The Same App in SwiftUI
+summary: Rebuild the catalog from project 4 with SwiftUI and Observation, reusing the data layer. Figure out what changes and which principles carry over.
 prerequisites: [m36, m37]
 objectives:
-  - Reutilizar dominio y datos sin cambios al cambiar de framework de interfaz.
-  - Ubicar el estado en el dueño correcto con Observation.
-  - Navegar por valores con NavigationStack.
+  - Reuse the domain and data layers unchanged when you switch UI frameworks.
+  - Put state in the right owner with Observation.
+  - Navigate by value with NavigationStack.
 requirements:
-  - Las mismas funcionalidades del proyecto 4.
-  - Modelos con @Observable y estado local con @State.
-  - Navegación con NavigationStack y NavigationPath.
-  - Un documento corto que compare ambas implementaciones.
+  - The same features as project 4.
+  - Models with @Observable and local state with @State.
+  - Navigation with NavigationStack and NavigationPath.
+  - A short write-up comparing the two implementations.
 acceptance:
-  - La capa de datos del proyecto 4 se usa sin modificaciones.
-  - El documento comparativo explica al menos tres diferencias y tres principios que se conservan.
-  - Las vistas no realizan llamadas de red directamente.
+  - The data layer from project 4 is used without modifications.
+  - The write-up explains at least three differences and three principles that carry over.
+  - Views don't make network calls directly.
 milestones:
   - id: p05-h1
-    title: Reutilizar la capa de datos
-    tasks: ["Extrae dominio y datos del proyecto 4 a un Swift Package local."]
-    concepts: [Modularización]
+    title: Reuse the data layer
+    tasks: ["Extract the domain and data layers from project 4 into a local Swift package."]
+    concepts: [Modularization]
   - id: p05-h2
-    title: Lista y detalle
-    tasks: ["Construye la lista con List o LazyVStack y la navegación por valores."]
+    title: List and detail
+    tasks: ["Build the list with List or LazyVStack, plus value-based navigation."]
     concepts: [NavigationStack, Observation]
   - id: p05-h3
-    title: Estados y paginación
-    tasks: ["Implementa carga, error, vacío y paginación con task y refreshable."]
+    title: States and pagination
+    tasks: ["Implement loading, error, empty and pagination with task and refreshable."]
     concepts: [task, refreshable]
   - id: p05-h4
-    title: Comparación
-    tasks: ["Escribe el documento comparativo."]
-    concepts: [Arquitectura]
+    title: Comparison
+    tasks: ["Write the comparison."]
+    concepts: [Architecture]
 ---
 
-## Qué observar
+## What to watch for
 
-La capa de datos no debería cambiar en absoluto. Si tienes que modificarla para SwiftUI, había dependencias de UIKit donde no correspondía: esa es la lección más valiosa del proyecto.
+The data layer shouldn't change at all. If you have to modify it for SwiftUI, there were UIKit dependencies where they didn't belong. That's the most useful lesson in this project.

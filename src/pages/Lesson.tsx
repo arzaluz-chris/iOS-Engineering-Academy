@@ -8,7 +8,7 @@ import { db } from '../db/db'
 import { latestByRef, lessonMastery } from '../db/stats'
 import { ExerciseBlock } from '../exercises/ExerciseBlock'
 
-const RESOURCE_KIND = { oficial: 'Documentación oficial', tutorial: 'Tutorial', articulo: 'Artículo complementario', referencia: 'Referencia' } as const
+const RESOURCE_KIND = { official: 'Official documentation', tutorial: 'Tutorial', article: 'Article', reference: 'Reference' } as const
 
 export function LessonPage({ id, focus }: { id: string; focus?: string }) {
   const lesson = getLesson(id)
@@ -20,7 +20,7 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
     if (lesson) void startLesson(lesson.id, lesson.title)
   }, [lesson])
 
-  // Ir al ejercicio enlazado (#/leccion/x/ejercicio) o retomar la última sección.
+  // Jump to a linked exercise (#/lesson/x/exercise) or resume the last section.
   useEffect(() => {
     if (!lesson) return
     const target = focus || undefined
@@ -30,7 +30,7 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
     return () => clearTimeout(t)
   }, [lesson, focus])
 
-  // Registrar la última sección visible para "continuar donde te quedaste".
+  // Remember the last visible section so the learner can pick up where they left off.
   useEffect(() => {
     if (!lesson || typeof IntersectionObserver === 'undefined') return
     const headings = [...document.querySelectorAll<HTMLElement>('.lesson-body h2[id]')]
@@ -53,7 +53,7 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
     [lesson],
   )
 
-  if (!lesson) return <Empty title="Lección no encontrada"><a href="#/curriculo">Volver al currículo</a></Empty>
+  if (!lesson) return <Empty title="Lesson not found"><a href="#/curriculum">Back to the curriculum</a></Empty>
 
   const mod = getModule(lesson.module)
   const latest = latestByRef(attempts)
@@ -69,7 +69,7 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
           <PageHeader
             kicker={
               <>
-                <a href="#/curriculo">Currículo</a> / <a href={`#/modulo/${lesson.module}`}>Módulo {mod?.number}. {mod?.title}</a> / Lección {lesson.order}
+                <a href="#/curriculum">Curriculum</a> / <a href={`#/module/${lesson.module}`}>Module {mod?.number}. {mod?.title}</a> / Lesson {lesson.order}
               </>
             }
             title={lesson.title}
@@ -79,16 +79,16 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
 
           <div className="lesson-meta row">
             <Badge>{LEVEL_LABEL[lesson.level]}</Badge>
-            <Badge>{lesson.minutes} min aprox.</Badge>
+            <Badge>About {lesson.minutes} min</Badge>
             {lesson.swiftVersion && <Badge>Swift {lesson.swiftVersion}</Badge>}
-            <Badge tone={lesson.codeStatus === 'probado' ? 'ok' : 'neutral'}>{CODE_STATUS_LABEL[lesson.codeStatus]}</Badge>
-            {progress?.status === 'completada' && <Badge tone={mastery.mastered ? 'ok' : 'accent'}>{mastery.mastered ? 'Dominada' : 'Completada'}</Badge>}
+            <Badge tone={lesson.codeStatus === 'tested' ? 'ok' : 'neutral'}>{CODE_STATUS_LABEL[lesson.codeStatus]}</Badge>
+            {progress?.status === 'completada' && <Badge tone={mastery.mastered ? 'ok' : 'accent'}>{mastery.mastered ? 'Mastered' : 'Completed'}</Badge>}
             <BookmarkButton type="leccion" id={lesson.id} />
           </div>
 
-          <section className="lesson-intro" aria-label="Antes de empezar">
+          <section className="lesson-intro" aria-label="Before you start">
             <div>
-              <h2 className="section-title">Objetivos</h2>
+              <h2 className="section-title">Goals</h2>
               <ul>
                 {lesson.objectives.map((o) => (
                   <li key={o}>{o}</li>
@@ -96,9 +96,9 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
               </ul>
             </div>
             <div>
-              <h2 className="section-title">Prerrequisitos</h2>
+              <h2 className="section-title">Prerequisites</h2>
               {lesson.prerequisites.length === 0 ? (
-                <p className="muted">Ninguno. Esta lección parte de cero.</p>
+                <p className="muted">None. This lesson starts from zero.</p>
               ) : (
                 <ul>
                   {lesson.prerequisites.map((p, i) => {
@@ -106,7 +106,7 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
                     const done = prereqProgress[i]?.status === 'completada'
                     return (
                       <li key={p}>
-                        <a href={`#/leccion/${p}`}>{pl?.title ?? p}</a> {done ? <Badge tone="ok">Completada</Badge> : <Badge tone="warn">Pendiente</Badge>}
+                        <a href={`#/lesson/${p}`}>{pl?.title ?? p}</a> {done ? <Badge tone="ok">Completed</Badge> : <Badge tone="warn">Not yet</Badge>}
                       </li>
                     )
                   })}
@@ -117,7 +117,7 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
 
           {lesson.terms.length > 0 && (
             <section aria-labelledby="terms">
-              <h2 id="terms" className="section-title">Terminología</h2>
+              <h2 id="terms" className="section-title">Terms</h2>
               <dl className="terms">
                 {lesson.terms.map((t) => (
                   <div key={t.term}>
@@ -133,13 +133,13 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
             {lesson.segments.map((s, i) => {
               if (s.kind === 'md') return <Markdown key={i} text={s.text} />
               exerciseCount++
-              return <ExerciseBlock key={s.exercise.id} exercise={s.exercise} label={`${lesson.title} · ejercicio ${exerciseCount}`} />
+              return <ExerciseBlock key={s.exercise.id} exercise={s.exercise} label={`${lesson.title} · exercise ${exerciseCount}`} />
             })}
           </div>
 
           <section className="mastery" aria-labelledby="mastery">
-            <h2 id="mastery">Lo que debes poder hacer ahora</h2>
-            <p className="muted">Comprueba cada punto sin mirar la lección. Si alguno te cuesta, vuelve a la sección correspondiente antes de avanzar.</p>
+            <h2 id="mastery">What you should be able to do now</h2>
+            <p className="muted">Check each one without looking back at the lesson. If one is shaky, reread that section before moving on.</p>
             <ul className="checklist">
               {lesson.mastery.map((m) => (
                 <li key={m}>{m}</li>
@@ -149,7 +149,7 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
 
           {lesson.resources.length > 0 && (
             <section aria-labelledby="resources">
-              <h2 id="resources" className="section-title">Para profundizar</h2>
+              <h2 id="resources" className="section-title">Go deeper</h2>
               <ul className="resources">
                 {lesson.resources.map((rid) => {
                   const r = getResource(rid)
@@ -162,7 +162,7 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
                       <span className="muted small">
                         {' '}
                         {r.source} · {RESOURCE_KIND[r.kind]}
-                        {r.status === 'verificado' && r.verifiedAt ? ` · verificado el ${r.verifiedAt}` : ' · enlace pendiente de verificación automática'}
+                        {r.status === 'verified' && r.verifiedAt ? ` · link checked ${r.verifiedAt}` : ' · link not checked yet'}
                       </span>
                       <p>{r.why}</p>
                     </li>
@@ -173,42 +173,42 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
           )}
 
           <section className="complete" aria-labelledby="complete">
-            <h2 id="complete" className="section-title">Cerrar la lección</h2>
+            <h2 id="complete" className="section-title">Finish the lesson</h2>
             <p>
-              Ejercicios intentados: {mastery.attempted}/{mastery.total}. Correctos en el último intento: {mastery.correct}/{mastery.total}.
+              Exercises tried: {mastery.attempted}/{mastery.total}. Right on the latest attempt: {mastery.correct}/{mastery.total}.
             </p>
             {progress?.status === 'completada' ? (
               <div className="row">
-                <span>Lección completada{progress.completedAt ? ` el ${new Date(progress.completedAt).toLocaleDateString('es-MX', { dateStyle: 'long' })}` : ''}.</span>
+                <span>Completed{progress.completedAt ? ` on ${new Date(progress.completedAt).toLocaleDateString('en-US', { dateStyle: 'long' })}` : ''}.</span>
                 <button type="button" className="btn btn-quiet" onClick={() => void reopenLesson(lesson.id)}>
-                  Marcar como en curso
+                  Mark as in progress
                 </button>
               </div>
             ) : (
               <>
                 <button type="button" className="btn btn-primary" disabled={!allAttempted} onClick={() => void completeLesson(lesson.id, lesson.title, lesson.cards.map((c) => c.id))}>
-                  Marcar lección como completada
+                  Mark lesson as complete
                 </button>
-                {!allAttempted && <p className="muted small">Intenta todos los ejercicios antes de completar la lección. No tienen que estar correctos: los fallados pasan a tu repaso.</p>}
-                {lesson.cards.length > 0 && <p className="muted small">Al completarla, {lesson.cards.length} conceptos clave entran a tu repaso espaciado.</p>}
+                {!allAttempted && <p className="muted small">Try every exercise before you finish. They don’t all have to be right; the ones you miss go into your review queue.</p>}
+                {lesson.cards.length > 0 && <p className="muted small">Finishing adds {lesson.cards.length} key concepts to your spaced review.</p>}
               </>
             )}
           </section>
 
           <NotesPanel type="leccion" id={lesson.id} />
 
-          <nav className="pager" aria-label="Lecciones">
+          <nav className="pager" aria-label="Lessons">
             {prev ? (
-              <a href={`#/leccion/${prev.id}`} rel="prev">
-                <span className="muted small">Anterior</span>
+              <a href={`#/lesson/${prev.id}`} rel="prev">
+                <span className="muted small">Previous</span>
                 {prev.title}
               </a>
             ) : (
               <span />
             )}
             {next && (
-              <a href={`#/leccion/${next.id}`} rel="next" className="pager-next">
-                <span className="muted small">Siguiente</span>
+              <a href={`#/lesson/${next.id}`} rel="next" className="pager-next">
+                <span className="muted small">Next</span>
                 {next.title}
               </a>
             )}
@@ -216,18 +216,18 @@ export function LessonPage({ id, focus }: { id: string; focus?: string }) {
         </article>
 
         {toc.length > 2 && (
-          <nav className="toc" aria-label="En esta lección">
-            <p className="nav-heading">En esta lección</p>
+          <nav className="toc" aria-label="On this page">
+            <p className="nav-heading">On this page</p>
             <ol>
               {toc.map((t) => (
                 <li key={t.id}>
-                  <a href={`#/leccion/${lesson.id}/${t.id}`} aria-current={progress?.lastAnchor === t.id ? 'location' : undefined}>
+                  <a href={`#/lesson/${lesson.id}/${t.id}`} aria-current={progress?.lastAnchor === t.id ? 'location' : undefined}>
                     {t.text}
                   </a>
                 </li>
               ))}
               <li>
-                <a href={`#/leccion/${lesson.id}/mastery`}>Lo que debes poder hacer ahora</a>
+                <a href={`#/lesson/${lesson.id}/mastery`}>What you should be able to do now</a>
               </li>
             </ol>
           </nav>

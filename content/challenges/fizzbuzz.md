@@ -1,64 +1,64 @@
 ---
 id: fizzbuzz
 title: FizzBuzz
-difficulty: facil
+difficulty: easy
 order: 1
-patterns: [Recorrido lineal, Condicionales]
+patterns: [Linear scan, Conditionals]
 prerequisites: [m05, m07]
-summary: El clásico filtro de entrevistas. Fácil de resolver y fácil de resolver mal si no cuidas el orden de las condiciones.
+summary: The classic interview screener. Easy to solve, and just as easy to get wrong if you don't watch the order of your conditions.
 solutionFile: FizzBuzz.swift
 testFile: FizzBuzzTests.swift
 starter: |
   func fizzBuzz(_ n: Int) -> [String] {
-      // Tu solución
+      // Your solution
       return []
   }
 time: O(n)
-space: O(n) por la lista resultado
+space: O(n) for the result list
 edgeCases:
-  - n igual a 1
-  - n igual a 0 o negativo
-  - Números múltiplos de 15
+  - n equal to 1
+  - n equal to 0 or negative
+  - Multiples of 15
 askInterviewer:
-  - ¿Devuelvo una lista o imprimo cada línea?
-  - ¿Qué espero si n es 0 o negativo?
-  - ¿El rango incluye a n?
+  - Do I return a list or print each line?
+  - What should happen if n is 0 or negative?
+  - Does the range include n?
 hints:
-  - Un número múltiplo de 15 es múltiplo de 3 y de 5. ¿Qué pasa si revisas «múltiplo de 3» primero?
-  - "`i % 3 == 0` significa que `i` es múltiplo de 3."
+  - A multiple of 15 is a multiple of both 3 and 5. What happens if you check "multiple of 3" first?
+  - "`i % 3 == 0` means `i` is a multiple of 3."
 followUps:
-  - ¿Cómo lo extenderías para que las reglas (3 → Fizz, 5 → Buzz, 7 → Bazz) se configuren sin modificar la función?
-  - ¿Qué cambia si n puede ser mil millones? Piensa en memoria y en devolver los valores de forma perezosa.
-  - ¿Cómo lo probarías sin escribir los 100 valores esperados?
+  - How would you extend it so the rules (3 → Fizz, 5 → Buzz, 7 → Bazz) can be configured without changing the function?
+  - What changes if n can be a billion? Think about memory and about producing the values lazily.
+  - How would you test it without writing out all 100 expected values?
 rubric:
-  - Los múltiplos de 15 producen FizzBuzz y no solo Fizz.
-  - Manejé n menor que 1 sin fallar.
-  - Mencioné la complejidad O(n).
-codeStatus: probado
+  - Multiples of 15 produce FizzBuzz, not just Fizz.
+  - I handled n less than 1 without crashing.
+  - I mentioned the O(n) complexity.
+codeStatus: tested
 ---
 
-Escribe una función que, dado un entero `n`, devuelva una lista de textos para cada número del 1 al `n`, ambos incluidos:
+Write a function that takes an integer `n` and returns a list of strings, one for each number from 1 to `n` inclusive:
 
-- Si el número es múltiplo de 3 y de 5: `"FizzBuzz"`.
-- Si solo es múltiplo de 3: `"Fizz"`.
-- Si solo es múltiplo de 5: `"Buzz"`.
-- En otro caso: el número como texto, por ejemplo `"7"`.
+- If the number is a multiple of both 3 and 5: `"FizzBuzz"`.
+- If it's only a multiple of 3: `"Fizz"`.
+- If it's only a multiple of 5: `"Buzz"`.
+- Otherwise: the number as text, for example `"7"`.
 
-Si `n` es menor que 1, devuelve una lista vacía.
+If `n` is less than 1, return an empty list.
 
 ```swift
 fizzBuzz(5)  // ["1", "2", "Fizz", "4", "Buzz"]
 ```
 
-**Restricciones:** `-10^4 ≤ n ≤ 10^4`.
+**Constraints:** `-10^4 ≤ n ≤ 10^4`.
 
-<!-- revelar -->
+<!-- reveal -->
 
-## Enfoque inicial
+## First approach
 
-Recorre del 1 al `n` y decide qué agregar en cada vuelta. La única dificultad real es el **orden de las condiciones**: el caso de 15 cumple dos reglas a la vez y debe revisarse antes que cada una por separado.
+Loop from 1 to `n` and decide what to append on each pass. The only real difficulty is the **order of the conditions**: 15 matches two rules at once, so it has to be checked before either rule on its own.
 
-## Solución ingenua
+## Naive solution
 
 ```swift
 func fizzBuzz(_ n: Int) -> [String] {
@@ -78,29 +78,29 @@ func fizzBuzz(_ n: Int) -> [String] {
 }
 ```
 
-## Problemas de la solución ingenua
+## Problems with the naive solution
 
-- **El caso FizzBuzz nunca ocurre.** Para 15, la primera condición (`i % 3 == 0`) ya es verdadera y se agrega `"Fizz"`. El `else if` de 15 es código muerto.
-- **Falla con n menor que 1.** `1...n` con `n = 0` es un rango inválido: Swift detiene el programa en ejecución, porque el límite inferior no puede ser mayor que el superior.
+- **The FizzBuzz case never happens.** For 15, the first condition (`i % 3 == 0`) is already true, so it appends `"Fizz"`. The `else if` for 15 is dead code.
+- **It crashes when n is less than 1.** `1...n` with `n = 0` is an invalid range: Swift stops the program at runtime, because the lower bound can't be greater than the upper bound.
 
-## Solución optimizada
+## Optimized solution
 
-Revisa primero el caso combinado, o mejor, evalúa ambas condiciones una vez y decide con un `switch` sobre la pareja. Así el compilador comprueba que cubriste las cuatro combinaciones.
+Check the combined case first. Better still, evaluate both conditions once and decide with a `switch` on the pair. That way the compiler checks that you covered all four combinations.
 
-## Explicación línea por línea
+## Line by line
 
-- `guard n >= 1 else { return [] }`: protege el rango `1...n`, que no admite `n < 1`.
-- `reserveCapacity(n)`: reserva memoria una sola vez. No cambia la complejidad, pero evita realojamientos; es un detalle que vale la pena mencionar en voz alta.
-- `let divisibleBy3 = i % 3 == 0`: calcula cada condición una vez y le da nombre.
-- `switch (divisibleBy3, divisibleBy5)`: un `switch` sobre una tupla de dos `Bool`. Las cuatro combinaciones están escritas y Swift exige que el `switch` sea exhaustivo, así que olvidar un caso es un error de compilación.
-- `String(i)`: convierte el entero a texto.
+- `guard n >= 1 else { return [] }`: protects the `1...n` range, which can't handle `n < 1`.
+- `reserveCapacity(n)`: allocates memory once. It doesn't change the complexity, but it avoids reallocations. It's a detail worth saying out loud.
+- `let divisibleBy3 = i % 3 == 0`: computes each condition once and gives it a name.
+- `switch (divisibleBy3, divisibleBy5)`: a `switch` on a tuple of two `Bool`s. All four combinations are written out, and Swift requires the `switch` to be exhaustive, so forgetting a case is a compile error.
+- `String(i)`: turns the integer into text.
 
-## Errores frecuentes
+## Common mistakes
 
-- Revisar «múltiplo de 3» antes que «múltiplo de 15».
-- Usar `0...n` y producir una línea de más para el 0.
-- Olvidar que `1...n` con `n` menor que 1 detiene el programa.
+- Checking "multiple of 3" before "multiple of 15".
+- Using `0...n` and producing an extra line for 0.
+- Forgetting that `1...n` with `n` less than 1 crashes the program.
 
-## Variante
+## Variation
 
-Generaliza las reglas: recibe una lista de parejas `(divisor, palabra)` y concatena las palabras de todos los divisores que se cumplan. Con `[(3, "Fizz"), (5, "Buzz")]` obtienes el FizzBuzz clásico; con `(7, "Bazz")` agregas una regla sin tocar la función.
+Generalize the rules: take a list of `(divisor, word)` pairs and concatenate the words for every divisor that matches. With `[(3, "Fizz"), (5, "Buzz")]` you get classic FizzBuzz; adding `(7, "Bazz")` adds a rule without touching the function.

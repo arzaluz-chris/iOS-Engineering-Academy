@@ -1,197 +1,197 @@
 ---
 id: m01-l03
-title: Aplicaciones, sistemas operativos y el ecosistema Swift, Xcode e iOS
-description: Qué es una aplicación, qué hace el sistema operativo, qué significa frontend y backend, y cómo encajan Swift, Xcode, el SDK de iOS y el ciclo de desarrollo de una app.
+title: Apps, operating systems and the Swift, Xcode and iOS ecosystem
+description: What an app is, what the operating system does, what frontend and backend mean, and how Swift, Xcode, the iOS SDK and an app's development cycle fit together.
 module: m01
 order: 3
-level: inicial
+level: beginner
 minutes: 35
 prerequisites: [m01-l02]
-codeStatus: sin-codigo
+codeStatus: no-code
 objectives:
-  - Explicar qué hace el sistema operativo por una aplicación.
-  - Distinguir frontend, backend y sistema operativo en una app real.
-  - Describir la relación entre Swift, Xcode, el SDK de iOS y el simulador.
-  - Ordenar las etapas del ciclo de desarrollo de una app iOS.
+  - Explain what the operating system does for an app.
+  - Tell frontend, backend and operating system apart in a real app.
+  - Describe how Swift, Xcode, the iOS SDK and the simulator relate to each other.
+  - Put the stages of an iOS app's development cycle in order.
 terms:
-  - term: Aplicación
-    definition: Programa con un propósito para la persona usuaria, empaquetado para instalarse y ejecutarse en un sistema operativo.
-  - term: Sistema operativo
-    definition: Software que administra el hardware y ofrece servicios a las aplicaciones, como pantalla, red, archivos y permisos. En el iPhone es iOS.
+  - term: App
+    definition: A program with a purpose for its user, packaged to be installed and run on an operating system.
+  - term: Operating system
+    definition: Software that manages the hardware and offers services to apps, such as the screen, networking, files and permissions. On the iPhone it's iOS.
   - term: Frontend
-    definition: La parte de un sistema con la que interactúa la persona usuaria. En este curso, la app iOS.
+    definition: The part of a system the user interacts with. In this course, the iOS app.
   - term: Backend
-    definition: Los servidores y servicios remotos que guardan datos compartidos y ejecutan la lógica que no debe vivir en el dispositivo.
+    definition: The remote servers and services that store shared data and run the logic that shouldn't live on the device.
   - term: IDE
-    definition: Entorno de desarrollo integrado; reúne editor, compilador, depurador y otras herramientas. Para iOS es Xcode.
+    definition: Integrated development environment; it brings together an editor, a compiler, a debugger and other tools. For iOS it's Xcode.
   - term: Terminal
-    definition: Programa para dar órdenes a la computadora escribiendo comandos de texto.
+    definition: A program for giving the computer orders by typing text commands.
   - term: SDK
-    definition: Kit de desarrollo de software; conjunto de frameworks y herramientas para construir apps para una plataforma.
+    definition: Software development kit; the set of frameworks and tools for building apps for a platform.
   - term: Framework
-    definition: Biblioteca de código reutilizable con un propósito, como UIKit o SwiftUI para construir interfaces.
+    definition: A library of reusable code with a purpose, like UIKit or SwiftUI for building interfaces.
 mastery:
-  - Señalar, en una app bancaria que uses, qué ocurre en el frontend, qué en el backend y qué resuelve iOS.
-  - Explicar qué aporta cada pieza entre Swift, Xcode, el SDK de iOS y el simulador.
-  - Enumerar en orden las etapas desde escribir código hasta publicar una app.
+  - Point out, in a banking app you use, what happens in the frontend, what happens in the backend and what iOS handles.
+  - Explain what each piece contributes among Swift, Xcode, the iOS SDK and the simulator.
+  - List, in order, the stages from writing code to publishing an app.
 resources: [xcode-overview, xcode-requirements, apple-documentation, develop-in-swift]
 cards:
   - id: m01-l03-c1
-    front: ¿Qué relación hay entre Swift, Xcode y el SDK de iOS?
-    back: "Swift es el lenguaje. Xcode es el IDE que incluye el compilador, el depurador y el simulador. El SDK de iOS es el conjunto de frameworks (UIKit, SwiftUI, Foundation…) con los que tu código usa las capacidades del sistema."
+    front: How are Swift, Xcode and the iOS SDK related?
+    back: "Swift is the language. Xcode is the IDE that includes the compiler, the debugger and the simulator. The iOS SDK is the set of frameworks (UIKit, SwiftUI, Foundation…) your code uses to reach the system's capabilities."
   - id: m01-l03-c2
-    front: En una app bancaria, ¿dónde se valida que tengas saldo para una transferencia?
-    back: En el backend. La app puede verificar antes para dar una buena experiencia, pero la decisión que vale es la del servidor, porque el dispositivo no es confiable.
+    front: In a banking app, where is it checked that you have enough balance for a transfer?
+    back: In the backend. The app can check first to give a good experience, but the decision that counts is the server's, because the device can't be trusted.
   - id: m01-l03-c3
-    front: ¿Qué hace el sistema operativo por una aplicación?
-    back: "Administra el hardware y le ofrece servicios: dibujar en pantalla, red, archivos, notificaciones, permisos y aislamiento entre apps (sandbox)."
+    front: What does the operating system do for an app?
+    back: "It manages the hardware and offers services: drawing on screen, networking, files, notifications, permissions and isolation between apps (sandbox)."
 ---
 
-## La idea en una frase
+## The idea in one sentence
 
-Una app iOS es un programa que vive dentro de iOS, usa los servicios del sistema a través de frameworks, suele hablar con un backend y se construye con Swift en Xcode.
+An iOS app is a program that lives inside iOS, uses system services through frameworks, usually talks to a backend, and is built with Swift in Xcode.
 
-## Qué hace el sistema operativo
+## What the operating system does
 
-Tu app no controla el hardware directamente. No enciende píxeles ni maneja la antena de red. Le pide esos servicios a **iOS**, el sistema operativo, que además decide qué puede y qué no puede hacer cada app.
+Your app doesn't control the hardware directly. It doesn't light up pixels or drive the network antenna. It asks **iOS**, the operating system, for those services, and iOS also decides what each app can and can't do.
 
-Algunos servicios que iOS da a cualquier app:
+Some services iOS gives every app:
 
-- Dibujar en pantalla y entregar los toques de la persona usuaria.
-- Acceso a red, archivos, cámara, ubicación y notificaciones.
-- **Permisos**: la app pide, por ejemplo, acceso a la cámara, y la persona decide.
-- **Aislamiento** (sandbox): cada app tiene su propio espacio de archivos y no puede leer los de otra.
-- Ciclo de vida: iOS decide cuándo tu app pasa a segundo plano o se suspende para ahorrar batería.
+- Drawing on screen and delivering the user's touches.
+- Access to the network, files, camera, location and notifications.
+- **Permissions**: the app asks for, say, camera access, and the user decides.
+- **Isolation** (sandbox): each app has its own file space and can't read another app's files.
+- Lifecycle: iOS decides when your app goes to the background or gets suspended to save battery.
 
-Esta última idea es importante desde ya: en iOS, **tu app no es dueña de su propio ciclo de vida**. El sistema lo es. Lo estudiarás en detalle en la etapa de fundamentos de iOS.
+That last point matters from day one: on iOS, **your app doesn't own its lifecycle**. The system does. You'll study it in detail in the iOS fundamentals stage.
 
-## Frontend, backend y sistema operativo
+## Frontend, backend and operating system
 
-Toma una app bancaria y una transferencia:
+Take a banking app and a transfer:
 
-| Pieza | Qué hace en una transferencia |
+| Piece | What it does in a transfer |
 | --- | --- |
-| Frontend (la app iOS) | Muestra el formulario, valida que el monto tenga formato correcto, pide confirmación con Face ID y muestra el resultado. |
-| Backend (servidores del banco) | Verifica identidad y saldo, aplica reglas antifraude, mueve el dinero y registra la operación. |
-| Sistema operativo (iOS) | Dibuja la interfaz, ofrece Face ID, cifra la comunicación de red y guarda credenciales en el llavero (Keychain). |
+| Frontend (the iOS app) | Shows the form, checks that the amount is well formed, asks for confirmation with Face ID and shows the result. |
+| Backend (the bank's servers) | Verifies identity and balance, applies anti-fraud rules, moves the money and records the operation. |
+| Operating system (iOS) | Draws the interface, provides Face ID, encrypts network traffic and stores credentials in the Keychain. |
 
-Una regla que vas a escuchar en cualquier equipo de banca: **el cliente no es confiable**. La app puede validar para dar buena experiencia, pero toda decisión que importe se toma en el backend, porque un dispositivo puede estar comprometido.
+A rule you'll hear on any banking team: **the client can't be trusted**. The app can validate to give a good experience, but every decision that matters is made in the backend, because a device can be compromised.
 
-## Swift, Xcode, el SDK y el simulador
+## Swift, Xcode, the SDK and the simulator
 
-Son piezas distintas que se usan juntas:
+They're separate pieces that you use together:
 
-- **Swift** es el lenguaje: las reglas para escribir el código. Es de código abierto y también corre fuera de las plataformas de Apple, por ejemplo en Linux.
-- **Xcode** es el IDE de Apple. Incluye el editor, el compilador de Swift, el depurador, el simulador e Instruments para medir rendimiento. Solo corre en macOS; cada versión exige una versión mínima de macOS y trae una versión concreta de Swift y del SDK.
-- **El SDK de iOS** es el conjunto de frameworks que te deja usar lo que ofrece iOS: Foundation para tipos básicos y red, UIKit y SwiftUI para interfaces, y muchos más.
-- **El simulador** ejecuta tu app en la Mac imitando un iPhone. Es rápido para desarrollar, pero no es idéntico a un dispositivo físico: algunas capacidades, como ciertos sensores, solo se prueban de verdad en un iPhone.
+- **Swift** is the language: the rules for writing the code. It's open source and also runs outside Apple's platforms, on Linux for example.
+- **Xcode** is Apple's IDE. It includes the editor, the Swift compiler, the debugger, the simulator and Instruments for measuring performance. It only runs on macOS; each version requires a minimum macOS version and ships with a specific version of Swift and of the SDK.
+- **The iOS SDK** is the set of frameworks that lets you use what iOS offers: Foundation for basic types and networking, UIKit and SwiftUI for interfaces, and many more.
+- **The simulator** runs your app on the Mac, imitating an iPhone. It's fast for development, but it isn't identical to a physical device: some capabilities, like certain sensors, can only really be tested on an iPhone.
 
-> [!version] Versiones vigentes al escribir esta lección (noviembre de 2026)
-> Swift 6.4, Xcode 27 e iOS 27. Las versiones cambian cada año; la tabla oficial de requisitos de Xcode, enlazada al final, es la fuente que debes consultar.
+> [!version] Current versions when this lesson was written (November 2026)
+> Swift 6.4, Xcode 27 and iOS 27. Versions change every year; Apple's official Xcode requirements table, linked at the end, is the source to check.
 
-Un detalle útil para no confundirte: **qué pertenece al lenguaje y qué al SDK**. `print`, `Int` y `Array` son parte de Swift y existen en cualquier plataforma. `UIViewController` o `NavigationStack` pertenecen a frameworks de Apple y solo existen donde ese SDK está disponible.
+One detail that keeps you from getting confused: **what belongs to the language and what belongs to the SDK**. `print`, `Int` and `Array` are part of Swift and exist on any platform. `UIViewController` or `NavigationStack` belong to Apple frameworks and only exist where that SDK is available.
 
-## La terminal
+## The terminal
 
-Además de Xcode, vas a usar la **terminal**: una ventana donde escribes comandos. Con ella clonarás repositorios con Git, crearás paquetes con `swift package init` y ejecutarás pruebas con `swift test`. Muchas tareas profesionales, como la integración continua, ocurren sin interfaz gráfica, así que conviene perderle el miedo pronto.
+Besides Xcode, you'll use the **terminal**: a window where you type commands. You'll use it to clone repositories with Git, create packages with `swift package init` and run tests with `swift test`. A lot of professional work, like continuous integration, happens without a graphical interface, so it pays to get comfortable with it early.
 
-## El ciclo de desarrollo de una app
+## An app's development cycle
 
-Las etapas, en orden:
+The stages, in order:
 
-1. **Definir** qué debe hacer la funcionalidad y cómo sabrás que está bien (criterios de aceptación).
-2. **Escribir** el código en Xcode.
-3. **Compilar**: el compilador traduce y revisa.
-4. **Ejecutar** en el simulador o en un iPhone.
-5. **Probar**: pruebas automatizadas y revisión manual.
-6. **Depurar** lo que falle, con breakpoints y la consola.
-7. **Firmar**: Apple exige que toda app instalada esté firmada con un certificado de desarrollador.
-8. **Distribuir para pruebas** con TestFlight.
-9. **Publicar** en App Store después de la revisión de Apple.
+1. **Define** what the feature has to do and how you'll know it's right (acceptance criteria).
+2. **Write** the code in Xcode.
+3. **Compile**: the compiler translates and checks.
+4. **Run** on the simulator or on an iPhone.
+5. **Test**: automated tests and manual review.
+6. **Debug** whatever fails, with breakpoints and the console.
+7. **Sign**: Apple requires every installed app to be signed with a developer certificate.
+8. **Distribute for testing** with TestFlight.
+9. **Publish** on the App Store after Apple's review.
 
-Los pasos 2 a 6 se repiten muchas veces al día. Los últimos tres ocurren cuando una versión está lista.
+Steps 2 through 6 repeat many times a day. The last three happen when a version is ready.
 
-## Errores frecuentes
+## Common mistakes
 
-> [!error] Confundir Swift con iOS
-> Swift es un lenguaje; iOS es un sistema operativo. Puedes escribir Swift en Linux sin iOS, y hay apps iOS escritas en otros lenguajes, como Objective-C.
+> [!error] Confusing Swift with iOS
+> Swift is a language; iOS is an operating system. You can write Swift on Linux with no iOS involved, and there are iOS apps written in other languages, like Objective-C.
 
-> [!error] Confiar en el simulador para todo
-> El simulador corre en la arquitectura de tu Mac y no reproduce todo el hardware. Antes de dar algo por terminado, pruébalo en un dispositivo físico.
+> [!error] Relying on the simulator for everything
+> The simulator runs on your Mac's architecture and doesn't reproduce all the hardware. Before you call something done, test it on a physical device.
 
-> [!error] Tomar decisiones de seguridad en la app
-> Si la app decide sola si una operación está permitida, alguien con un dispositivo modificado puede saltarse esa decisión. Las reglas que importan viven en el backend.
+> [!error] Making security decisions in the app
+> If the app alone decides whether an operation is allowed, someone with a modified device can bypass that decision. The rules that matter live in the backend.
 
 ````exercise
 id: m01-l03-e1
-type: comprension
-prompt: En una app de pagos, ¿quién debe decidir si el pago de 5,000 pesos procede?
+type: comprehension
+prompt: In a payments app, who should decide whether a $5,000 payment goes through?
 choices:
-  - text: La app, porque ya conoce el saldo que mostró en pantalla.
+  - text: The app, because it already knows the balance it showed on screen.
     correct: false
-    why: El saldo en pantalla puede estar desactualizado, y la app corre en un dispositivo que puede estar manipulado.
-  - text: El backend, con los datos y las reglas del banco.
+    why: The balance on screen may be out of date, and the app runs on a device that may have been tampered with.
+  - text: The backend, using the bank's data and rules.
     correct: true
-    why: Es el único lugar confiable para decisiones que mueven dinero.
-  - text: iOS, porque administra Face ID.
+    why: It's the only trustworthy place for decisions that move money.
+  - text: iOS, because it manages Face ID.
     correct: false
-    why: iOS confirma la identidad de quien usa el dispositivo, pero no conoce las reglas ni el saldo del banco.
+    why: iOS confirms the identity of whoever is using the device, but it knows nothing about the bank's rules or the balance.
 solution: |
-  Decide el **backend**. La app puede verificar antes, para avisar rápido si falta saldo, pero esa verificación es solo de experiencia de usuario. La decisión válida ocurre en el servidor. iOS aporta la autenticación biométrica y el canal cifrado, no la regla de negocio.
+  The **backend** decides. The app can check first, to warn quickly when the balance is too low, but that check is only for the user experience. The decision that counts happens on the server. iOS contributes biometric authentication and the encrypted channel, not the business rule.
 ````
 
 ````exercise
 id: m01-l03-e2
-type: comprension
+type: comprehension
 multiple: true
-prompt: ¿Cuáles de estas piezas son **parte del lenguaje Swift** y no de un framework de Apple? Selecciona todas.
+prompt: Which of these are **part of the Swift language** and not of an Apple framework? Select all that apply.
 choices:
   - text: "`print`"
     correct: true
-    why: Es una función de la biblioteca estándar de Swift.
+    why: It's a function in the Swift standard library.
   - text: "`Int`"
     correct: true
-    why: Es un tipo de la biblioteca estándar de Swift.
+    why: It's a type in the Swift standard library.
   - text: "`UIViewController`"
     correct: false
-    why: Pertenece a UIKit, un framework del SDK de iOS.
+    why: It belongs to UIKit, a framework in the iOS SDK.
   - text: "`NavigationStack`"
     correct: false
-    why: Pertenece a SwiftUI, un framework de Apple.
+    why: It belongs to SwiftUI, an Apple framework.
 solution: |
-  `print` e `Int` pertenecen a la **biblioteca estándar de Swift** y existen en cualquier plataforma donde corra Swift, incluido Linux. `UIViewController` (UIKit) y `NavigationStack` (SwiftUI) pertenecen al **SDK de Apple** y solo existen en sus plataformas. Saber distinguirlos te ayuda a leer la documentación correcta y a entender qué código puedes probar fuera de un iPhone.
+  `print` and `Int` belong to the **Swift standard library** and exist on every platform where Swift runs, Linux included. `UIViewController` (UIKit) and `NavigationStack` (SwiftUI) belong to **Apple's SDK** and only exist on Apple's platforms. Knowing the difference helps you find the right documentation and understand which code you can test outside an iPhone.
 ````
 
 ````exercise
 id: m01-l03-e3
-type: diseno
+type: design
 prompt: |
-  Elige una funcionalidad de una app que uses a diario (por ejemplo, «ver mis movimientos del mes» en tu app bancaria) y describe:
+  Pick a feature from an app you use every day (for example, "see this month's transactions" in your banking app) and describe:
 
-  1. Qué hace el frontend.
-  2. Qué hace el backend.
-  3. Qué servicios de iOS intervienen.
-  4. Un criterio de aceptación verificable para esa funcionalidad.
+  1. What the frontend does.
+  2. What the backend does.
+  3. Which iOS services are involved.
+  4. One verifiable acceptance criterion for that feature.
 hints:
-  - Piensa en qué datos necesitan guardarse en un servidor para que los veas desde otro dispositivo.
-  - Un criterio de aceptación verificable dice qué debe pasar en una situación concreta, por ejemplo sin conexión.
+  - Think about which data has to be stored on a server so you can see it from another device.
+  - A verifiable acceptance criterion says what has to happen in a specific situation, for example with no connection.
 rubric:
-  - Separé con claridad lo que ocurre en el dispositivo y lo que ocurre en el servidor.
-  - Mencioné al menos un servicio concreto de iOS (red, Keychain, notificaciones, biometría, etc.).
-  - Ninguna decisión de seguridad o de dinero quedó solo en la app.
-  - Mi criterio de aceptación se puede comprobar con un sí o un no.
+  - I clearly separated what happens on the device from what happens on the server.
+  - I named at least one specific iOS service (networking, Keychain, notifications, biometrics, etc.).
+  - No security or money decision was left to the app alone.
+  - My acceptance criterion can be checked with a yes or a no.
 solution: |
-  Ejemplo con «ver mis movimientos del mes»:
+  An example with "see this month's transactions":
 
-  1. **Frontend**: pide los movimientos, muestra un estado de carga, presenta la lista agrupada por día, permite filtrar y muestra un mensaje claro si no hay conexión.
-  2. **Backend**: autentica la sesión, consulta los movimientos de la cuenta, aplica permisos (solo las cuentas de esa persona) y responde con datos paginados.
-  3. **iOS**: red cifrada (HTTPS con App Transport Security), Keychain para el token de sesión, Face ID si la app protege el acceso, y Dynamic Type para el tamaño de letra.
-  4. **Criterio de aceptación**: «Sin conexión, la pantalla muestra los últimos movimientos guardados y un aviso con la hora de la última actualización; nunca una pantalla en blanco».
+  1. **Frontend**: requests the transactions, shows a loading state, presents the list grouped by day, lets you filter, and shows a clear message when there's no connection.
+  2. **Backend**: authenticates the session, looks up the account's transactions, applies permissions (only that person's accounts) and responds with paginated data.
+  3. **iOS**: encrypted networking (HTTPS with App Transport Security), the Keychain for the session token, Face ID if the app protects access, and Dynamic Type for text size.
+  4. **Acceptance criterion**: "With no connection, the screen shows the last saved transactions and a notice with the time of the last update; never a blank screen."
 ````
 
-## Resumen
+## Summary
 
-- iOS administra el hardware y el ciclo de vida de tu app; tu app pide servicios a través de frameworks.
-- Frontend, backend y sistema operativo tienen responsabilidades distintas; las decisiones que importan van en el backend.
-- Swift es el lenguaje, Xcode el IDE, el SDK los frameworks y el simulador una aproximación a un iPhone.
-- El ciclo de desarrollo va de definir criterios de aceptación a publicar, con un bucle constante de escribir, compilar, probar y depurar.
+- iOS manages the hardware and your app's lifecycle; your app asks for services through frameworks.
+- Frontend, backend and operating system have different responsibilities; the decisions that matter go in the backend.
+- Swift is the language, Xcode the IDE, the SDK the frameworks, and the simulator an approximation of an iPhone.
+- The development cycle runs from defining acceptance criteria to publishing, with a constant loop of writing, compiling, testing and debugging.

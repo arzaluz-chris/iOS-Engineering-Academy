@@ -2,19 +2,19 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { content, getChallenge, getExercise, getLesson, getModule, getProject, lessonSequence } from '../content'
 import { db } from '../db/db'
 import { currentLesson, overview } from '../db/stats'
-import { Empty, Meter } from '../components/ui'
+import { EXERCISE_STATUS_LABEL, Empty, Meter } from '../components/ui'
 import { TYPE_LABEL } from '../exercises/ExerciseBlock'
 
 const ACTIVITY_LABEL: Record<string, string> = {
-  'leccion-iniciada': 'Iniciaste la lección',
-  'leccion-completada': 'Completaste la lección',
-  ejercicio: 'Intento en ejercicio',
-  reto: 'Intento en reto',
-  entrevista: 'Pregunta de entrevista',
-  repaso: 'Repaso',
-  nota: 'Nota',
-  proyecto: 'Proyecto',
-  importacion: 'Importación de respaldo',
+  'leccion-iniciada': 'Started lesson',
+  'leccion-completada': 'Completed lesson',
+  ejercicio: 'Exercise attempt',
+  reto: 'Challenge attempt',
+  entrevista: 'Interview question',
+  repaso: 'Review',
+  nota: 'Note',
+  proyecto: 'Project',
+  importacion: 'Backup import',
 }
 
 export function Dashboard() {
@@ -39,103 +39,107 @@ export function Dashboard() {
   const currentModule = current ? getModule(current.module) : undefined
   const currentStatus = current ? data.progress.find((p) => p.lessonId === current.id) : undefined
 
+  const lessonCount = content.lessons.length
+  const exerciseCount = content.lessons.reduce((n, l) => n + l.exercises.length, 0)
+
   return (
-    <div className="page dashboard">
-      <header className="page-header">
-        <h1>{fresh ? 'Empieza desde cero' : 'Tu progreso'}</h1>
-        <p className="page-lede">
-          {fresh
-            ? 'El curso asume que nunca has programado. Cada lección se apoya solo en lo que ya aprendiste. Avanza por orden.'
-            : 'Todo lo que ves aquí sale de lo que has hecho en este navegador.'}
-        </p>
-      </header>
-
-      {current && (
-        <section className="next-up" aria-labelledby="next-title">
-          <p className="next-label">{currentStatus?.status === 'en-curso' ? 'Continúa donde te quedaste' : 'Siguiente lección'}</p>
-          <h2 id="next-title">
-            <a href={`#/leccion/${current.id}${currentStatus?.lastAnchor ? '' : ''}`}>{current.title}</a>
-          </h2>
-          <p className="muted">
-            Módulo {currentModule?.number}. {currentModule?.title} · {current.minutes} min
+    <div className="dashboard">
+      <section className="hero" aria-labelledby="hero-title">
+        <div className="hero-inner">
+          <p className="hero-kicker">iOS Engineering Academy</p>
+          <h1 id="hero-title">{fresh ? 'From your first line of code to shipping iOS apps.' : 'Pick up where you left off.'}</h1>
+          <p className="hero-lede">
+            {fresh
+              ? 'No experience assumed. Every lesson builds only on what came before, so go in order.'
+              : 'Everything below comes from what you’ve done in this browser.'}
           </p>
-          <p>{current.description}</p>
-          <a className="btn btn-primary" href={`#/leccion/${current.id}`}>
-            {currentStatus ? 'Continuar la lección' : 'Comenzar la lección'}
-          </a>
-        </section>
-      )}
+          {current && (
+            <div className="hero-cta">
+              <a className="btn btn-pill" href={`#/lesson/${current.id}`}>
+                {currentStatus ? 'Continue' : 'Start'}: {current.title}
+              </a>
+              <p className="hero-note">
+                Module {currentModule?.number} · {currentModule?.title} · {current.minutes} min
+              </p>
+            </div>
+          )}
+          <p className="hero-stats">
+            {lessonCount} lessons · {exerciseCount} exercises · {content.challenges.length} coding challenges · {content.questions.length} interview questions
+          </p>
+        </div>
+      </section>
 
+      <div className="page dash-body">
       <div className="dash-grid">
         <section aria-labelledby="g-progress">
-          <h2 id="g-progress" className="section-title">Avance general</h2>
+          <h2 id="g-progress" className="section-title">Overall progress</h2>
           <dl className="figures">
             <div>
-              <dt>Lecciones completadas</dt>
+              <dt>Lessons completed</dt>
               <dd>
-                <Meter value={o.lessonsCompleted} max={o.lessonsTotal} label="Lecciones completadas" />
+                <Meter value={o.lessonsCompleted} max={o.lessonsTotal} label="Lessons completed" />
               </dd>
             </div>
             <div>
-              <dt>Lecciones dominadas</dt>
+              <dt>Lessons mastered</dt>
               <dd>
-                <Meter value={o.lessonsMastered} max={o.lessonsTotal} label="Lecciones dominadas" />
-                <span className="muted small">Completada y con todos sus ejercicios correctos en el último intento.</span>
+                <Meter value={o.lessonsMastered} max={o.lessonsTotal} label="Lessons mastered" />
+                <span className="muted small">Completed, with every exercise right on the latest attempt.</span>
               </dd>
             </div>
             <div>
-              <dt>Ejercicios correctos</dt>
+              <dt>Exercises correct</dt>
               <dd>
-                <Meter value={o.exercisesCorrect} max={o.exercisesTotal} label="Ejercicios correctos" />
+                <Meter value={o.exercisesCorrect} max={o.exercisesTotal} label="Exercises correct" />
               </dd>
             </div>
             <div>
-              <dt>Retos resueltos</dt>
+              <dt>Challenges solved</dt>
               <dd>
-                <Meter value={o.challengesSolved} max={content.challenges.length} label="Retos resueltos" />
+                <Meter value={o.challengesSolved} max={content.challenges.length} label="Challenges solved" />
               </dd>
             </div>
           </dl>
-          <p className="muted small">El tiempo de estudio no se registra: no hay una forma fiable de medirlo sin contar tiempo con la pestaña abierta y sin estudiar.</p>
+          <p className="muted small">Study time isn’t tracked. There’s no reliable way to measure it without counting time the tab sat open while you did something else.</p>
         </section>
 
         <section aria-labelledby="g-review">
-          <h2 id="g-review" className="section-title">Por reforzar</h2>
+          <h2 id="g-review" className="section-title">Needs work</h2>
           {data.dueCards.length === 0 && data.difficult === 0 && o.pendingExercises.length === 0 ? (
-            <Empty title="Nada pendiente por ahora">Los ejercicios fallados, los retos incompletos y los conceptos de lecciones terminadas aparecerán aquí.</Empty>
+            <Empty title="Nothing due right now">Missed exercises, unfinished challenges and concepts from completed lessons show up here.</Empty>
           ) : (
             <ul className="plain-list">
               <li>
-                <a href="#/repaso">
-                  {data.dueCards.length} tarjeta{data.dueCards.length === 1 ? '' : 's'} de repaso para hoy
+                <a href="#/review">
+                  {data.dueCards.length} review card{data.dueCards.length === 1 ? '' : 's'} due today
                 </a>
-                {data.difficult > 0 && <span className="muted"> · {data.difficult} marcada{data.difficult === 1 ? '' : 's'} como difícil</span>}
+                {data.difficult > 0 && <span className="muted"> · {data.difficult} marked hard</span>}
               </li>
               {o.pendingExercises.slice(0, 5).map((p) => {
                 const ex = getExercise(p.exerciseId)
                 return (
                   <li key={p.exerciseId}>
-                    <a href={`#/leccion/${p.lessonId}/${p.exerciseId}`}>
-                      {ex ? TYPE_LABEL[ex.exercise.type] : 'Ejercicio'} en «{getLesson(p.lessonId)?.title}»
+                    <a href={`#/lesson/${p.lessonId}/${p.exerciseId}`}>
+                      {ex ? TYPE_LABEL[ex.exercise.type] : 'Exercise'} in “{getLesson(p.lessonId)?.title}”
                     </a>
-                    <span className="muted"> · {p.status === 'sin-intento' ? 'sin intento' : p.status}</span>
+                    <span className="muted"> · {EXERCISE_STATUS_LABEL[p.status]}</span>
                   </li>
                 )
               })}
               {o.pendingExercises.length > 5 && (
                 <li>
-                  <a href="#/ejercicios?estado=pendiente">Ver los {o.pendingExercises.length} ejercicios pendientes</a>
+                  <a href="#/exercises?status=pending">See all {o.pendingExercises.length} open exercises</a>
                 </li>
               )}
             </ul>
           )}
           {o.failedChallenges.length > 0 && (
             <>
-              <h3 className="sub-title">Retos fallados</h3>
+              <h3 className="sub-title">Failed challenges</h3>
               <ul className="plain-list">
                 {o.failedChallenges.map((id) => (
                   <li key={id}>
-                    <a href={`#/reto/${id}`}>{getChallenge(id)?.title}</a>
+                    <a href={`#/challenge/${id}`}>{getChallenge(id)?.title}</a>
                   </li>
                 ))}
               </ul>
@@ -144,13 +148,13 @@ export function Dashboard() {
         </section>
 
         <section aria-labelledby="g-stages" className="span-2">
-          <h2 id="g-stages" className="section-title">Avance por etapa</h2>
+          <h2 id="g-stages" className="section-title">Progress by stage</h2>
           <table className="stage-table">
             <thead>
               <tr>
-                <th scope="col">Etapa</th>
-                <th scope="col">Lecciones completadas</th>
-                <th scope="col">Módulos con contenido</th>
+                <th scope="col">Stage</th>
+                <th scope="col">Lessons completed</th>
+                <th scope="col">Modules with lessons</th>
               </tr>
             </thead>
             <tbody>
@@ -159,7 +163,7 @@ export function Dashboard() {
                   <th scope="row">
                     <span className="stage-num">{s.number}</span> {s.title}
                   </th>
-                  <td>{s.lessons ? <Meter value={s.completed} max={s.lessons} label={`Lecciones de ${s.title}`} /> : <span className="muted">En preparación</span>}</td>
+                  <td>{s.lessons ? <Meter value={s.completed} max={s.lessons} label={`${s.title} lessons`} /> : <span className="muted">Coming soon</span>}</td>
                   <td>
                     {s.modulesWithContent}/{s.modules}
                   </td>
@@ -170,10 +174,10 @@ export function Dashboard() {
         </section>
 
         <section aria-labelledby="g-projects">
-          <h2 id="g-projects" className="section-title">Proyectos en curso</h2>
+          <h2 id="g-projects" className="section-title">Projects in progress</h2>
           {data.projects.length === 0 ? (
-            <Empty title="Aún no inicias un proyecto">
-              El primero, una aplicación de consola, se desbloquea con los módulos de fundamentos. <a href="#/proyectos">Ver los proyectos</a>.
+            <Empty title="No projects started yet">
+              The first one, a console app, opens up once you finish the fundamentals. <a href="#/projects">See the projects</a>.
             </Empty>
           ) : (
             <ul className="plain-list">
@@ -181,10 +185,10 @@ export function Dashboard() {
                 const proj = getProject(p.projectId)
                 return (
                   <li key={p.projectId}>
-                    <a href={`#/proyecto/${p.projectId}`}>{proj?.title}</a>
+                    <a href={`#/project/${p.projectId}`}>{proj?.title}</a>
                     <span className="muted">
                       {' '}
-                      · {p.milestonesDone.length}/{proj?.milestones.length} hitos
+                      · {p.milestonesDone.length}/{proj?.milestones.length} milestones
                     </span>
                   </li>
                 )
@@ -194,14 +198,14 @@ export function Dashboard() {
         </section>
 
         <section aria-labelledby="g-activity">
-          <h2 id="g-activity" className="section-title">Actividad reciente</h2>
+          <h2 id="g-activity" className="section-title">Recent activity</h2>
           {data.activity.length === 0 ? (
-            <Empty title="Sin actividad todavía" />
+            <Empty title="No activity yet" />
           ) : (
             <ol className="activity">
               {data.activity.map((a) => (
                 <li key={a.id}>
-                  <time dateTime={a.at}>{new Date(a.at).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' })}</time>
+                  <time dateTime={a.at}>{new Date(a.at).toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'short' })}</time>
                   <span>
                     {ACTIVITY_LABEL[a.type] ?? a.type}: {a.label}
                   </span>
@@ -210,6 +214,7 @@ export function Dashboard() {
             </ol>
           )}
         </section>
+      </div>
       </div>
     </div>
   )

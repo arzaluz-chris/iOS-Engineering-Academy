@@ -1,17 +1,17 @@
-# Soluciones de los retos y fragmentos de las lecciones
+# Challenge solutions and lesson snippets
 
-Swift Package con una solución y sus pruebas (Swift Testing) por cada reto de `content/challenges/`. La web muestra estos mismos archivos.
+A Swift package with one solution and its tests (Swift Testing) for each challenge in `content/challenges/`. The site shows these same files.
 
 ```bash
-swift test                          # todas las pruebas
-swift test --filter TwoSumTests     # un reto
+swift test                          # all tests
+swift test --filter TwoSumTests     # one challenge
 ```
 
-Requiere Swift 6 (Xcode 16 o posterior). Para practicar con tu propia solución, sustituye el archivo del reto en `Sources/Challenges/` en una rama aparte y corre sus pruebas.
+Requires Swift 6 (Xcode 16 or later). To practice with your own solution, replace the challenge's file in `Sources/Challenges/` on a separate branch and run its tests.
 
-## Fragmentos de las lecciones
+## Lesson snippets
 
-`Tests/LessonSnippetsTests` compila y ejecuta los fragmentos de `content/lessons/` (ejercicios de predicción y, en lecciones `probado`, cada bloque Swift) y compara su salida con la que afirma la lección. Las reglas están en `docs/CONTENIDO.md`. Necesita `swiftc` en el `PATH`.
+`Tests/LessonSnippetsTests` compiles and runs the snippets in `content/lessons/` (prediction exercises and, in `tested` lessons, every Swift block) and compares their output with what the lesson claims. The rules are in `docs/CONTENT.md`. It needs `swiftc` on the `PATH`.
 
 ```bash
 swift test --filter LessonSnippetsTests

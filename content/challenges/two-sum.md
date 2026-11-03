@@ -1,66 +1,66 @@
 ---
 id: two-sum
 title: Two Sum
-difficulty: facil
+difficulty: easy
 order: 3
-patterns: [Hash map, Complemento]
+patterns: [Hash map, Complement lookup]
 prerequisites: [m07, m08, m15]
-summary: Encontrar dos posiciones cuya suma es un objetivo. El ejemplo canónico de cambiar memoria por tiempo con un diccionario.
+summary: Find two positions whose values add up to a target. The textbook case of trading memory for time with a dictionary.
 solutionFile: TwoSum.swift
 testFile: TwoSumTests.swift
 starter: |
   func twoSum(_ nums: [Int], _ target: Int) -> [Int]? {
-      // Tu solución
+      // Your solution
       return nil
   }
-time: O(n) en promedio
+time: O(n) on average
 space: O(n)
 edgeCases:
-  - Dos valores iguales que suman el objetivo, como [3, 3] con 6
-  - Un valor que es la mitad del objetivo pero aparece una sola vez
-  - Negativos y cero
-  - Sin solución
+  - Two equal values that add up to the target, like [3, 3] with 6
+  - A value that's half the target but appears only once
+  - Negatives and zero
+  - No solution
 askInterviewer:
-  - ¿Siempre existe exactamente una solución, o debo manejar ninguna o varias?
-  - ¿Devuelvo índices o valores?
-  - ¿La lista está ordenada?
-  - ¿Puede haber valores repetidos?
+  - Is there always exactly one solution, or do I need to handle none or several?
+  - Do I return indices or values?
+  - Is the list sorted?
+  - Can values repeat?
 hints:
-  - Para cada número `x`, ¿qué número necesitas encontrar? Escríbelo en función de `target` y `x`.
-  - Si guardaras los números que ya recorriste junto con su índice, ¿cuánto costaría preguntar si ya viste el que necesitas?
-  - Busca el complemento antes de guardar el número actual. ¿Por qué importa ese orden?
+  - For each number `x`, which number do you need to find? Write it in terms of `target` and `x`.
+  - If you stored the numbers you've already walked past along with their index, how much would it cost to ask whether you've seen the one you need?
+  - Look up the complement before you store the current number. Why does that order matter?
 followUps:
-  - Si la lista estuviera ordenada, ¿cómo lo resolverías con O(1) de memoria? (Two pointers.)
-  - ¿Y si hay que devolver todas las parejas distintas?
-  - ¿Qué riesgo tiene calcular target - x con valores cercanos a Int.max?
+  - If the list were sorted, how would you solve it with O(1) extra memory? (Two pointers.)
+  - What if you have to return every distinct pair?
+  - What's the risk of computing target - x when values are close to Int.max?
 rubric:
-  - Expliqué la solución O(n²) y por qué no escala.
-  - Usé un diccionario de valor a índice para buscar el complemento en O(1) promedio.
-  - Busqué el complemento antes de insertar el valor actual, para no usar el mismo índice dos veces.
-  - Manejé el caso sin solución.
-codeStatus: probado
+  - I explained the O(n²) solution and why it doesn't scale.
+  - I used a dictionary from value to index to find the complement in O(1) on average.
+  - I looked up the complement before inserting the current value, so the same index is never used twice.
+  - I handled the no-solution case.
+codeStatus: tested
 ---
 
-Dada una lista de enteros `nums` y un entero `target`, devuelve los índices `[i, j]` de dos elementos **distintos** (`i ≠ j`) cuya suma es `target`, con `i < j`. Si no existen, devuelve `nil`.
+Given a list of integers `nums` and an integer `target`, return the indices `[i, j]` of two **different** elements (`i ≠ j`) that add up to `target`, with `i < j`. If there aren't any, return `nil`.
 
 ```swift
-twoSum([2, 7, 11, 15], 9)  // [0, 1]  porque 2 + 7 = 9
-twoSum([3, 2, 4], 6)       // [1, 2]  porque 2 + 4 = 6
+twoSum([2, 7, 11, 15], 9)  // [0, 1]  because 2 + 7 = 9
+twoSum([3, 2, 4], 6)       // [1, 2]  because 2 + 4 = 6
 twoSum([3, 3], 6)          // [0, 1]
 twoSum([1, 2, 3], 100)     // nil
 ```
 
-**Restricciones:** `0 ≤ nums.count ≤ 10^4`; `-10^9 ≤ nums[i], target ≤ 10^9`. Si hay varias soluciones, devuelve la primera cuyo segundo índice es menor.
+**Constraints:** `0 ≤ nums.count ≤ 10^4`; `-10^9 ≤ nums[i], target ≤ 10^9`. If there are several solutions, return the one whose second index is smallest.
 
-<!-- revelar -->
+<!-- reveal -->
 
-## Enfoque inicial
+## First approach
 
-Para cada número `x`, el número que lo completa es `target - x`. El problema se reduce a preguntar, rápido, «¿ya vi `target - x`, y en qué posición?».
+For each number `x`, the number that completes it is `target - x`. So the problem comes down to answering one question quickly: "have I already seen `target - x`, and at what position?"
 
-## Solución ingenua
+## Naive solution
 
-Probar todas las parejas `(i, j)` con `i < j`:
+Try every pair `(i, j)` with `i < j`:
 
 ```swift
 func twoSum(_ nums: [Int], _ target: Int) -> [Int]? {
@@ -73,29 +73,29 @@ func twoSum(_ nums: [Int], _ target: Int) -> [Int]? {
 }
 ```
 
-## Problemas de la solución ingenua
+## Problems with the naive solution
 
-Es **O(n²)** en tiempo. Con 10^4 elementos son cerca de 5·10^7 sumas: funciona, pero en entrevista el siguiente paso esperado es mejorarla. Su ventaja es que usa O(1) de memoria; menciónalo, porque es un trade-off real.
+It's **O(n²)** time. With 10^4 elements that's about 5·10^7 additions. It works, but in an interview the expected next step is to beat it. Its one advantage is O(1) memory; say so, because that's a real trade-off.
 
-## Solución optimizada
+## Optimized solution
 
-Recorre una vez. Para cada valor, busca su complemento en un diccionario `[valor: índice]` con lo ya recorrido; si está, terminaste. Si no, guarda el valor actual y sigue.
+Walk the list once. For each value, look up its complement in a `[value: index]` dictionary of what you've already seen. If it's there, you're done. If not, store the current value and keep going.
 
-## Explicación línea por línea
+## Line by line
 
-- `var indexByValue: [Int: Int] = [:]`: para cada valor ya visto, su índice.
-- `for (index, value) in nums.enumerated()`: recorre con posición y valor a la vez.
-- `if let complementIndex = indexByValue[target - value]`: leer un diccionario devuelve un optional, porque la clave puede no existir. `if let` lo desempaqueta solo si existe.
-- `return [complementIndex, index]`: el complemento se vio antes, así que su índice es menor.
-- `indexByValue[value] = index`: se guarda **después** de buscar. Si se guardara antes, con `[3, 5]` y objetivo 6, el 3 encontraría a sí mismo como complemento.
-- Si hay valores repetidos, la última asignación sobrescribe el índice anterior; no afecta, porque cualquier pareja válida se detecta al llegar a su segundo elemento.
+- `var indexByValue: [Int: Int] = [:]`: for each value seen so far, its index.
+- `for (index, value) in nums.enumerated()`: walks the list with position and value together.
+- `if let complementIndex = indexByValue[target - value]`: reading a dictionary returns an optional, because the key might not exist. `if let` unwraps it only when it does.
+- `return [complementIndex, index]`: the complement was seen earlier, so its index is smaller.
+- `indexByValue[value] = index`: stored **after** the lookup. If you stored it first, with `[3, 5]` and a target of 6, the 3 would find itself as its own complement.
+- If values repeat, the later assignment overwrites the earlier index. That's fine: any valid pair gets caught when the loop reaches its second element.
 
-## Errores frecuentes
+## Common mistakes
 
-- Insertar antes de buscar y emparejar un elemento consigo mismo.
-- Ordenar la lista para usar two pointers y perder los índices originales.
-- Usar `firstIndex(of:)` dentro del ciclo: parece O(n), pero es O(n²), porque `firstIndex` recorre la lista.
+- Inserting before looking up, and pairing an element with itself.
+- Sorting the list to use two pointers and losing the original indices.
+- Calling `firstIndex(of:)` inside the loop. It looks O(n), but it's O(n²), because `firstIndex` walks the list.
 
-## Variante
+## Variation
 
-**Two Sum II** (lista ordenada): un índice al inicio y otro al final. Si la suma es menor que el objetivo, avanza el izquierdo; si es mayor, retrocede el derecho. O(n) de tiempo y O(1) de memoria.
+**Two Sum II** (sorted list): one index at the start and one at the end. If the sum is less than the target, move the left one forward; if it's greater, move the right one back. O(n) time and O(1) memory.

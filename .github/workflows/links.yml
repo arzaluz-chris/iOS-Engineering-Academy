@@ -1,5 +1,5 @@
-# Revisa semanalmente los enlaces de content/resources.yaml y publica el reporte en el resumen del job.
-name: Enlaces · verificación
+# Checks the links in content/resources.yaml every week and posts the report in the job summary.
+name: Links · check
 
 on:
   schedule:
@@ -20,9 +20,9 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Comprobar enlaces
+      - name: Check links
         run: npm run check-links | tee links.txt
-      - name: Resumen
+      - name: Summary
         if: always()
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,72 @@
+questions:
+  - id: q-sec-store-token
+    category: security
+    difficulty: medium
+    question: Where would you store a banking app's session token, and why not in UserDefaults?
+    answer: |
+      In the **Keychain**. `UserDefaults` is saved as a plist file inside the app's container, with no encryption of its own beyond the general file system protection. It's included in backups, and it's trivial to read on a jailbroken device or from an unencrypted backup.
+
+      The Keychain stores secrets encrypted by the system and lets you choose **when** they're accessible with `kSecAttrAccessible`:
+      - `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`: only while the device is unlocked, and never migrated to another device through a backup. It's a good choice for a banking token.
+      - The `…ThisDeviceOnly` variants keep the secret out of backups and device migrations.
+      - With `SecAccessControl` and `.biometryCurrentSet` you can require Face ID or Touch ID to read the item, and the item is invalidated if the enrolled fingerprints or faces change.
+
+      On top of that: keep tokens short-lived, refresh them with a refresh token that also lives in the Keychain, wipe everything on sign-out, and never write tokens to logs.
+    keyPoints:
+      - Keychain, not UserDefaults, with the concrete reason.
+      - The right accessibility class and the ThisDeviceOnly suffix.
+      - Biometric access control that's invalidated when biometrics change.
+      - Short-lived tokens, cleanup on sign-out, and no tokens in logs.
+    followUps:
+      - question: Does protecting the token with Face ID make authorizing a transfer secure?
+        answer: Not on its own. Local biometrics prove that whoever has the phone unlocked it; a compromised device can bypass checks in the app. For high-risk operations, the verification has to be cryptographic and validated by the backend, for example with a Secure Enclave key that signs a server challenge and can only be used after biometric authentication.
+      - question: Is the Keychain wiped when the app is uninstalled?
+        answer: Historically, Keychain items have been able to survive an uninstall. That's why many apps detect the first launch after install (with a flag in UserDefaults, which does get wiped) and clear the Keychain. I wouldn't rely on either behavior without checking it on the iOS version I'm targeting.
+    related: [m42, m31]
+
+  - id: q-sec-pinning
+    category: security
+    difficulty: hard
+    question: What is certificate pinning, what does it protect against, and what are its operational risks?
+    answer: |
+      By default, TLS trusts any certificate signed by an authority in the device's trust store. **Pinning** narrows that trust: the app only accepts the connection if the server's certificate, or better, its **public key**, matches one it expects.
+
+      **It protects** against man-in-the-middle attacks that use certificates issued by a compromised authority, or a root certificate installed on the device (for example, a malicious configuration profile or a corporate proxy).
+
+      **It doesn't protect** against a jailbroken device in the attacker's hands: they can turn off pinning at runtime with instrumentation tools.
+
+      **Operational risks:**
+      - If the certificate or key rotates and the app doesn't have the new pin, every installed version stops connecting. That's an availability incident.
+      - Mitigations: pin the public key (it survives renewals if the key is kept), include a backup pin, coordinate rotations with the infrastructure team, and have a forced-update plan.
+
+      On iOS you can implement it in `urlSession(_:didReceive:completionHandler:)` by evaluating the `SecTrust`, or declaratively with `NSPinnedDomains` inside `NSAppTransportSecurity` in Info.plist (available since iOS 14).
+    keyPoints:
+      - What changes compared with normal TLS validation.
+      - What it protects against and what it doesn't.
+      - Public key pinning versus certificate pinning.
+      - The risk of cutting the app off when keys rotate, and backup pins.
+      - Ways to implement it on iOS.
+    followUps:
+      - question: What is App Transport Security?
+        answer: An iOS policy that, by default, requires HTTPS with modern TLS for connections made with URLSession. Exceptions are declared under `NSAppTransportSecurity` in Info.plist, and Apple asks you to justify them in App Review. A banking app shouldn't have exceptions for its own domains.
+    related: [m42, m30]
+
+  - id: q-sec-client-trust
+    category: security
+    difficulty: medium
+    question: An auditor reports that the app enforces the daily transfer limit on the client. How does an iOS engineer respond?
+    answer: |
+      That the finding is correct if the check happens **only** on the client. The device isn't a trusted environment: with a modified device, a proxy, or by calling the API directly without the app, you can skip any local check.
+
+      The fix is for the **backend** to enforce the limit as the authoritative business rule. The check in the app stays, but only as user experience: warning before sending. I'd also check:
+      - That the API doesn't trust fields the client sends to decide permissions (for example, a `role` in the request body).
+      - That backend errors are shown properly in the app.
+      - That backend tests cover the case.
+
+      This lines up with the MASVS control about not relying on the client for security decisions.
+    keyPoints:
+      - The client isn't trusted.
+      - The authoritative rule lives on the backend.
+      - The local check stays as user experience.
+      - Review other data the API trusts from the client.
+    related: [m42, m01-l03]

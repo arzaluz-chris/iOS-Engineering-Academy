@@ -1,45 +1,45 @@
 questions:
   - id: q-uikit-vc-lifecycle
     category: uikit
-    difficulty: facil
-    question: Describe el ciclo de vida de un UIViewController y qué harías en cada método.
+    difficulty: easy
+    question: Walk through the lifecycle of a UIViewController and what you'd do in each method.
     answer: |
-      - `loadView`: crea la vista raíz. Solo se sobrescribe para asignar una vista propia sin Storyboard; no se llama a `super` si la reemplazas por completo.
-      - `viewDidLoad`: una vez, cuando la vista está en memoria. Configuración inicial: subvistas, constraints, data sources, observación de datos.
-      - `viewWillAppear`: cada vez que la vista va a mostrarse. Refrescar datos que pudieron cambiar, ajustar la barra de navegación.
-      - `viewIsAppearing` (iOS 17 y posteriores, con back-deployment a iOS 13): la vista ya tiene trait collection y geometría correctas; buen lugar para trabajo que depende del tamaño.
-      - `viewWillLayoutSubviews` / `viewDidLayoutSubviews`: en cada pasada de layout. Ajustes que dependen de tamaños finales; deben ser baratos.
-      - `viewDidAppear`: la vista ya es visible. Iniciar animaciones, analítica de pantalla vista.
-      - `viewWillDisappear` / `viewDidDisappear`: detener trabajo, guardar estado, cancelar tareas que ya no tienen sentido.
+      - `loadView`: creates the root view. You only override it to assign your own view without a storyboard; don't call `super` if you're replacing the view entirely.
+      - `viewDidLoad`: once, when the view is in memory. Initial setup: subviews, constraints, data sources, observing data.
+      - `viewWillAppear`: every time the view is about to show. Refresh data that may have changed, adjust the navigation bar.
+      - `viewIsAppearing` (iOS 17 and later, back-deployed to iOS 13): the view already has the right trait collection and geometry. A good place for work that depends on size.
+      - `viewWillLayoutSubviews` / `viewDidLayoutSubviews`: on every layout pass. Adjustments that depend on final sizes; they need to be cheap.
+      - `viewDidAppear`: the view is now visible. Start animations, log the screen view for analytics.
+      - `viewWillDisappear` / `viewDidDisappear`: stop work, save state, cancel tasks that no longer make sense.
 
-      `deinit` no es parte del ciclo de la vista, pero sirve para confirmar que el controller se libera al salir de la pantalla.
+      `deinit` isn't part of the view lifecycle, but it's how you confirm the controller is freed when you leave the screen.
     keyPoints:
-      - viewDidLoad ocurre una vez; viewWillAppear en cada aparición.
-      - Trabajo dependiente de geometría en layout o viewIsAppearing, no en viewDidLoad.
-      - Detener o cancelar trabajo al desaparecer.
-      - deinit para verificar que no hay fugas.
+      - viewDidLoad happens once; viewWillAppear on every appearance.
+      - Geometry-dependent work goes in layout or viewIsAppearing, not viewDidLoad.
+      - Stop or cancel work on disappear.
+      - deinit to confirm there are no leaks.
     followUps:
-      - question: ¿Por qué no conviene leer view.bounds en viewDidLoad para calcular el layout?
-        answer: Porque en ese momento la vista aún no tiene su tamaño final en la jerarquía; puede tener el tamaño del Storyboard o cero. Auto Layout o los métodos de layout son el lugar correcto.
+      - question: Why shouldn't you read view.bounds in viewDidLoad to compute layout?
+        answer: Because at that point the view doesn't have its final size in the hierarchy yet; it might have the storyboard's size, or zero. Auto Layout or the layout methods are the right place.
     related: [m22]
 
   - id: q-uikit-cell-reuse
     category: uikit
-    difficulty: medio
-    question: ¿Cómo funciona la reutilización de celdas y qué errores provoca?
+    difficulty: medium
+    question: How does cell reuse work, and what bugs does it cause?
     answer: |
-      `UITableView` y `UICollectionView` crean solo las celdas necesarias para llenar la pantalla más un pequeño margen. Al hacer scroll, las celdas que salen se ponen en una cola de reutilización y se entregan de nuevo al pedir `dequeueReusableCell`. Así una lista de 10,000 elementos usa unas pocas decenas de celdas.
+      `UITableView` and `UICollectionView` only create the cells needed to fill the screen plus a small margin. As you scroll, cells that go off screen are put in a reuse queue and handed back when you call `dequeueReusableCell`. That way a list of 10,000 items uses a few dozen cells.
 
-      Errores típicos:
-      - **Estado residual:** configurar una propiedad solo en algunos casos (por ejemplo, poner una insignia si el elemento es nuevo y no quitarla si no lo es). Cada configuración debe asignar todo el estado, o restablecerlo en `prepareForReuse`.
-      - **Imágenes en la celda equivocada:** una descarga asíncrona termina cuando la celda ya muestra otro elemento. Se resuelve cancelando la carga en `prepareForReuse` o verificando que el identificador del elemento siga siendo el mismo antes de asignar la imagen.
-      - Trabajo pesado en `cellForRowAt`, que se ejecuta en el hilo principal en cada scroll.
+      Typical bugs:
+      - **Leftover state:** setting a property only in some cases (for example, showing a badge if the item is new and not removing it if it isn't). Every configuration has to set all the state, or reset it in `prepareForReuse`.
+      - **Images in the wrong cell:** an async download finishes after the cell is already showing a different item. You fix it by cancelling the load in `prepareForReuse`, or by checking that the item's identifier is still the same before setting the image.
+      - Heavy work in `cellForRowAt`, which runs on the main thread on every scroll.
     keyPoints:
-      - Pool de celdas y dequeue.
-      - Estado residual y prepareForReuse o configuración completa.
-      - Cargas asíncronas que llegan a la celda equivocada.
-      - No hacer trabajo pesado al configurar.
+      - The cell pool and dequeue.
+      - Leftover state, and prepareForReuse or full configuration.
+      - Async loads that land in the wrong cell.
+      - No heavy work during configuration.
     followUps:
-      - question: ¿Qué aportan los diffable data sources frente a reloadData?
-        answer: "Describes el estado deseado con un **snapshot** de identificadores y el data source calcula las diferencias y anima inserciones, borrados y movimientos. Evita las inconsistencias entre modelo y vista que provocan excepciones con `performBatchUpdates`. Requiere identificadores `Hashable` estables."
+      - question: What do diffable data sources give you over reloadData?
+        answer: You describe the state you want with a **snapshot** of identifiers, and the data source works out the differences and animates insertions, deletions and moves. It avoids the model/view inconsistencies that throw exceptions with `performBatchUpdates`. It needs stable `Hashable` identifiers.
     related: [m24]

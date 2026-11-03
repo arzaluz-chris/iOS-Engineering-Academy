@@ -1,6 +1,6 @@
 import Foundation
 
-/// Compila un fragmento como programa independiente (`main.swift`, modo de lenguaje Swift 6) y lo ejecuta.
+/// Compiles a snippet as a standalone program (`main.swift`, Swift 6 language mode) and runs it.
 enum SwiftRunner {
     struct Result {
         let compiled: Bool
@@ -9,8 +9,8 @@ enum SwiftRunner {
         let stdout: String
     }
 
-    /// Salida por líneas, como en una terminal o en la consola de Xcode. Sin esto, con la salida
-    /// conectada a un pipe, lo impreso antes de un error en ejecución se queda en el búfer y se pierde.
+    /// Line-buffered output, like a terminal or the Xcode console. Without this, when stdout is a
+    /// pipe, anything printed before a runtime error stays in the buffer and is lost.
     static let prelude = """
         #if canImport(Darwin)
         @preconcurrency import Darwin
@@ -43,14 +43,14 @@ enum SwiftRunner {
         let p = Process()
         p.executableURL = URL(fileURLWithPath: path)
         p.arguments = args
-        // Sin variables del proceso de pruebas que alteren el enlazado del programa.
+        // Drop test-process variables that would change how the program links.
         p.environment = ProcessInfo.processInfo.environment.filter { !$0.key.hasPrefix("DYLD_") }
         let out = Pipe(), err = Pipe()
         p.standardOutput = out
         p.standardError = err
         p.standardInput = FileHandle.nullDevice
         try p.run()
-        // Leer antes de esperar evita bloqueos si la salida llena el búfer del pipe.
+        // Read before waiting so a full pipe buffer can't deadlock.
         let o = out.fileHandleForReading.readDataToEndOfFile()
         let e = err.fileHandleForReading.readDataToEndOfFile()
         p.waitUntilExit()

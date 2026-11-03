@@ -1,0 +1,40 @@
+questions:
+  - id: q-conc-thread-vs-task
+    category: concurrency
+    difficulty: medium
+    question: What's the difference between a thread and a Task in Swift Concurrency?
+    answer: |
+      - A **thread** is an operating system resource: a flow of execution with its own stack, scheduled by the kernel. Creating lots of them is expensive, and blocking one wastes it.
+      - A **Task** is a unit of asynchronous work in the Swift runtime. Tasks run on a limited pool of threads (roughly one per core on the global concurrent executor). When a task hits an `await` and has to wait, it **suspends** and frees the thread for another task; it may resume later on a different thread.
+
+      What follows from that: you can have thousands of tasks without thousands of threads; you shouldn't block a thread inside a task (say, with a semaphore waiting on another task), because the pool is small; and you shouldn't assume the code before and after an `await` runs on the same thread, unless it's isolated to an actor like `@MainActor`, which guarantees the execution context.
+    keyPoints:
+      - A thread belongs to the operating system; a Task belongs to the Swift runtime.
+      - Tasks suspend at await and give up the thread.
+      - The thread pool is limited, so blocking is risky.
+      - The thread can change after an await, unless the code is isolated to an actor.
+    followUps:
+      - question: Does async mean the code runs in parallel?
+        answer: No. `async` means the function **can suspend**. Whether it runs in parallel with anything else depends on where it runs. Two `await` calls in a row run one after the other. You get parallelism with `async let`, `TaskGroup`, or separate tasks on the concurrent executor.
+      - question: What does @MainActor do?
+        answer: It isolates a function, property or type to the **main actor**, whose executor is the main thread. The compiler requires access from other contexts to go through `await`, which guarantees UI state is only touched from the main thread.
+    related: [m29]
+
+  - id: q-conc-data-race
+    category: concurrency
+    difficulty: medium
+    question: What's a data race, how is it different from a race condition, and how does Swift 6 prevent it?
+    answer: |
+      - A **data race** happens when two threads access the same memory at the same time, at least one of them writes, and there's no synchronization. The result is undefined behavior.
+      - A **race condition** is a logic bug where the result depends on the order things happen in. You can have one without a data race. For example, two tasks read a balance through an actor, each decides there's enough money, and both withdraw it.
+
+      In the Swift 6 language mode, the compiler checks **data isolation**: shared mutable state has to be protected by an actor (or by `@MainActor`), and only `Sendable` values can cross between isolation domains. So data races get caught at compile time. Logic race conditions don't: you have to design atomic operations on the actor, for example a `withdraw(_:)` method that checks and deducts without an `await` in between.
+    keyPoints:
+      - A precise definition of a data race.
+      - How it differs from a logic race condition, with an example.
+      - Actors, @MainActor and Sendable in Swift 6.
+      - Actor reentrancy, and why you don't suspend in the middle of an invariant.
+    followUps:
+      - question: What is actor reentrancy?
+        answer: When an actor method hits an `await`, the actor is free to process other messages in the meantime. When the method resumes, the state may have changed. That's why you re-check invariants after every `await`, or avoid suspending in the middle of an operation that has to be atomic.
+    related: [m28, m29]

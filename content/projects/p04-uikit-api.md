@@ -1,47 +1,47 @@
 ---
 id: p04
 number: 4
-title: App UIKit con API pública
-summary: Un catálogo que consume una API pública, con paginación, caché de imágenes, persistencia local y pruebas de la capa de datos.
+title: UIKit App with a Public API
+summary: A catalog app backed by a public API, with pagination, image caching, local persistence and tests for the data layer.
 prerequisites: [m30, m31, m32, m33]
 objectives:
-  - Construir un cliente HTTP con URLSession y async/await, separado de la interfaz.
-  - Manejar estados de carga, error, vacío y paginación.
-  - Probar la capa de datos con dobles de prueba.
+  - Build an HTTP client with URLSession and async/await, kept separate from the UI.
+  - Handle loading, error, empty and pagination states.
+  - Test the data layer with test doubles.
 requirements:
-  - Elige una API pública gratuita y sin datos personales (por ejemplo, un catálogo de libros o de arte de un museo) y documenta su licencia de uso.
-  - Lista paginada con carga al acercarse al final.
-  - Caché de imágenes en memoria con cancelación al reutilizar celdas.
-  - Persistencia local de los últimos resultados para mostrar sin conexión.
-  - Pruebas del repositorio con un cliente de red falso.
+  - Pick a free public API that has no personal data (for example, a book catalog or a museum's art collection) and document its license terms.
+  - A paginated list that loads more as you get near the end.
+  - An in-memory image cache, with cancellation when cells are reused.
+  - Local persistence of the latest results so they can be shown offline.
+  - Tests for the repository using a fake network client.
 acceptance:
-  - Sin conexión se muestran los datos guardados y un aviso con la hora de la última actualización.
-  - Un error de decodificación muestra un estado de error recuperable, no un cierre.
-  - Ninguna imagen aparece en la celda equivocada al hacer scroll rápido.
-  - Las pruebas de la capa de datos pasan sin red.
+  - Offline, the app shows the saved data and a notice with the time of the last update.
+  - A decoding error shows a recoverable error state, not a crash.
+  - No image shows up in the wrong cell when you scroll fast.
+  - The data layer tests pass without a network connection.
 milestones:
   - id: p04-h1
-    title: Cliente de red
-    tasks: ["Define un protocolo de cliente HTTP y su implementación con URLSession.", "Modela errores de red, de estado HTTP y de decodificación."]
-    concepts: [URLSession, Codable, Manejo de errores]
+    title: Network client
+    tasks: ["Define an HTTP client protocol and an implementation backed by URLSession.", "Model network errors, HTTP status errors and decoding errors."]
+    concepts: [URLSession, Codable, Error handling]
   - id: p04-h2
-    title: Repositorio y estados
-    tasks: ["Expón estados de carga, datos, vacío y error.", "Implementa paginación por cursor o página según la API."]
-    concepts: [Repository pattern, Paginación]
+    title: Repository and states
+    tasks: ["Expose loading, data, empty and error states.", "Implement cursor-based or page-based pagination, depending on the API."]
+    concepts: [Repository pattern, Pagination]
   - id: p04-h3
-    title: Imágenes y rendimiento
-    tasks: ["Implementa caché de imágenes y cancelación en prepareForReuse."]
-    concepts: [Caché, Reutilización de celdas]
+    title: Images and performance
+    tasks: ["Implement an image cache and cancellation in prepareForReuse."]
+    concepts: [Caching, Cell reuse]
   - id: p04-h4
-    title: Persistencia y modo sin conexión
-    tasks: ["Guarda la última página con SwiftData o Core Data.", "Muestra datos locales primero y actualiza desde red."]
-    concepts: [Persistencia, Offline-first]
+    title: Persistence and offline mode
+    tasks: ["Save the latest page with SwiftData or Core Data.", "Show local data first, then refresh from the network."]
+    concepts: [Persistence, Offline-first]
   - id: p04-h5
-    title: Pruebas
-    tasks: ["Prueba el repositorio con un cliente falso: éxito, error, vacío y paginación."]
-    concepts: [Test doubles, Tests asíncronos]
+    title: Tests
+    tasks: ["Test the repository with a fake client: success, error, empty and pagination."]
+    concepts: [Test doubles, Async tests]
 ---
 
-## Elección de la API
+## Choosing the API
 
-Prefiere APIs con documentación estable y sin clave, o con clave gratuita. Nunca pongas una clave secreta en el código de la app: cualquier persona puede extraerla del binario. Si la API exige clave, documenta el riesgo y usa una de solo lectura.
+Prefer APIs with stable documentation that need no key, or only a free one. Never put a secret key in the app's code: anyone can pull it out of the binary. If the API requires a key, document the risk and use a read-only one.

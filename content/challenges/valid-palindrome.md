@@ -1,64 +1,64 @@
 ---
 id: valid-palindrome
 title: Valid Palindrome
-difficulty: facil
+difficulty: easy
 order: 4
-patterns: [Two pointers, Cadenas]
+patterns: [Two pointers, Strings]
 prerequisites: [m07, m15]
-summary: ¿Se lee igual al derecho y al revés? Dos índices que convergen y una trampa de rendimiento propia de Swift.
+summary: Does it read the same forward and backward? Two converging indices and a performance trap that's specific to Swift.
 solutionFile: ValidPalindrome.swift
 testFile: ValidPalindromeTests.swift
 starter: |
   func isPalindrome(_ s: String) -> Bool {
-      // Tu solución
+      // Your solution
       return false
   }
 time: O(n)
-space: O(n) por la copia en Array
+space: O(n) for the Array copy
 edgeCases:
-  - Cadena vacía
-  - Cadena solo con espacios o signos de puntuación
-  - Mezcla de letras y dígitos, como "0P"
-  - Un solo carácter
+  - Empty string
+  - A string with only spaces or punctuation
+  - A mix of letters and digits, like "0P"
+  - A single character
 askInterviewer:
-  - ¿Qué caracteres cuentan? ¿Solo letras y dígitos?
-  - ¿Distingo mayúsculas de minúsculas?
-  - ¿La entrada puede tener caracteres fuera de ASCII, como acentos o emoji?
+  - Which characters count? Only letters and digits?
+  - Is the comparison case-sensitive?
+  - Can the input contain non-ASCII characters, like accents or emoji?
 hints:
-  - Primero resuélvelo limpiando la cadena y comparándola con su reverso. Luego busca cómo evitar la copia limpia.
-  - Dos índices, uno en cada extremo. ¿Qué haces cuando uno de ellos apunta a un espacio?
-  - "En Swift, `s[i]` con un entero no compila: los índices de String no son enteros. ¿Qué conversión te permite indexar en O(1)?"
+  - Solve it first by cleaning the string and comparing it with its reverse. Then look for a way to skip the cleaned copy.
+  - Two indices, one at each end. What do you do when one of them points at a space?
+  - "In Swift, `s[i]` with an integer doesn't compile: String indices aren't integers. What conversion lets you index in O(1)?"
 followUps:
-  - "Valid Palindrome II: ¿y si puedes borrar como máximo un carácter?"
-  - ¿Por qué Swift no permite indexar String con enteros?
-  - ¿Cómo cambia tu solución si la entrada tiene emoji o acentos combinados?
+  - "Valid Palindrome II: what if you're allowed to delete at most one character?"
+  - Why doesn't Swift let you index a String with integers?
+  - How does your solution change if the input has emoji or combining accents?
 rubric:
-  - Aclaré qué caracteres cuentan y si importa la capitalización.
-  - Usé dos índices que convergen sin construir otra cadena limpia, o expliqué ese trade-off.
-  - La cadena vacía devuelve true.
-  - Expliqué por qué convertí a Array para indexar.
-codeStatus: probado
+  - I clarified which characters count and whether case matters.
+  - I used two converging indices without building a cleaned string, or I explained that trade-off.
+  - The empty string returns true.
+  - I explained why I converted to an Array for indexing.
+codeStatus: tested
 ---
 
-Una frase es palíndromo si, después de pasar todo a minúsculas y quitar lo que no sea letra ni dígito, se lee igual al derecho y al revés.
+A phrase is a palindrome if, after lowercasing everything and removing anything that isn't a letter or a digit, it reads the same forward and backward.
 
-Escribe `isPalindrome(_ s: String) -> Bool`.
+Write `isPalindrome(_ s: String) -> Bool`.
 
 ```swift
 isPalindrome("A man, a plan, a canal: Panama")  // true
 isPalindrome("race a car")                      // false
-isPalindrome(" ")                               // true: queda vacía
+isPalindrome(" ")                               // true: nothing is left
 ```
 
-**Restricciones:** `0 ≤ s.count ≤ 2·10^5`.
+**Constraints:** `0 ≤ s.count ≤ 2·10^5`.
 
-<!-- revelar -->
+<!-- reveal -->
 
-## Enfoque inicial
+## First approach
 
-Hay dos tareas: decidir qué caracteres cuentan y comparar de afuera hacia adentro. Se pueden hacer juntas con dos índices.
+There are two jobs: decide which characters count, and compare from the outside in. You can do both at once with two indices.
 
-## Solución ingenua
+## Naive solution
 
 ```swift
 func isPalindrome(_ s: String) -> Bool {
@@ -67,28 +67,28 @@ func isPalindrome(_ s: String) -> Bool {
 }
 ```
 
-## Problemas de la solución ingenua
+## Problems with the naive solution
 
-Es correcta y O(n), y en Swift es una respuesta legítima. Su costo está en la memoria: construye la cadena limpia y su reverso, dos copias extra. En entrevista suelen pedir el siguiente paso: comparar sin construir la cadena limpia.
+It's correct and O(n), and in Swift it's a legitimate answer. The cost is memory: it builds the cleaned string and its reverse, two extra copies. In an interview you'll usually be asked for the next step: compare without building the cleaned string.
 
-## Solución optimizada
+## Optimized solution
 
-Convierte la cadena a un `Array` de `Character` para indexar por posición en O(1). Usa `left` desde el inicio y `right` desde el final. Salta lo que no cuente; si los dos caracteres válidos difieren, no es palíndromo. Si los índices se cruzan sin diferencias, sí lo es.
+Convert the string to an `Array` of `Character` so you can index by position in O(1). Start `left` at the beginning and `right` at the end. Skip anything that doesn't count; if the two valid characters differ, it's not a palindrome. If the indices cross without a mismatch, it is.
 
-## Explicación línea por línea
+## Line by line
 
-- `Array(s.lowercased())`: en Swift, `String` no se indexa con enteros porque un `Character` puede ocupar varios bytes (por ejemplo, un emoji o una letra con acento combinado). Pedir «el carácter 5000» exigiría recorrer desde el inicio. El `Array` da acceso O(1) a cambio de O(n) memoria.
-- `var right = characters.count - 1`: con la cadena vacía vale −1 y el ciclo no se ejecuta; la respuesta es `true`.
-- `while left < right`: cuando se cruzan, ya se comparó todo.
-- Los dos `continue` saltan caracteres que no cuentan sin mover el otro índice.
-- `characters[left] != characters[right]`: la primera diferencia basta para responder `false`.
+- `Array(s.lowercased())`: in Swift, `String` can't be indexed with integers because a `Character` can take up several bytes (an emoji, or a letter with a combining accent). Asking for "character 5000" would mean walking from the start. The `Array` gives you O(1) access in exchange for O(n) memory.
+- `var right = characters.count - 1`: for the empty string this is −1, the loop never runs, and the answer is `true`.
+- `while left < right`: once they cross, everything has been compared.
+- The two `continue` statements skip characters that don't count without moving the other index.
+- `characters[left] != characters[right]`: the first mismatch is enough to answer `false`.
 
-## Errores frecuentes
+## Common mistakes
 
-- Intentar `s[i]` con un `Int`: no compila en Swift.
-- Usar `s.index(s.startIndex, offsetBy: i)` dentro del ciclo: compila, pero cada llamada es O(i) y el total se vuelve O(n²).
-- Olvidar convertir a minúsculas y decir que «Aa» no es palíndromo.
+- Trying `s[i]` with an `Int`: it doesn't compile in Swift.
+- Using `s.index(s.startIndex, offsetBy: i)` inside the loop. It compiles, but each call is O(i), so the total becomes O(n²).
+- Forgetting to lowercase and deciding that "Aa" isn't a palindrome.
 
-## Variante
+## Variation
 
-**Valid Palindrome II:** se permite borrar como máximo un carácter. Al encontrar la primera diferencia, prueba si `[left+1...right]` o `[left...right-1]` es palíndromo. Sigue siendo O(n).
+**Valid Palindrome II:** you may delete at most one character. At the first mismatch, check whether `[left+1...right]` or `[left...right-1]` is a palindrome. It's still O(n).

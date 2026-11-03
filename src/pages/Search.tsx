@@ -8,35 +8,35 @@ let index: ReturnType<typeof createIndex> | null = null
 const getIndex = () => (index ??= createIndex(buildDocs(content)))
 
 export function SearchPage({ q }: { q: string }) {
-  const [kind, setKind] = useState<SearchKind | 'todo'>('todo')
+  const [kind, setKind] = useState<SearchKind | 'all'>('all')
   const [text, setText] = useState(q)
   const results = useMemo(() => (q.trim() ? getIndex().search(q) : []), [q])
-  const filtered = kind === 'todo' ? results : results.filter((r) => r.kind === kind)
+  const filtered = kind === 'all' ? results : results.filter((r) => r.kind === kind)
   const counts = results.reduce<Record<string, number>>((acc, r) => ({ ...acc, [r.kind]: (acc[r.kind] ?? 0) + 1 }), {})
 
   return (
     <div className="page">
-      <PageHeader title="Buscar" />
+      <PageHeader title="Search" />
       <form
         role="search"
         className="search-page-form"
         onSubmit={(e) => {
           e.preventDefault()
-          navigate(`/buscar?q=${encodeURIComponent(text.trim())}`)
+          navigate(`/search?q=${encodeURIComponent(text.trim())}`)
         }}
       >
         <label htmlFor="q" className="sr-only">
-          Términos de búsqueda
+          Search terms
         </label>
-        <input id="q" type="search" value={text} onChange={(e) => setText(e.target.value)} placeholder="optional, closure, two pointers, compilador…" autoFocus />
+        <input id="q" type="search" value={text} onChange={(e) => setText(e.target.value)} placeholder="optional, closure, two pointers, compiler…" autoFocus />
         <button className="btn btn-primary" type="submit">
-          Buscar
+          Search
         </button>
       </form>
       {q && (
-        <div className="filters" role="group" aria-label="Tipo de resultado">
-          <button type="button" className="chip" aria-pressed={kind === 'todo'} onClick={() => setKind('todo')}>
-            Todo ({results.length})
+        <div className="filters" role="group" aria-label="Result type">
+          <button type="button" className="chip" aria-pressed={kind === 'all'} onClick={() => setKind('all')}>
+            All ({results.length})
           </button>
           {(Object.keys(KIND_LABEL) as SearchKind[])
             .filter((k) => counts[k])
@@ -48,9 +48,9 @@ export function SearchPage({ q }: { q: string }) {
         </div>
       )}
       {!q ? (
-        <Empty title="Escribe qué buscas">Busca en títulos, explicaciones, APIs, conceptos, preguntas, retos y recursos. Los acentos no importan.</Empty>
+        <Empty title="Type what you’re looking for">Searches titles, explanations, APIs, concepts, questions, challenges and resources.</Empty>
       ) : filtered.length === 0 ? (
-        <Empty title={`Sin resultados para «${q}»`}>Prueba con menos palabras o con el término en inglés (por ejemplo, «closure» en lugar de «cierre»).</Empty>
+        <Empty title={`No results for “${q}”`}>Try fewer words, or the exact API name.</Empty>
       ) : (
         <ol className="results">
           {filtered.slice(0, 60).map((r) => (

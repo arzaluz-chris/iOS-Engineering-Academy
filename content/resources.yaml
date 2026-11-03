@@ -1,275 +1,275 @@
-# Registro de recursos externos. Sin videos.
-# status: verificado (con fecha) solo después de comprobar el enlace con `npm run check-links`
-# o manualmente. Los enlaces de developer.apple.com/documentation se comprueban contra su JSON de datos.
+# Registry of external resources. No videos.
+# status: verified (with a date) only after the link has been checked with `npm run check-links`
+# or by hand. developer.apple.com/documentation links are checked against their JSON data.
 
 resources:
   - id: swift-book
     title: The Swift Programming Language
     source: Swift.org
     url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/
-    kind: oficial
-    topic: Lenguaje Swift
-    why: Es la referencia oficial del lenguaje. Cada capítulo del curso de Swift remite a la sección correspondiente.
-    status: verificado
+    kind: official
+    topic: Swift language
+    why: The official language reference. Each chapter of the Swift course points to the matching section.
+    status: verified
     verifiedAt: 2026-11-03
   - id: swift-book-basics
     title: The Basics (The Swift Programming Language)
     source: Swift.org
     url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/thebasics/
-    kind: oficial
-    topic: Constantes, variables, tipos e interpolación
-    why: Describe con precisión let, var, anotaciones de tipo, comentarios y print, que son el tema de tus primeros programas.
-    status: verificado
+    kind: official
+    topic: Constants, variables, types and interpolation
+    why: Covers let, var, type annotations, comments and print precisely. That's what your first programs are made of.
+    status: verified
     verifiedAt: 2026-11-03
   - id: swift-book-basic-operators
     title: Basic Operators (The Swift Programming Language)
     source: Swift.org
     url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/basicoperators/
-    kind: oficial
-    topic: Operadores
-    why: Lista oficial de operadores aritméticos, de comparación y lógicos, con las reglas que el compilador aplica.
-    status: verificado
+    kind: official
+    topic: Operators
+    why: The official list of arithmetic, comparison and logical operators, with the rules the compiler applies.
+    status: verified
     verifiedAt: 2026-11-03
   - id: swift-book-tour
     title: A Swift Tour
     source: Swift.org
     url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/guidedtour/
-    kind: oficial
-    topic: Panorama del lenguaje
-    why: Un recorrido corto por todo el lenguaje. Úsalo como mapa, no como lección; el curso desarrolla cada tema por separado.
-    status: verificado
+    kind: official
+    topic: Language overview
+    why: A short walk through the whole language. Use it as a map, not a lesson; the course covers each topic on its own.
+    status: verified
     verifiedAt: 2026-11-03
   - id: swift-install
     title: Install Swift
     source: Swift.org
     url: https://www.swift.org/install/
-    kind: oficial
-    topic: Instalación de la toolchain
-    why: Indica la versión estable actual y cómo instalar Swift fuera de Xcode, por ejemplo para usar `swift` desde la terminal en Linux.
-    status: verificado
+    kind: official
+    topic: Installing the toolchain
+    why: Shows the current stable release and how to install Swift without Xcode, for example to use `swift` from the terminal on Linux.
+    status: verified
     verifiedAt: 2026-11-03
   - id: swift-org
     title: Swift.org
     source: Swift.org
     url: https://www.swift.org/
-    kind: oficial
-    topic: Proyecto Swift
-    why: Sitio del proyecto de código abierto; publica las versiones del lenguaje y su evolución.
-    status: verificado
+    kind: official
+    topic: The Swift project
+    why: The open source project's site. Language releases and their evolution are published here.
+    status: verified
     verifiedAt: 2026-11-03
   - id: swift-evolution
     title: Swift Evolution
     source: GitHub · swiftlang
     url: https://github.com/swiftlang/swift-evolution
-    kind: referencia
-    topic: Evolución del lenguaje
-    why: Cada cambio del lenguaje se discute como una propuesta numerada (SE-xxxx). Sirve para saber en qué versión llegó una característica.
-    status: verificado
+    kind: reference
+    topic: Language evolution
+    why: Every language change is discussed as a numbered proposal (SE-xxxx). Use it to find out which version a feature shipped in.
+    status: verified
     verifiedAt: 2026-11-03
   - id: xcode-overview
     title: Xcode
     source: Apple Developer
     url: https://developer.apple.com/xcode/
-    kind: oficial
+    kind: official
     topic: IDE
-    why: Página oficial de Xcode con sus componentes y enlace de descarga.
-    status: verificado
+    why: Xcode's official page, with its components and the download link.
+    status: verified
     verifiedAt: 2026-11-03
   - id: xcode-requirements
     title: Xcode system requirements
     source: Apple Developer
     url: https://developer.apple.com/xcode/system-requirements/
-    kind: oficial
-    topic: Versiones de Xcode, macOS, SDK y deployment targets
-    why: Tabla oficial de qué macOS necesita cada Xcode, qué versión de Swift incluye y qué deployment targets admite.
-    status: verificado
+    kind: official
+    topic: Xcode, macOS, SDK and deployment target versions
+    why: The official table of which macOS each Xcode needs, which Swift version it ships with, and which deployment targets it supports.
+    status: verified
     verifiedAt: 2026-11-03
   - id: apple-documentation
     title: Apple Developer Documentation
     source: Apple Developer
     url: https://developer.apple.com/documentation/
-    kind: oficial
-    topic: Documentación de frameworks
-    why: Punto de entrada a la documentación de todos los frameworks. Aprende a navegarla desde el principio.
-    status: verificado
+    kind: official
+    topic: Framework documentation
+    why: The entry point to the documentation for every framework. Learn to find your way around it early.
+    status: verified
     verifiedAt: 2026-11-03
   - id: develop-in-swift
     title: Develop in Swift Tutorials
     source: Apple Developer
     url: https://developer.apple.com/tutorials/develop-in-swift
     kind: tutorial
-    topic: Primeras apps con SwiftUI
-    why: Ruta introductoria de Apple. Complementa la etapa de SwiftUI con ejercicios guiados en Xcode.
-    status: verificado
+    topic: First apps with SwiftUI
+    why: Apple's introductory path. It complements the SwiftUI stage with guided exercises in Xcode.
+    status: verified
     verifiedAt: 2026-11-03
   - id: swift-print
     title: print(_:separator:terminator:)
     source: Apple Developer
     url: https://developer.apple.com/documentation/swift/print(_:separator:terminator:)
-    kind: oficial
+    kind: official
     topic: print
-    why: Documenta los parámetros separator y terminator, que explican por qué cada print termina en un salto de línea.
-    status: verificado
+    why: Documents the separator and terminator parameters, which explain why every print ends with a newline.
+    status: verified
     verifiedAt: 2026-11-03
   - id: tn3187-scenes
     title: "TN3187: Migrating to the UIKit scene-based life cycle"
     source: Apple Developer
     url: https://developer.apple.com/documentation/technotes/tn3187-migrating-to-the-uikit-scene-based-life-cycle
-    kind: oficial
-    topic: Ciclo de vida por escenas
-    why: Desde el SDK de iOS 27 las apps UIKit deben adoptar escenas; esta nota técnica explica la migración.
-    status: verificado
+    kind: official
+    topic: Scene-based life cycle
+    why: Starting with the iOS 27 SDK, UIKit apps must adopt scenes. This technote explains the migration.
+    status: verified
     verifiedAt: 2026-11-03
   - id: hig
     title: Human Interface Guidelines
     source: Apple Developer
     url: https://developer.apple.com/design/human-interface-guidelines/
-    kind: oficial
-    topic: Diseño de interfaces
-    why: Criterios de diseño de Apple para cualquier plataforma; se citan en las etapas de UIKit y SwiftUI.
-    status: verificado
+    kind: official
+    topic: Interface design
+    why: Apple's design guidance for every platform. The UIKit and SwiftUI stages cite it.
+    status: verified
     verifiedAt: 2026-11-03
   - id: swift-testing-docs
     title: Swift Testing
     source: Apple Developer
     url: https://developer.apple.com/documentation/testing
-    kind: oficial
-    topic: Pruebas con @Test y #expect
-    why: Documentación del framework de pruebas que usan los retos de este curso.
-    status: verificado
+    kind: official
+    topic: Testing with @Test and #expect
+    why: Documentation for the testing framework the course's challenges use.
+    status: verified
     verifiedAt: 2026-11-03
   - id: owasp-masvs
     title: OWASP MASVS
     source: OWASP
     url: https://mas.owasp.org/MASVS/
-    kind: referencia
-    topic: Estándar de seguridad de apps móviles
-    why: Estándar de requisitos de seguridad móvil que muchos bancos usan como base para auditorías.
-    status: verificado
+    kind: reference
+    topic: Mobile app security standard
+    why: A standard of mobile security requirements that many banks use as the baseline for audits.
+    status: verified
     verifiedAt: 2026-11-03
   - id: owasp-mastg
     title: OWASP MASTG
     source: OWASP
     url: https://mas.owasp.org/MASTG/
-    kind: referencia
-    topic: Pruebas de seguridad de apps móviles
-    why: Guía técnica que explica cómo se prueba cada control del MASVS en iOS.
-    status: verificado
+    kind: reference
+    topic: Mobile app security testing
+    why: A technical guide to how each MASVS control is tested on iOS.
+    status: verified
     verifiedAt: 2026-11-03
   - id: apple-platform-security
     title: Apple Platform Security
     source: Apple Support
     url: https://support.apple.com/guide/security/welcome/web
-    kind: oficial
-    topic: Seguridad de la plataforma
-    why: Explica Secure Enclave, Data Protection y Keychain desde el diseño del sistema.
-    status: verificado
+    kind: official
+    topic: Platform security
+    why: Explains the Secure Enclave, Data Protection and the Keychain from the system design side.
+    status: verified
     verifiedAt: 2026-11-03
   - id: keychain-services
     title: Keychain services
     source: Apple Developer
     url: https://developer.apple.com/documentation/security/keychain-services
-    kind: oficial
-    topic: Almacenamiento seguro de secretos
-    why: API oficial para guardar credenciales y llaves; base del módulo de desarrollo seguro.
-    status: verificado
+    kind: official
+    topic: Secure storage for secrets
+    why: The official API for storing credentials and keys. The secure development module builds on it.
+    status: verified
     verifiedAt: 2026-11-03
   - id: app-review-guidelines
     title: App Review Guidelines
     source: Apple Developer
     url: https://developer.apple.com/app-store/review/guidelines/
-    kind: oficial
-    topic: Revisión de App Store
-    why: Reglas con las que Apple revisa cada app; necesarias en la etapa de distribución.
-    status: verificado
+    kind: official
+    topic: App Store review
+    why: The rules Apple reviews every app against. You need them for the distribution stage.
+    status: verified
     verifiedAt: 2026-11-03
   - id: swift-book-control-flow
     title: Control Flow (The Swift Programming Language)
     source: Swift.org
     url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/controlflow/
-    kind: oficial
-    topic: if, for-in, while y switch
-    why: Describe las estructuras de decisión y repetición de Swift a las que se traduce el pseudocódigo del curso.
-    status: no-verificado
+    kind: official
+    topic: if, for-in, while and switch
+    why: Describes Swift's decision and loop statements, which are what the course's pseudocode translates into.
+    status: unverified
     verifiedAt: null
   - id: swift-book-functions
     title: Functions (The Swift Programming Language)
     source: Swift.org
     url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/functions/
-    kind: oficial
-    topic: Funciones
-    why: Muestra cómo un procedimiento con entrada y salida se convierte en una función de Swift con parámetros y valor de retorno.
-    status: no-verificado
+    kind: official
+    topic: Functions
+    why: Shows how a procedure with input and output becomes a Swift function with parameters and a return value.
+    status: unverified
     verifiedAt: null
   - id: xcode-components
     title: Downloading and installing additional Xcode components
     source: Apple Developer
     url: https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components
-    kind: oficial
-    topic: Simuladores y plataformas de Xcode
-    why: Explica cómo instalar runtimes de simulador y soporte de plataformas desde Xcode › Settings › Components o con xcodebuild.
-    status: no-verificado
+    kind: official
+    topic: Xcode simulators and platforms
+    why: Explains how to install simulator runtimes and platform support from Xcode › Settings › Components or with xcodebuild.
+    status: unverified
     verifiedAt: null
   - id: xcode-create-project
     title: Creating an Xcode project for an app
     source: Apple Developer
     url: https://developer.apple.com/documentation/xcode/creating-an-xcode-project-for-an-app
-    kind: oficial
-    topic: Proyectos de Xcode
-    why: Paso a paso oficial para crear un proyecto desde plantilla, con el identificador de organización y la ventana principal.
-    status: no-verificado
+    kind: official
+    topic: Xcode projects
+    why: Apple's step-by-step guide to creating a project from a template, including the organization identifier and the main window.
+    status: unverified
     verifiedAt: null
   - id: xcode-breakpoints
     title: Setting breakpoints to pause your running app
     source: Apple Developer
     url: https://developer.apple.com/documentation/xcode/setting-breakpoints-to-pause-your-running-app
-    kind: oficial
+    kind: official
     topic: Breakpoints
-    why: Cómo poner, mover, condicionar y administrar breakpoints en Xcode.
-    status: no-verificado
+    why: How to set, move, add conditions to and manage breakpoints in Xcode.
+    status: unverified
     verifiedAt: null
   - id: xcode-stepping
     title: Stepping through code and inspecting variables to isolate bugs
     source: Apple Developer
     url: https://developer.apple.com/documentation/xcode/stepping-through-code-and-inspecting-variables-to-isolate-bugs
-    kind: oficial
-    topic: Depuración paso a paso
-    why: Describe Step Over, Step Into, Step Out, el visor de variables y los comandos v, p y po de la consola de LLDB.
-    status: no-verificado
+    kind: official
+    topic: Stepping through code
+    why: Covers Step Over, Step Into, Step Out, the variables view, and the v, p and po commands in the LLDB console.
+    status: unverified
     verifiedAt: null
   - id: swiftpm-docs
     title: Swift Package Manager
     source: Swift.org
     url: https://docs.swift.org/latest/documentation/packagemanagerdocs/
-    kind: oficial
-    topic: Paquetes de Swift
-    why: Qué es un paquete, qué contiene Package.swift y cómo se compila y prueba con swift build, swift run y swift test.
-    status: no-verificado
+    kind: official
+    topic: Swift packages
+    why: What a package is, what goes in Package.swift, and how to build and test with swift build, swift run and swift test.
+    status: unverified
     verifiedAt: null
   - id: swift-cli-getting-started
     title: Build a Command-line Tool
     source: Swift.org
     url: https://www.swift.org/getting-started/cli-swiftpm/
     kind: tutorial
-    topic: Swift desde la terminal
-    why: Guía oficial para crear un ejecutable con swift package init y ejecutarlo con swift run.
-    status: no-verificado
+    topic: Swift from the terminal
+    why: The official guide to creating an executable with swift package init and running it with swift run.
+    status: unverified
     verifiedAt: null
   - id: lldb-tutorial
     title: LLDB Tutorial
     source: LLVM
     url: https://lldb.llvm.org/use/tutorial.html
-    kind: referencia
-    topic: Depurador LLDB
-    why: Referencia de los comandos del depurador que usa Xcode por debajo, como breakpoint, frame variable y expression.
-    status: no-verificado
+    kind: reference
+    topic: LLDB debugger
+    why: A reference for the commands of the debugger Xcode uses under the hood, such as breakpoint, frame variable and expression.
+    status: unverified
     verifiedAt: null
   - id: swift-book-strings
     title: Strings and Characters (The Swift Programming Language)
     source: Swift.org
     url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/stringsandcharacters/
-    kind: oficial
-    topic: String, Character, interpolación y literales de varias líneas
-    why: Referencia oficial de la interpolación, las secuencias de escape, los literales de varias líneas y los literales sin procesar.
-    status: no-verificado
+    kind: official
+    topic: String, Character, interpolation and multiline literals
+    why: The official reference for interpolation, escape sequences, multiline string literals and raw string literals.
+    status: unverified
     verifiedAt: null

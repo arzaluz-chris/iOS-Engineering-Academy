@@ -10,84 +10,86 @@ import { db, type ChallengeState } from '../db/db'
 import { latestByRef } from '../db/stats'
 import { navigate } from '../router'
 
-const STATUS_LABEL: Record<ChallengeState['status'] | 'nuevo', string> = { nuevo: 'Sin empezar', intentado: 'Intentado', resuelto: 'Resuelto', dominado: 'Dominado' }
+const STATUS_LABEL: Record<ChallengeState['status'] | 'nuevo', string> = { nuevo: 'Not started', intentado: 'Attempted', resuelto: 'Solved', dominado: 'Mastered' }
+// URL filter values (English) mapped to the stored status values.
+const STATUS_FILTER: Record<string, ChallengeState['status'] | 'nuevo'> = { new: 'nuevo', attempted: 'intentado', solved: 'resuelto', mastered: 'dominado' }
 
 export function ChallengesPage({ query }: { query: URLSearchParams }) {
-  const diff = query.get('dificultad') ?? 'todas'
-  const pattern = query.get('patron') ?? 'todos'
-  const status = query.get('estado') ?? 'todos'
+  const diff = query.get('difficulty') ?? 'all'
+  const pattern = query.get('pattern') ?? 'all'
+  const status = query.get('status') ?? 'all'
   const states = useLiveQuery(() => db.challenges.toArray(), []) ?? []
   const attempts = useLiveQuery(() => db.attempts.where('kind').equals('reto').toArray(), []) ?? []
   const byId = new Map(states.map((s) => [s.challengeId, s]))
   const latest = latestByRef(attempts)
-  const patterns = [...new Set(content.challenges.flatMap((c) => c.patterns))].sort((a, b) => a.localeCompare(b, 'es'))
+  const patterns = [...new Set(content.challenges.flatMap((c) => c.patterns))].sort((a, b) => a.localeCompare(b, 'en'))
 
   const set = (k: string, v: string) => {
     const q = new URLSearchParams(query)
-    if (v === 'todos' || v === 'todas') q.delete(k)
+    if (v === 'all') q.delete(k)
     else q.set(k, v)
-    navigate(`/retos${q.toString() ? `?${q}` : ''}`)
+    navigate(`/challenges${q.toString() ? `?${q}` : ''}`)
   }
 
   const rows = content.challenges.filter((c) => {
     const st = byId.get(c.id)?.status ?? 'nuevo'
     const failed = latest.get(c.id) && latest.get(c.id)?.result !== 'correcto'
     return (
-      (diff === 'todas' || c.difficulty === diff) &&
-      (pattern === 'todos' || c.patterns.includes(pattern)) &&
-      (status === 'todos' || (status === 'fallados' ? failed : st === status))
+      (diff === 'all' || c.difficulty === diff) &&
+      (pattern === 'all' || c.patterns.includes(pattern)) &&
+      (status === 'all' || (status === 'failed' ? failed : st === STATUS_FILTER[status]))
     )
   })
 
   return (
     <div className="page">
-      <PageHeader title="Retos de código">
+      <PageHeader kicker="Practice" title="Coding challenges">
         <p>
-          Problemas de entrevista resueltos en Swift. Intenta primero; las pistas, el enfoque y la solución se revelan uno a uno. Cada solución vive en el paquete <code>swift/</code> del
-          repositorio con sus pruebas, y CI las compila y ejecuta en macOS.
+          Interview problems, solved in Swift. Try first. Hints, the approach and the solution open one at a time. Every solution lives in the repository’s <code>swift/</code>
+          package with its tests, and CI builds and runs them on macOS.
         </p>
       </PageHeader>
-      <div className="filters" role="group" aria-label="Filtros">
+      <div className="filters" role="group" aria-label="Filters">
         <label>
-          Dificultad
-          <select value={diff} onChange={(e) => set('dificultad', e.target.value)}>
-            <option value="todas">Todas</option>
-            <option value="facil">Fácil</option>
-            <option value="medio">Medio</option>
-            <option value="dificil">Difícil</option>
+          Difficulty
+          <select value={diff} onChange={(e) => set('difficulty', e.target.value)}>
+            <option value="all">All</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
           </select>
         </label>
         <label>
-          Patrón
-          <select value={pattern} onChange={(e) => set('patron', e.target.value)}>
-            <option value="todos">Todos</option>
+          Pattern
+          <select value={pattern} onChange={(e) => set('pattern', e.target.value)}>
+            <option value="all">All</option>
             {patterns.map((p) => (
               <option key={p}>{p}</option>
             ))}
           </select>
         </label>
         <label>
-          Estado
-          <select value={status} onChange={(e) => set('estado', e.target.value)}>
-            <option value="todos">Todos</option>
-            <option value="nuevo">Sin empezar</option>
-            <option value="intentado">Intentados</option>
-            <option value="resuelto">Resueltos</option>
-            <option value="dominado">Dominados</option>
-            <option value="fallados">Fallados (para repasar)</option>
+          Status
+          <select value={status} onChange={(e) => set('status', e.target.value)}>
+            <option value="all">All</option>
+            <option value="new">Not started</option>
+            <option value="attempted">Attempted</option>
+            <option value="solved">Solved</option>
+            <option value="mastered">Mastered</option>
+            <option value="failed">Failed (to review)</option>
           </select>
         </label>
       </div>
       {rows.length === 0 ? (
-        <Empty title="Ningún reto coincide con los filtros" />
+        <Empty title="No challenges match these filters" />
       ) : (
         <table className="data-table">
           <thead>
             <tr>
-              <th scope="col">Reto</th>
-              <th scope="col">Dificultad</th>
-              <th scope="col">Patrones</th>
-              <th scope="col">Estado</th>
+              <th scope="col">Challenge</th>
+              <th scope="col">Difficulty</th>
+              <th scope="col">Patterns</th>
+              <th scope="col">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -97,14 +99,14 @@ export function ChallengesPage({ query }: { query: URLSearchParams }) {
               return (
                 <tr key={c.id}>
                   <td>
-                    <a href={`#/reto/${c.id}`}>{c.title}</a>
+                    <a href={`#/challenge/${c.id}`}>{c.title}</a>
                     <p className="muted small">{c.summary}</p>
                   </td>
                   <td>{DIFFICULTY_LABEL[c.difficulty]}</td>
                   <td className="small">{c.patterns.join(', ')}</td>
                   <td>
                     <Badge tone={st === 'dominado' || st === 'resuelto' ? 'ok' : st === 'intentado' ? 'warn' : 'neutral'}>{STATUS_LABEL[st]}</Badge>
-                    {last && last.result !== 'correcto' && <span className="muted small"> último: {RESULT_LABEL[last.result].toLowerCase()}</span>}
+                    {last && last.result !== 'correcto' && <span className="muted small"> last: {RESULT_LABEL[last.result].toLowerCase()}</span>}
                   </td>
                 </tr>
               )
@@ -114,13 +116,13 @@ export function ChallengesPage({ query }: { query: URLSearchParams }) {
       )}
 
       <section aria-labelledby="by-pattern">
-        <h2 id="by-pattern" className="section-title">Repaso por patrón</h2>
-        <p className="muted">Reconocer el patrón a partir del enunciado es la mitad del trabajo. Repasa los retos agrupados por la técnica que los resuelve.</p>
+        <h2 id="by-pattern" className="section-title">Review by pattern</h2>
+        <p className="muted">Spotting the pattern from the problem statement is half the work. Here are the challenges grouped by the technique that cracks them.</p>
         <dl className="patterns">
           {patterns.map((p) => (
             <div key={p}>
               <dt>
-                <a href={`#/retos?patron=${encodeURIComponent(p)}`}>{p}</a>
+                <a href={`#/challenges?pattern=${encodeURIComponent(p)}`}>{p}</a>
               </dt>
               <dd>
                 {content.challenges
@@ -138,22 +140,22 @@ export function ChallengesPage({ query }: { query: URLSearchParams }) {
 
 type Mode = 'guiado' | 'independiente' | 'entrevista'
 const MODE_HELP: Record<Mode, string> = {
-  guiado: 'Puedes revelar pistas y secciones cuando quieras, una a la vez.',
-  independiente: 'Las pistas se desbloquean cuando hayas escrito un intento propio.',
-  entrevista: 'Sin pistas hasta terminar. Piensa en voz alta: aclara el problema, propone una solución, analiza complejidad y prueba casos límite.',
+  guiado: 'Open hints and sections whenever you want, one at a time.',
+  independiente: 'Hints unlock once you’ve written an attempt of your own.',
+  entrevista: 'No hints until you finish. Think out loud: clarify the problem, propose an approach, work out the complexity and test the edge cases.',
 }
 
 const INTERVIEW_RUBRIC = [
-  'Hice preguntas aclaratorias antes de escribir código',
-  'Expliqué en voz alta un enfoque antes de implementarlo',
-  'Recorrí al menos un ejemplo a mano',
-  'Consideré los casos límite',
-  'Di la complejidad temporal y espacial correcta',
+  'I asked clarifying questions before writing code',
+  'I explained an approach out loud before coding it',
+  'I traced at least one example by hand',
+  'I considered the edge cases',
+  'I stated the correct time and space complexity',
 ]
 
 export function ChallengePage({ id }: { id: string }) {
   const c = getChallenge(id)
-  if (!c) return <Empty title="Reto no encontrado"><a href="#/retos">Volver a los retos</a></Empty>
+  if (!c) return <Empty title="Challenge not found"><a href="#/challenges">Back to the challenges</a></Empty>
   return <ChallengeView key={c.id} c={c} />
 }
 
@@ -178,7 +180,7 @@ function ChallengeView({ c }: { c: Challenge }) {
 
   const value = code ?? draft?.code ?? c.starter
   const wroteSomething = value.trim() !== c.starter.trim() && value.trim().length > 0
-  const steps = [...c.hints.map((h, i) => ({ heading: `Pista ${i + 1}`, body: h, kind: 'hint' as const })), ...c.reveal.map((s) => ({ ...s, kind: 'section' as const }))]
+  const steps = [...c.hints.map((h, i) => ({ heading: `Hint ${i + 1}`, body: h, kind: 'hint' as const })), ...c.reveal.map((s) => ({ ...s, kind: 'section' as const }))]
   const locked = (mode === 'independiente' && !wroteSomething) || (mode === 'entrevista' && !finished)
   const last = attempts.at(-1)
   const elapsed = startedAt ? Math.floor((nowTick - startedAt) / 1000) : 0
@@ -202,38 +204,38 @@ function ChallengeView({ c }: { c: Challenge }) {
 
   return (
     <div className="page challenge-page">
-      <PageHeader kicker={<><a href="#/retos">Retos de código</a> / {DIFFICULTY_LABEL[c.difficulty]}</>} title={c.title}>
+      <PageHeader kicker={<><a href="#/challenges">Coding challenges</a> / {DIFFICULTY_LABEL[c.difficulty]}</>} title={c.title}>
         <p>{c.summary}</p>
       </PageHeader>
       <div className="row">
         {c.patterns.map((p) => (
           <Badge key={p}>{p}</Badge>
         ))}
-        <Badge tone={c.codeStatus === 'probado' ? 'ok' : 'neutral'}>{CODE_STATUS_LABEL[c.codeStatus]}</Badge>
+        <Badge tone={c.codeStatus === 'tested' ? 'ok' : 'neutral'}>{CODE_STATUS_LABEL[c.codeStatus]}</Badge>
         {state && <Badge tone={state.status === 'intentado' ? 'warn' : 'ok'}>{STATUS_LABEL[state.status]}</Badge>}
-        {last && <Badge tone={RESULT_TONE[last.result]}>Última autoevaluación: {RESULT_LABEL[last.result]}</Badge>}
+        {last && <Badge tone={RESULT_TONE[last.result]}>Last self-assessment: {RESULT_LABEL[last.result]}</Badge>}
         <BookmarkButton type="reto" id={c.id} />
       </div>
 
       {c.prerequisites.length > 0 && (
         <p className="prereq">
-          Conviene haber visto:{' '}
+          Helps to have seen:{' '}
           {c.prerequisites.map((p, i) => (
             <span key={p}>
               {i > 0 && ', '}
-              <a href={getLesson(p) ? `#/leccion/${p}` : `#/modulo/${p}`}>{getLesson(p)?.title ?? `Módulo ${getModule(p)?.number}. ${getModule(p)?.title}`}</a>
+              <a href={getLesson(p) ? `#/lesson/${p}` : `#/module/${p}`}>{getLesson(p)?.title ?? `Module ${getModule(p)?.number}. ${getModule(p)?.title}`}</a>
             </span>
           ))}
         </p>
       )}
 
       <fieldset className="modes">
-        <legend>Modo de práctica</legend>
+        <legend>Practice mode</legend>
         {(['guiado', 'independiente', 'entrevista'] as Mode[]).map((m) => (
           <label key={m} className="mode">
             <input type="radio" name="mode" checked={mode === m} onChange={() => { setMode(m); setFinished(false); setRevealed(0) }} />
             <span>
-              <strong>{m === 'guiado' ? 'Aprendizaje guiado' : m === 'independiente' ? 'Práctica independiente' : 'Simulación de entrevista'}</strong>
+              <strong>{m === 'guiado' ? 'Guided' : m === 'independiente' ? 'On your own' : 'Mock interview'}</strong>
               <span className="muted small">{MODE_HELP[m]}</span>
             </span>
           </label>
@@ -241,9 +243,9 @@ function ChallengeView({ c }: { c: Challenge }) {
         {mode === 'entrevista' && (
           <div className="row timer">
             <label>
-              Cronómetro opcional
+              Optional timer
               <select value={timerMin} onChange={(e) => setTimerMin(Number(e.target.value))}>
-                <option value={0}>Sin límite</option>
+                <option value={0}>No limit</option>
                 <option value={20}>20 min</option>
                 <option value={35}>35 min</option>
                 <option value={45}>45 min</option>
@@ -251,17 +253,17 @@ function ChallengeView({ c }: { c: Challenge }) {
             </label>
             {!startedAt ? (
               <button type="button" className="btn" onClick={() => setStartedAt(Date.now())}>
-                Empezar
+                Start
               </button>
             ) : (
               <span className={`clock ${remaining !== null && remaining < 0 ? 'over' : ''}`} aria-live="off">
                 {formatClock(remaining ?? elapsed)}
-                {remaining !== null && remaining < 0 && ' fuera de tiempo'}
+                {remaining !== null && remaining < 0 && ' over time'}
               </span>
             )}
             {!finished && (
               <button type="button" className="btn btn-quiet" onClick={() => setFinished(true)}>
-                Terminar la entrevista
+                End the interview
               </button>
             )}
           </div>
@@ -269,11 +271,11 @@ function ChallengeView({ c }: { c: Challenge }) {
       </fieldset>
 
       <section className="statement" aria-labelledby="statement">
-        <h2 id="statement" className="section-title">Enunciado</h2>
+        <h2 id="statement" className="section-title">Problem</h2>
         <Markdown text={c.statement} />
         <div className="two-col">
           <div>
-            <h3 className="sub-title">Casos límite a considerar</h3>
+            <h3 className="sub-title">Edge cases to consider</h3>
             <ul>
               {c.edgeCases.map((e) => (
                 <li key={e}>{e}</li>
@@ -281,7 +283,7 @@ function ChallengeView({ c }: { c: Challenge }) {
             </ul>
           </div>
           <div>
-            <h3 className="sub-title">Preguntas que conviene hacer al entrevistador</h3>
+            <h3 className="sub-title">Questions worth asking the interviewer</h3>
             <ul>
               {c.askInterviewer.map((e) => (
                 <li key={e}>{e}</li>
@@ -292,31 +294,31 @@ function ChallengeView({ c }: { c: Challenge }) {
       </section>
 
       <section aria-labelledby="attempt">
-        <h2 id="attempt" className="section-title">Tu solución</h2>
-        <CodeEditor value={value} onChange={onChange} label="Tu solución en Swift" minLines={14} />
+        <h2 id="attempt" className="section-title">Your solution</h2>
+        <CodeEditor value={value} onChange={onChange} label="Your Swift solution" minLines={14} />
         <p className="muted small">
-          Se guarda en este navegador. Para ejecutarla: copia tu código a <code>swift/Sources/Challenges/{c.solutionFile}</code> en tu clon del repositorio y corre <code>swift test --filter {c.testFile.replace('.swift', '')}</code>, o pega ambos archivos en un paquete nuevo de Xcode.
+          Saved in this browser. To run it, copy your code into <code>swift/Sources/Challenges/{c.solutionFile}</code> in your clone of the repository and run <code>swift test --filter {c.testFile.replace('.swift', '')}</code>, or paste both files into a new Swift package in Xcode.
         </p>
         <details className="tests">
-          <summary>Pruebas que debe pasar tu solución</summary>
+          <summary>Tests your solution has to pass</summary>
           <CodeView code={c.testCode} label={c.testFile} />
         </details>
       </section>
 
       <section aria-labelledby="reveal">
-        <h2 id="reveal" className="section-title">Pistas y solución</h2>
+        <h2 id="reveal" className="section-title">Hints and solution</h2>
         {locked && (
-          <p className="muted">{mode === 'entrevista' ? 'Termina la entrevista para revelar pistas y solución.' : 'Escribe un intento propio en el editor para desbloquear las pistas.'}</p>
+          <p className="muted">{mode === 'entrevista' ? 'End the interview to open the hints and solution.' : 'Write an attempt of your own in the editor to unlock the hints.'}</p>
         )}
         {steps.slice(0, revealed).map((s, i) => (
           <div key={i} className={s.kind === 'hint' ? 'hint' : 'reveal-section'}>
             {s.kind === 'hint' ? <p className="hint-label">{s.heading}</p> : <h3>{s.heading}</h3>}
             <Markdown text={s.body} />
-            {s.kind === 'section' && /^Solución optimizada/i.test(s.heading) && (
+            {s.kind === 'section' && /^Optimized solution/i.test(s.heading) && (
               <>
-                <CodeView code={c.solutionCode} label={`${c.solutionFile} · ${c.codeStatus === 'probado' ? 'probado en CI' : 'pendiente de prueba'}`} />
+                <CodeView code={c.solutionCode} label={`${c.solutionFile} · ${c.codeStatus === 'tested' ? 'tested in CI' : 'not tested yet'}`} />
                 <p className="muted small">
-                  Complejidad: tiempo {c.time}; espacio {c.space}.
+                  Complexity: time {c.time}; space {c.space}.
                 </p>
               </>
             )}
@@ -327,25 +329,25 @@ function ChallengeView({ c }: { c: Challenge }) {
             type="button"
             className="btn btn-reveal"
             onClick={() => {
-              const nextIsSolution = steps[revealed]?.kind === 'section' && /^Solución/.test(steps[revealed]?.heading ?? '')
-              if (nextIsSolution && !wroteSomething && !confirm('Aún no escribes un intento. ¿Revelar la solución de todos modos?')) return
+              const nextIsSolution = steps[revealed]?.kind === 'section' && /^(Naive|Optimized) solution/i.test(steps[revealed]?.heading ?? '')
+              if (nextIsSolution && !wroteSomething && !confirm('You haven’t written an attempt yet. Show the solution anyway?')) return
               reveal()
             }}
           >
-            Revelar: {steps[revealed]?.heading}
+            Reveal: {steps[revealed]?.heading}
           </button>
         )}
-        {!locked && revealed >= steps.length && steps.length > 0 && <p className="muted small">Ya revelaste todo.</p>}
+        {!locked && revealed >= steps.length && steps.length > 0 && <p className="muted small">Everything is revealed.</p>}
       </section>
 
       <section aria-labelledby="eval">
-        <h2 id="eval" className="section-title">Autoevaluación</h2>
+        <h2 id="eval" className="section-title">Self-assessment</h2>
         <p className="muted">
-          Corre las pruebas antes de marcar el primer criterio. Que el código "se vea bien" no cuenta.
+          Run the tests before you check the first box. Code that “looks right” doesn’t count.
         </p>
         <Rubric
           key={mode}
-          items={mode === 'entrevista' ? ['Mi solución pasa todas las pruebas en Xcode o con swift test', ...INTERVIEW_RUBRIC, ...c.rubric] : ['Mi solución pasa todas las pruebas en Xcode o con swift test', ...c.rubric]}
+          items={mode === 'entrevista' ? ['My solution passes every test in Xcode or with swift test', ...INTERVIEW_RUBRIC, ...c.rubric] : ['My solution passes every test in Xcode or with swift test', ...c.rubric]}
           onSubmit={(score) => {
             const result = scoreToResult(score)
             void recordAttempt({ kind: 'reto', refId: c.id, result, score, grading: 'autoevaluacion', answer: value, label: c.title })
@@ -354,13 +356,13 @@ function ChallengeView({ c }: { c: Challenge }) {
         />
         {state?.status === 'resuelto' && (
           <button type="button" className="btn btn-quiet" onClick={() => void updateChallenge(c.id, { status: 'dominado' })}>
-            Lo resolví sin ayuda otra vez: marcar como dominado
+            I solved it again without help: mark as mastered
           </button>
         )}
       </section>
 
       <section aria-labelledby="followups">
-        <h2 id="followups" className="section-title">Preguntas de seguimiento del entrevistador</h2>
+        <h2 id="followups" className="section-title">Interviewer follow-up questions</h2>
         <ul>
           {c.followUps.map((f) => (
             <li key={f}>

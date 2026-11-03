@@ -1,28 +1,35 @@
-# Instrucciones para sesiones de desarrollo
+# Instructions for development sessions
 
-Academia personal de iOS para Christian. Sitio estático en GitHub Pages; sin backend. Idioma del contenido: español de México, con términos técnicos e identificadores en inglés.
+A personal iOS academy for Christian. Static site on GitHub Pages, no backend.
 
-## Antes de trabajar
+**Language: everything is in English** — content, UI, code identifiers, comments, tests and docs. Write natural, direct American English that doesn't read as AI-generated; the voice rules are in `docs/CONTENT.md`. The only Spanish file is `docs/ESPECIFICACION.md`, the owner's original spec, kept as written.
 
-1. Lee `docs/ESTADO.md` (qué está hecho y qué sigue), `docs/CONTENIDO.md` (formato del contenido) y, si necesitas contexto, `docs/ESPECIFICACION.md` y `docs/fases/`.
-2. Contenido en `content/`, soluciones Swift en `swift/`, aplicación en `src/`.
+**Design: the site follows swift.org's visual language** (system font, warm peach hero gradient, orange gradient pill buttons, 22px cards, translucent sticky nav, indigo footer, navy dark mode, Xcode-style syntax colors). Keep new UI consistent with `src/styles.css`. Don't copy Apple's or the Swift project's logos or present the site as swift.org.
 
-## Reglas
+## Before you start
 
-- Exactitud técnica primero. No inventes versiones, firmas ni comportamientos de APIs; si no se verificó, dilo.
-- `codeStatus: probado` solo si el código se compiló y ejecutó. Las salidas de ejercicios de predicción deben estar verificadas.
-- Ningún código Swift se califica comparando texto.
-- Sin videos en recursos. Enlaza documentación concreta de la API.
-- No reveles soluciones antes de que el estudiante las pida.
-- No marques algo como terminado si es parcial; actualiza `docs/ESTADO.md` al cerrar cada lote.
+1. Read `docs/STATUS.md` (what's done and what's next), `docs/CONTENT.md` (content format and voice) and, if you need background, `docs/ESPECIFICACION.md` and `docs/phases/`.
+2. Content lives in `content/`, Swift solutions and snippet tests in `swift/`, the app in `src/`.
 
-## Comandos
+## Rules
+
+- Technical accuracy first. Don't invent versions, signatures or API behavior; if something wasn't verified, say so.
+- `codeStatus: tested` only if the code was compiled and run (the `LessonSnippetsTests` target does this). Prediction outputs must be verified by those tests.
+- Swift code is never graded by comparing text.
+- No videos in resources. Link specific API documentation.
+- Don't reveal solutions before the learner asks for them.
+- Never change existing ids (lessons, exercises, cards, modules, challenges, questions, projects): saved progress is keyed on them.
+- Don't mark something done if it's partial; update `docs/STATUS.md` when you close each batch.
+
+## Commands
 
 ```bash
-npm run validate   # esquema e integridad del contenido
-npm test           # pruebas web
-npm run build      # validación + tipos + build
+npm run validate   # content schema and integrity
+npm test           # web tests
+npm run build      # validation + types + build
 cd swift && swift test
 ```
 
-Ejecuta `npm run validate && npm test` antes de cada commit.
+Without Xcode, run Swift in a container: `docker run --rm -v "$PWD":/w -w /w/swift swift:6.3 swift test` (start the daemon with `dockerd` if it isn't running).
+
+Run `npm run validate && npm test` before every commit.

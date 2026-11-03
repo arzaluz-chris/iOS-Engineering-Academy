@@ -1,27 +1,28 @@
 import { z } from 'zod'
 
 /**
- * Esquema único del contenido del curso.
- * Lo usan el navegador (al cargar), el script de validación y los tests.
- * Cualquier cambio aquí se refleja en docs/CONTENIDO.md.
+ * The single schema for course content.
+ * Used by the browser (on load), the validation script and the tests.
+ * Any change here must be reflected in docs/CONTENT.md.
  */
 
-const id = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'ID en kebab-case: minúsculas, números y guiones')
-const md = z.string().trim().min(1, 'No puede estar vacío')
-const nonEmptyList = <T extends z.ZodType>(t: T) => z.array(t).min(1, 'Debe tener al menos un elemento')
+const id = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'IDs are kebab-case: lowercase letters, digits and hyphens')
+const md = z.string().trim().min(1, 'Can\'t be empty')
+const nonEmptyList = <T extends z.ZodType>(t: T) => z.array(t).min(1, 'Needs at least one item')
 
-export const level = z.enum(['inicial', 'intermedio', 'avanzado'])
-export const difficulty = z.enum(['facil', 'medio', 'dificil'])
+export const level = z.enum(['beginner', 'intermediate', 'advanced'])
+export const difficulty = z.enum(['easy', 'medium', 'hard'])
 
 /**
- * Qué tan verificado está el código de una pieza de contenido.
- * - probado: compilado y con tests ejecutados en CI (swift test).
- * - revisado: revisado estáticamente, no compilado.
- * - ilustrativo: ejemplo explicativo que no pretende compilar tal cual.
+ * How well the code in a piece of content has been checked.
+ * - tested: compiled, with tests run in CI (swift test).
+ * - reviewed: reviewed by reading it, not compiled.
+ * - illustrative: an explanatory example that isn't meant to compile as is.
+ * - no-code: the piece has no code.
  */
-export const codeStatus = z.enum(['probado', 'revisado', 'ilustrativo', 'sin-codigo'])
+export const codeStatus = z.enum(['tested', 'reviewed', 'illustrative', 'no-code'])
 
-// ---------- Currículo ----------
+// ---------- Curriculum ----------
 
 export const moduleSchema = z.object({
   id,
@@ -48,21 +49,21 @@ export const curriculumSchema = z.object({
   modules: nonEmptyList(moduleSchema),
 })
 
-// ---------- Recursos ----------
+// ---------- Resources ----------
 
 export const resourceSchema = z.object({
   id,
   title: md,
   source: md,
   url: z.url({ protocol: /^https$/ }),
-  kind: z.enum(['oficial', 'tutorial', 'articulo', 'referencia']),
+  kind: z.enum(['official', 'tutorial', 'article', 'reference']),
   topic: md,
   why: md,
-  status: z.enum(['verificado', 'no-verificado', 'roto']),
+  status: z.enum(['verified', 'unverified', 'broken']),
   verifiedAt: z.iso.date().nullable(),
 })
 
-// ---------- Ejercicios ----------
+// ---------- Exercises ----------
 
 const exerciseBase = {
   id,
@@ -77,50 +78,50 @@ const choice = z.object({ text: md, correct: z.boolean(), why: z.string().option
 export const exerciseSchema = z.discriminatedUnion('type', [
   z.object({
     ...exerciseBase,
-    type: z.literal('comprension'),
+    type: z.literal('comprehension'),
     choices: z.array(choice).min(2),
     multiple: z.boolean().default(false),
   }),
   z.object({
     ...exerciseBase,
-    type: z.literal('prediccion'),
+    type: z.literal('prediction'),
     code: md,
     /**
-     * Lenguaje de `code`. Con `pseudo`, la solución debe incluir la traducción a Swift en un bloque
-     * ```swift: las pruebas de swift/ ejecutan esa traducción y comparan su salida con `output`.
+     * Language of `code`. With `pseudo`, the solution must include the Swift translation in a
+     * ```swift block: the tests in swift/ run that translation and compare its output with `output`.
      */
     lang: z.enum(['swift', 'pseudo']).default('swift'),
-    /** Salida esperada exacta. Se compara línea por línea, ignorando espacios al final. */
+    /** Exact expected output. Compared line by line, ignoring trailing spaces. */
     output: z.string(),
     accept: z.array(z.string()).default([]),
   }),
   z.object({
     ...exerciseBase,
-    type: z.literal('completar'),
-    /** Código con huecos marcados como [[1]], [[2]]... */
+    type: z.literal('fill-in'),
+    /** Code with blanks marked as [[1]], [[2]]... */
     code: md,
     blanks: z.array(z.object({ id: z.string(), answers: nonEmptyList(z.string()) })).min(1),
   }),
   z.object({
     ...exerciseBase,
-    type: z.literal('errores'),
+    type: z.literal('find-errors'),
     code: md,
-    /** El estudiante selecciona los problemas reales entre opciones; la corrección se autoevalúa. */
+    /** The learner picks the real problems from a list of options; the fix is self-assessed. */
     choices: z.array(choice).min(2),
     rubric: nonEmptyList(md),
   }),
-  z.object({ ...exerciseBase, type: z.literal('resolver'), starter: z.string().default(''), rubric: nonEmptyList(md), tests: z.string().optional() }),
-  z.object({ ...exerciseBase, type: z.literal('explicar'), code: md, rubric: nonEmptyList(md) }),
-  z.object({ ...exerciseBase, type: z.literal('refactorizar'), code: md, rubric: nonEmptyList(md) }),
-  z.object({ ...exerciseBase, type: z.literal('diseno'), rubric: nonEmptyList(md) }),
+  z.object({ ...exerciseBase, type: z.literal('solve'), starter: z.string().default(''), rubric: nonEmptyList(md), tests: z.string().optional() }),
+  z.object({ ...exerciseBase, type: z.literal('explain'), code: md, rubric: nonEmptyList(md) }),
+  z.object({ ...exerciseBase, type: z.literal('refactor'), code: md, rubric: nonEmptyList(md) }),
+  z.object({ ...exerciseBase, type: z.literal('design'), rubric: nonEmptyList(md) }),
 ])
 
 export type Exercise = z.infer<typeof exerciseSchema>
 export type ExerciseType = Exercise['type']
 
-export const AUTO_TYPES: ExerciseType[] = ['comprension', 'prediccion', 'completar', 'errores']
+export const AUTO_TYPES: ExerciseType[] = ['comprehension', 'prediction', 'fill-in', 'find-errors']
 
-// ---------- Lecciones ----------
+// ---------- Lessons ----------
 
 export const cardSchema = z.object({ id, front: md, back: md })
 
@@ -142,7 +143,7 @@ export const lessonMetaSchema = z.object({
   codeStatus,
 })
 
-// ---------- Retos ----------
+// ---------- Challenges ----------
 
 export const challengeMetaSchema = z.object({
   id,
@@ -154,7 +155,7 @@ export const challengeMetaSchema = z.object({
   summary: md,
   solutionFile: z.string().regex(/^[A-Za-z0-9]+\.swift$/),
   testFile: z.string().regex(/^[A-Za-z0-9]+Tests\.swift$/),
-  /** Firma inicial que ve el estudiante en el editor. */
+  /** Starting signature the learner sees in the editor. */
   starter: md,
   time: md,
   space: md,
@@ -166,9 +167,9 @@ export const challengeMetaSchema = z.object({
   codeStatus,
 })
 
-// ---------- Entrevistas ----------
+// ---------- Interviews ----------
 
-export const interviewCategory = z.enum(['swift', 'uikit', 'swiftui', 'concurrencia', 'arquitectura', 'memoria', 'testing', 'seguridad', 'system-design'])
+export const interviewCategory = z.enum(['swift', 'uikit', 'swiftui', 'concurrency', 'architecture', 'memory', 'testing', 'security', 'system-design'])
 
 export const interviewQuestionSchema = z.object({
   id,
@@ -184,7 +185,7 @@ export const interviewQuestionSchema = z.object({
 
 export const interviewFileSchema = z.object({ questions: nonEmptyList(interviewQuestionSchema) })
 
-// ---------- Proyectos ----------
+// ---------- Projects ----------
 
 export const projectMetaSchema = z.object({
   id,

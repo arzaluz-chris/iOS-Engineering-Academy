@@ -9,15 +9,15 @@ import { useEffect, useRef } from 'react'
 interface Props {
   value: string
   onChange: (value: string) => void
-  /** 'swift' usa resaltado de Swift; 'text' sirve para respuestas en prosa o pseudocódigo. */
+  /** 'swift' uses Swift highlighting; 'text' is for prose or pseudocode answers. */
   language?: 'swift' | 'text'
   label: string
   minLines?: number
 }
 
 /**
- * Editor de código. No ejecuta Swift: en el navegador no hay compilador.
- * El código se guarda localmente y se ejecuta en Xcode o con `swift test`.
+ * Code editor. It doesn't run Swift: there's no compiler in the browser.
+ * The code is saved locally and run in Xcode or with `swift test`.
  */
 export default function CodeEditor({ value, onChange, language = 'swift', label, minLines = 8 }: Props) {
   const host = useRef<HTMLDivElement>(null)
@@ -46,7 +46,7 @@ export default function CodeEditor({ value, onChange, language = 'swift', label,
     })
     view.current = v
     return () => v.destroy()
-    // El editor se crea una sola vez; los cambios externos se aplican abajo.
+    // The editor is created once; outside changes are applied below.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language])
 

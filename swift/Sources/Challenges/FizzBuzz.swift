@@ -1,11 +1,11 @@
-/// Devuelve las líneas de FizzBuzz del 1 al `n`, ambos incluidos.
-/// - Múltiplos de 3 y de 5: "FizzBuzz"
-/// - Solo de 3: "Fizz"
-/// - Solo de 5: "Buzz"
-/// - Los demás: el número como texto.
-/// Para `n < 1` devuelve una lista vacía.
+/// Returns the FizzBuzz lines from 1 to `n`, inclusive.
+/// - Multiples of both 3 and 5: "FizzBuzz"
+/// - Multiples of 3 only: "Fizz"
+/// - Multiples of 5 only: "Buzz"
+/// - Everything else: the number as text.
+/// For `n < 1` it returns an empty list.
 ///
-/// Tiempo O(n), espacio O(n) por el resultado.
+/// O(n) time, O(n) space for the result.
 public func fizzBuzz(_ n: Int) -> [String] {
     guard n >= 1 else { return [] }
     var result: [String] = []

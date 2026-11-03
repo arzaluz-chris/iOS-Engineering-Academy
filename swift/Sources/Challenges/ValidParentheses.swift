@@ -1,8 +1,8 @@
-/// Indica si los paréntesis `()`, corchetes `[]` y llaves `{}` de `s` están bien balanceados
-/// y anidados. Cualquier otro carácter hace que la cadena sea inválida.
+/// Returns whether the parentheses `()`, brackets `[]` and braces `{}` in `s` are balanced
+/// and properly nested. Any other character makes the string invalid.
 ///
-/// Cada apertura se apila; cada cierre debe coincidir con la última apertura pendiente.
-/// Tiempo O(n), espacio O(n) en el peor caso (solo aperturas).
+/// Every opener is pushed onto a stack; every closer must match the most recent pending opener.
+/// O(n) time, O(n) space in the worst case (only openers).
 public func isValidParentheses(_ s: String) -> Bool {
     let openerFor: [Character: Character] = [")": "(", "]": "[", "}": "{"]
     let openers: Set<Character> = ["(", "[", "{"]

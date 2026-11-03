@@ -1,50 +1,50 @@
 ---
 id: valid-parentheses
 title: Valid Parentheses
-difficulty: facil
+difficulty: easy
 order: 5
 patterns: [Stack]
 prerequisites: [m07, m15]
-summary: Verificar que paréntesis, corchetes y llaves se cierren en orden. El problema que enseña para qué sirve una pila.
+summary: Check that parentheses, brackets and braces close in the right order. The problem that shows you what a stack is for.
 solutionFile: ValidParentheses.swift
 testFile: ValidParenthesesTests.swift
 starter: |
   func isValidParentheses(_ s: String) -> Bool {
-      // Tu solución
+      // Your solution
       return false
   }
 time: O(n)
 space: O(n)
 edgeCases:
-  - Cadena vacía
-  - Solo aperturas, como "(("
-  - Un cierre sin apertura, como ")"
-  - Cierres en el orden equivocado, como "([)]"
+  - Empty string
+  - Only openers, like "(("
+  - A closer with no opener, like ")"
+  - Closers in the wrong order, like "([)]"
 askInterviewer:
-  - ¿Qué caracteres puede contener la cadena? ¿Ignoro los demás o la invalidan?
-  - ¿La cadena vacía cuenta como válida?
+  - Which characters can the string contain? Do I ignore the others, or do they make it invalid?
+  - Does the empty string count as valid?
 hints:
-  - Contar aperturas y cierres no basta. ¿Por qué "([)]" tiene los mismos conteos que "([])" y no es válida?
-  - Cada cierre debe corresponder a la apertura más reciente que siga abierta. ¿Qué estructura te da «lo más reciente» en O(1)?
+  - Counting openers and closers isn't enough. Why does "([)]" have the same counts as "([])" and still not be valid?
+  - Each closer has to match the most recent opener that's still open. Which data structure gives you "the most recent" in O(1)?
 followUps:
-  - ¿Cómo lo resolverías si solo existieran paréntesis redondos, con O(1) de memoria?
-  - "¿Cómo encuentras la longitud de la subcadena válida más larga? (Longest Valid Parentheses.)"
-  - ¿Dónde aparece este patrón en una app real? (Validar plantillas, analizar expresiones, deshacer operaciones.)
+  - How would you solve it with O(1) memory if there were only round parentheses?
+  - "How do you find the length of the longest valid substring? (Longest Valid Parentheses.)"
+  - Where does this pattern show up in a real app? (Validating templates, parsing expressions, undo.)
 rubric:
-  - Usé una pila para emparejar cada cierre con la apertura más reciente.
-  - Rechacé un cierre cuando la pila está vacía.
-  - Verifiqué que la pila quede vacía al final.
-  - Di complejidad O(n) de tiempo y de espacio.
-codeStatus: probado
+  - I used a stack to match each closer with the most recent opener.
+  - I rejected a closer when the stack is empty.
+  - I checked that the stack is empty at the end.
+  - I gave O(n) time and space complexity.
+codeStatus: tested
 ---
 
-Dada una cadena formada por `(`, `)`, `[`, `]`, `{` y `}`, devuelve `true` si es válida:
+Given a string made of `(`, `)`, `[`, `]`, `{` and `}`, return `true` if it's valid:
 
-1. Cada apertura se cierra con su mismo tipo.
-2. Las aperturas se cierran en el orden correcto.
-3. Cada cierre tiene una apertura previa de su tipo.
+1. Every opener is closed by the same type.
+2. Openers are closed in the correct order.
+3. Every closer has an earlier opener of its type.
 
-Cualquier otro carácter hace que la cadena sea inválida. La cadena vacía es válida.
+Any other character makes the string invalid. The empty string is valid.
 
 ```swift
 isValidParentheses("()[]{}")  // true
@@ -52,17 +52,17 @@ isValidParentheses("([)]")    // false
 isValidParentheses("{[]}")    // true
 ```
 
-**Restricciones:** `0 ≤ s.count ≤ 10^4`.
+**Constraints:** `0 ≤ s.count ≤ 10^4`.
 
-<!-- revelar -->
+<!-- reveal -->
 
-## Enfoque inicial
+## First approach
 
-La apertura que debe cerrarse primero es la última que se abrió. «Lo último que entró es lo primero que sale» es exactamente el comportamiento de una **pila** (stack).
+The opener that has to close first is the last one that was opened. "Last in, first out" is exactly how a **stack** behaves.
 
-## Solución ingenua
+## Naive solution
 
-Borrar repetidamente los pares adyacentes `()`, `[]` y `{}` hasta que no quede ninguno:
+Keep deleting adjacent `()`, `[]` and `{}` pairs until there are none left:
 
 ```swift
 func isValidParentheses(_ s: String) -> Bool {
@@ -78,31 +78,31 @@ func isValidParentheses(_ s: String) -> Bool {
 }
 ```
 
-`replacingOccurrences` pertenece a Foundation; este fragmento necesita `import Foundation`.
+`replacingOccurrences` comes from Foundation; this snippet needs `import Foundation`.
 
-## Problemas de la solución ingenua
+## Problems with the naive solution
 
-Cada pasada recorre la cadena y puede quitar un solo nivel de anidación. Con `"((((…))))"` de profundidad n/2 hacen falta n/2 pasadas: **O(n²)**. Además crea una cadena nueva en cada reemplazo.
+Each pass walks the string and may only remove one level of nesting. With `"((((…))))"` nested n/2 deep you need n/2 passes: **O(n²)**. It also creates a new string on every replacement.
 
-## Solución optimizada
+## Optimized solution
 
-Recorre la cadena una vez. Apila cada apertura. Ante un cierre, saca el último elemento de la pila y verifica que sea la apertura correspondiente. Al final, la pila debe quedar vacía.
+Walk the string once. Push every opener. On a closer, pop the last element off the stack and check that it's the matching opener. At the end, the stack must be empty.
 
-## Explicación línea por línea
+## Line by line
 
-- `openerFor`: diccionario de cada cierre a su apertura. Evita una cadena de `if`.
-- `openers`: conjunto de aperturas para preguntar en O(1).
-- `stack.append(character)`: la apertura queda pendiente.
-- `guard stack.popLast() == expectedOpener`: `popLast()` devuelve un optional, `nil` si la pila está vacía. Comparar el optional con la apertura esperada cubre dos fallas en una línea: cierre sin apertura y cierre del tipo equivocado.
-- `else { return false }`: cualquier otro carácter invalida la cadena, como dice el enunciado.
-- `return stack.isEmpty`: si quedan aperturas sin cerrar, como en `"(("`, no es válida.
+- `openerFor`: a dictionary from each closer to its opener. It saves you a chain of `if`s.
+- `openers`: the set of openers, so you can ask about membership in O(1).
+- `stack.append(character)`: the opener is now pending.
+- `guard stack.popLast() == expectedOpener`: `popLast()` returns an optional, `nil` if the stack is empty. Comparing that optional with the expected opener covers two failures in one line: a closer with no opener, and a closer of the wrong type.
+- `else { return false }`: any other character makes the string invalid, as the problem says.
+- `return stack.isEmpty`: if there are openers left unclosed, as in `"(("`, the string isn't valid.
 
-## Errores frecuentes
+## Common mistakes
 
-- Contar aperturas y cierres de cada tipo: `"([)]"` tiene conteos correctos y es inválida.
-- Llamar `removeLast()` sin revisar si la pila está vacía: detiene el programa con `")"`.
-- Olvidar revisar la pila al final.
+- Counting openers and closers of each type: `"([)]"` has the right counts and is still invalid.
+- Calling `removeLast()` without checking whether the stack is empty: it crashes the program on `")"`.
+- Forgetting to check the stack at the end.
 
-## Variante
+## Variation
 
-Si solo hay paréntesis redondos, basta un contador: suma 1 por apertura, resta 1 por cierre, falla si baja de 0 y exige 0 al final. O(1) de memoria.
+If there are only round parentheses, a counter is enough: add 1 for each opener, subtract 1 for each closer, fail if it drops below 0, and require 0 at the end. O(1) memory.

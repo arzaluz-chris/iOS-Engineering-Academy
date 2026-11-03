@@ -15,7 +15,7 @@ const { catalog, issues } = buildCatalog({
   swift: glob(import.meta.glob('../../swift/{Sources,Tests}/**/*.swift', { query: '?raw', import: 'default', eager: true })),
 })
 
-if (issues.length && import.meta.env.DEV) console.warn('Problemas de contenido', issues)
+if (issues.length && import.meta.env.DEV) console.warn('Content problems', issues)
 
 export const content: Catalog = catalog
 export const contentIssues = issues
@@ -48,7 +48,7 @@ export const getExercise = (id: string) => exerciseById.get(id)
 export const modulesOf = (stageId: string) => catalog.modules.filter((m) => m.stage === stageId)
 export const lessonsOf = (moduleId: string) => catalog.lessons.filter((l) => l.module === moduleId)
 
-/** Orden global de lectura: por número de módulo y orden de lección. */
+/** Global reading order: by module number, then lesson order. */
 export const lessonSequence: Lesson[] = [...catalog.lessons].sort(
   (a, b) => (moduleById.get(a.module)?.number ?? 0) - (moduleById.get(b.module)?.number ?? 0) || a.order - b.order,
 )

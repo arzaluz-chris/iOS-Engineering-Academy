@@ -1,8 +1,8 @@
-/// Indica si algún valor aparece al menos dos veces en `nums`.
+/// Returns whether any value appears at least twice in `nums`.
 ///
-/// Recorre la lista una vez y guarda lo visto en un `Set`.
-/// `insert` devuelve `inserted == false` cuando el valor ya estaba.
-/// Tiempo O(n) en promedio, espacio O(n).
+/// Walks the list once and keeps what it has seen in a `Set`.
+/// `insert` returns `inserted == false` when the value was already there.
+/// O(n) time on average, O(n) space.
 public func containsDuplicate(_ nums: [Int]) -> Bool {
     var seen = Set<Int>()
     seen.reserveCapacity(nums.count)
@@ -14,8 +14,8 @@ public func containsDuplicate(_ nums: [Int]) -> Bool {
     return false
 }
 
-/// Alternativa sin memoria extra proporcional a n (además de la copia ordenada):
-/// ordenar y comparar vecinos. Tiempo O(n log n).
+/// Alternative with no extra memory proportional to n (besides the sorted copy):
+/// sort and compare neighbors. O(n log n) time.
 public func containsDuplicateBySorting(_ nums: [Int]) -> Bool {
     let sorted = nums.sorted()
     for i in sorted.indices.dropFirst() where sorted[i] == sorted[i - 1] {

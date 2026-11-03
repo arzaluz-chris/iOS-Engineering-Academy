@@ -1,0 +1,24 @@
+questions:
+  - id: q-mem-arc
+    category: memory
+    difficulty: easy
+    question: How does ARC work, and what is a retain cycle?
+    answer: |
+      **ARC** (Automatic Reference Counting) keeps track of how many **strong** references point to each class instance. The compiler inserts the retain and release calls; when the count hits zero, the instance is freed and its `deinit` runs. It's not a garbage collector: there are no pauses and no process scanning memory.
+
+      A **retain cycle** happens when two or more objects hold strong references to each other, directly or indirectly. No count ever reaches zero, so nothing gets freed. That's a memory leak.
+
+      Typical examples: a view controller that stores a closure capturing `self` strongly; a delegate declared as a strong property; a timer that retains its target.
+
+      You break them with `weak` references (optional, becomes `nil` when the object is freed) or `unowned` (non-optional, for when the reference should never outlive the object).
+    keyPoints:
+      - ARC counts strong references and frees the instance when the count hits zero.
+      - ARC isn't garbage collection.
+      - A definition of a retain cycle with a real iOS example.
+      - weak versus unowned.
+    followUps:
+      - question: How do you find a leak in an app?
+        answer: With Xcode's **Memory Graph Debugger**, which shows live instances and who's holding them, and with Instruments (Leaks and Allocations). A quick check is to put a `print` or a breakpoint in `deinit` and confirm it runs when you close the screen.
+      - question: Why are delegates usually declared weak?
+        answer: Because the delegating object (say, a view) is usually owned by its delegate (the view controller). If the view held the controller strongly, you'd have a cycle. To declare `weak var delegate`, the protocol has to be class-constrained (`AnyObject`).
+    related: [m13]

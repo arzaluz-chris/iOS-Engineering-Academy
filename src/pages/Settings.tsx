@@ -4,9 +4,9 @@ import { contentIssues } from '../content'
 import { logActivity } from '../db/actions'
 import { downloadJson, exportBackup, importBackup, parseBackup, resetAll } from '../db/backup'
 
-type Theme = 'system' | 'light' | 'dark'
+export type Theme = 'system' | 'light' | 'dark'
 
-function readTheme(): Theme {
+export function readTheme(): Theme {
   try {
     const t = localStorage.getItem('iea:theme')
     return t === 'light' || t === 'dark' ? t : 'system'
@@ -22,7 +22,7 @@ export function applyTheme(t: Theme) {
     if (t === 'system') localStorage.removeItem('iea:theme')
     else localStorage.setItem('iea:theme', t)
   } catch {
-    /* almacenamiento no disponible: el tema dura solo esta sesión */
+    /* storage unavailable: the theme only lasts for this session */
   }
 }
 
@@ -35,27 +35,26 @@ export function SettingsPage() {
 
   return (
     <div className="page settings">
-      <PageHeader title="Ajustes y respaldo" />
+      <PageHeader kicker="Yours" title="Settings and backup" />
 
       <section aria-labelledby="theme">
-        <h2 id="theme" className="section-title">Apariencia</h2>
+        <h2 id="theme" className="section-title">Appearance</h2>
         <fieldset className="segmented">
-          <legend className="sr-only">Tema</legend>
+          <legend className="sr-only">Theme</legend>
           {(['system', 'light', 'dark'] as Theme[]).map((t) => (
             <label key={t}>
               <input type="radio" name="theme" checked={theme === t} onChange={() => setTheme(t)} />
-              <span>{t === 'system' ? 'Igual que el sistema' : t === 'light' ? 'Claro' : 'Oscuro'}</span>
+              <span>{t === 'system' ? 'Match the system' : t === 'light' ? 'Light' : 'Dark'}</span>
             </label>
           ))}
         </fieldset>
       </section>
 
       <section aria-labelledby="backup">
-        <h2 id="backup" className="section-title">Tu progreso y cómo respaldarlo</h2>
+        <h2 id="backup" className="section-title">Your progress and how to back it up</h2>
         <p>
-          Lecciones, intentos, borradores de código, notas, marcadores, retos, proyectos y tarjetas de repaso se guardan en IndexedDB, dentro de este navegador y en este dispositivo. No se
-          envían a ningún servidor. Si borras los datos del sitio o cambias de navegador o de equipo, se pierden: exporta un respaldo de vez en cuando y guárdalo, por ejemplo, en iCloud
-          Drive.
+          Lessons, attempts, code drafts, notes, bookmarks, challenges, projects and review cards are stored in IndexedDB, inside this browser on this device. Nothing is sent to a
+          server. If you clear the site’s data or switch browsers or computers, it’s gone, so export a backup now and then and keep it somewhere safe, like iCloud Drive.
         </p>
         <div className="row">
           <button
@@ -63,14 +62,14 @@ export function SettingsPage() {
             className="btn btn-primary"
             onClick={async () => {
               const b = await exportBackup()
-              downloadJson(`ios-academy-respaldo-${b.exportedAt.slice(0, 10)}.json`, b)
-              setMessage({ tone: 'ok', text: 'Respaldo exportado.' })
+              downloadJson(`ios-academy-backup-${b.exportedAt.slice(0, 10)}.json`, b)
+              setMessage({ tone: 'ok', text: 'Backup exported.' })
             }}
           >
-            Exportar respaldo
+            Export backup
           </button>
           <button type="button" className="btn" onClick={() => file.current?.click()}>
-            Importar respaldo
+            Import backup
           </button>
           <input
             ref={file}
@@ -87,10 +86,10 @@ export function SettingsPage() {
                 return
               }
               const n = Object.values(parsed.backup.data).reduce((s, rows) => s + rows.length, 0)
-              if (!confirm(`El respaldo del ${new Date(parsed.backup.exportedAt).toLocaleString('es-MX')} tiene ${n} registros. Importarlo reemplaza todo tu progreso actual. ¿Continuar?`)) return
+              if (!confirm(`The backup from ${new Date(parsed.backup.exportedAt).toLocaleString('en-US')} has ${n} records. Importing it replaces all your current progress. Continue?`)) return
               await importBackup(parsed.backup)
               await logActivity('importacion', 'respaldo', parsed.backup.exportedAt)
-              setMessage({ tone: 'ok', text: `Respaldo importado: ${n} registros.` })
+              setMessage({ tone: 'ok', text: `Backup imported: ${n} records.` })
             }}
           />
         </div>
@@ -100,49 +99,49 @@ export function SettingsPage() {
           </p>
         )}
         <details className="danger">
-          <summary>Borrar todo el progreso</summary>
-          <p>Elimina lecciones, intentos, notas y repaso de este navegador. Exporta un respaldo antes si lo quieres conservar.</p>
+          <summary>Erase all progress</summary>
+          <p>Deletes lessons, attempts, notes and review cards from this browser. Export a backup first if you want to keep them.</p>
           <button
             type="button"
             className="btn btn-danger"
             onClick={async () => {
-              if (!confirm('Esto borra todo tu progreso en este navegador y no se puede deshacer. ¿Borrar?')) return
+              if (!confirm('This erases all your progress in this browser and can’t be undone. Erase it?')) return
               await resetAll()
-              setMessage({ tone: 'ok', text: 'Progreso borrado.' })
+              setMessage({ tone: 'ok', text: 'Progress erased.' })
             }}
           >
-            Borrar el progreso
+            Erase progress
           </button>
         </details>
       </section>
 
       <section aria-labelledby="keys">
-        <h2 id="keys" className="section-title">Atajos de teclado</h2>
+        <h2 id="keys" className="section-title">Keyboard shortcuts</h2>
         <dl className="terms">
           <div>
             <dt>
               <kbd>/</kbd>
             </dt>
-            <dd>Ir al buscador</dd>
+            <dd>Jump to search</dd>
           </div>
           <div>
             <dt>
-              <kbd>Tab</kbd> en el editor
+              <kbd>Tab</kbd> in the editor
             </dt>
-            <dd>Indentar. Para salir del editor con el teclado: <kbd>Esc</kbd> y luego <kbd>Tab</kbd>.</dd>
+            <dd>Indents. To leave the editor with the keyboard, press <kbd>Esc</kbd> and then <kbd>Tab</kbd>.</dd>
           </div>
         </dl>
       </section>
 
       <section aria-labelledby="about">
-        <h2 id="about" className="section-title">Sobre la ejecución de Swift</h2>
+        <h2 id="about" className="section-title">About running Swift</h2>
         <p>
-          El navegador no compila Swift: el compilador oficial no corre en WebAssembly dentro de una página. Por eso los ejercicios de código se escriben aquí, se guardan, y se ejecutan en
-          Xcode o con <code>swift test</code>. Ningún ejercicio de código se marca como correcto comparando texto.
+          The browser can’t compile Swift: the official compiler doesn’t run as WebAssembly inside a page. So you write code exercises here, they’re saved, and you run them in Xcode or
+          with <code>swift test</code>. No code exercise is ever marked correct by comparing text.
         </p>
         {contentIssues.length > 0 && (
           <p className="verdict bad">
-            Hay {contentIssues.length} problemas de contenido detectados al cargar. Ejecuta <code>npm run validate</code> en el repositorio.
+            {contentIssues.length} content problems were found while loading. Run <code>npm run validate</code> in the repository.
           </p>
         )}
       </section>

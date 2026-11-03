@@ -15,7 +15,7 @@ export async function logActivity(type: Activity['type'], refId: string, label: 
   await db.activity.add({ at: now(), type, refId, label })
 }
 
-// ---------- Lecciones ----------
+// ---------- Lessons ----------
 
 export async function startLesson(lessonId: string, title: string) {
   const existing = await db.lessons.get(lessonId)
@@ -39,7 +39,7 @@ export async function reopenLesson(lessonId: string) {
   await db.lessons.update(lessonId, { status: 'en-curso', completedAt: undefined })
 }
 
-// ---------- Intentos ----------
+// ---------- Attempts ----------
 
 export async function recordAttempt(params: {
   kind: AttemptKind
@@ -61,7 +61,7 @@ export async function saveDraft(key: string, code: string) {
   await db.drafts.put({ key, code, updatedAt: now() })
 }
 
-// ---------- Retos ----------
+// ---------- Challenges ----------
 
 export async function updateChallenge(challengeId: string, patch: { status?: ChallengeStatus; revealed?: number; hintsUsed?: number }) {
   const prev = await db.challenges.get(challengeId)
@@ -74,13 +74,13 @@ export async function updateChallenge(challengeId: string, patch: { status?: Cha
   })
 }
 
-// ---------- Preguntas de entrevista ----------
+// ---------- Interview questions ----------
 
 export async function setQuestionStatus(questionId: string, status: 'pendiente' | 'dominada') {
   await db.questions.put({ questionId, status, updatedAt: now() })
 }
 
-// ---------- Proyectos ----------
+// ---------- Projects ----------
 
 export async function toggleMilestone(projectId: string, milestoneId: string, title: string) {
   const prev = await db.projects.get(projectId)
@@ -97,7 +97,7 @@ export async function startProject(projectId: string, title: string) {
   await logActivity('proyecto', projectId, title)
 }
 
-// ---------- Notas y marcadores ----------
+// ---------- Notes and bookmarks ----------
 
 export async function saveNote(targetType: NoteTarget, targetId: string, text: string, id?: number) {
   const t = now()
@@ -106,7 +106,7 @@ export async function saveNote(targetType: NoteTarget, targetId: string, text: s
     return id
   }
   const newId = await db.notes.add({ targetType, targetId, text, createdAt: t, updatedAt: t })
-  await logActivity('nota', targetId, 'Nota agregada')
+  await logActivity('nota', targetId, 'Note added')
   return newId
 }
 
@@ -120,7 +120,7 @@ export async function toggleBookmark(targetType: NoteTarget | 'recurso', targetI
   else await db.bookmarks.put({ key, targetType, targetId, createdAt: now() })
 }
 
-// ---------- Repaso espaciado ----------
+// ---------- Spaced review ----------
 
 export const cardKey = (source: CardSource, refId: string) => `${source}:${refId}`
 
@@ -128,7 +128,7 @@ export async function ensureCard(source: CardSource, refId: string, reason: Revi
   const id = cardKey(source, refId)
   const existing = await db.cards.get(id)
   if (existing) {
-    // Un nuevo fallo vuelve a poner la tarjeta como pendiente hoy.
+    // A new miss makes the card due today again.
     if (reason === 'fallo' && existing.dueAt > now()) await db.cards.update(id, { dueAt: now(), reason })
     return
   }

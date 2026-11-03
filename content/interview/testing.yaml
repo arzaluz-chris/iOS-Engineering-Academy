@@ -1,22 +1,22 @@
 questions:
   - id: q-test-doubles
     category: testing
-    difficulty: facil
-    question: ¿Qué diferencia hay entre un stub, un mock y un fake?
+    difficulty: easy
+    question: What's the difference between a stub, a mock and a fake?
     answer: |
-      Son tipos de **dobles de prueba**, implementaciones que sustituyen una dependencia real:
-      - **Stub:** devuelve respuestas predefinidas. Sirve para controlar la entrada indirecta del código bajo prueba («el servicio responde con este saldo»).
-      - **Mock:** además registra cómo se usó y la prueba verifica esas interacciones («se llamó a `guardar` una vez con estos datos»).
-      - **Fake:** una implementación funcional pero simplificada, como un repositorio en memoria en lugar de una base de datos.
-      - **Spy** es un término cercano a mock: registra llamadas para inspeccionarlas después.
+      They're all kinds of **test doubles**, implementations that stand in for a real dependency:
+      - **Stub:** returns canned responses. You use it to control the indirect input to the code under test ("the service responds with this balance").
+      - **Mock:** also records how it was used, and the test checks those interactions ("`save` was called once with this data").
+      - **Fake:** a working but simplified implementation, like an in-memory repository instead of a database.
+      - **Spy** is close to a mock: it records calls so you can inspect them afterward.
 
-      En Swift se crean sin frameworks: el código depende de un protocolo y la prueba entrega una implementación propia.
+      In Swift you build them without a framework: the code depends on a protocol and the test passes in its own implementation.
     keyPoints:
-      - Stub controla respuestas.
-      - Mock verifica interacciones.
-      - Fake es una implementación simplificada funcional.
-      - En Swift se construyen con protocolos e inyección.
+      - A stub controls responses.
+      - A mock verifies interactions.
+      - A fake is a simplified working implementation.
+      - In Swift you build them with protocols and injection.
     followUps:
-      - question: ¿Cuál es el riesgo de abusar de mocks?
-        answer: Las pruebas terminan verificando **cómo** está implementado el código y no **qué** resultado produce. Cualquier refactorización las rompe aunque el comportamiento no cambie. Conviene verificar resultados observables y reservar la verificación de interacciones para efectos que no tienen otro resultado visible, como enviar un evento de analítica.
+      - question: What's the risk of overusing mocks?
+        answer: The tests end up checking **how** the code is implemented instead of **what** result it produces. Any refactor breaks them even when the behavior doesn't change. I'd rather check observable results, and keep interaction checks for effects that have no other visible result, like sending an analytics event.
     related: [m33]

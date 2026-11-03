@@ -1,29 +1,29 @@
 questions:
   - id: q-sd-feed-offline
     category: system-design
-    difficulty: dificil
-    question: Diseña la pantalla de movimientos de una app bancaria que debe funcionar sin conexión y mostrar millones de movimientos históricos.
+    difficulty: hard
+    question: Design the transactions screen of a banking app that has to work offline and show millions of historical transactions.
     answer: |
-      Una estructura que funciona en 45 minutos:
+      A structure that fits in 45 minutes:
 
-      1. **Requisitos.** Funcionales: listar movimientos por fecha, buscar, filtrar por cuenta, ver detalle. No funcionales: arranque rápido, uso sin conexión con datos recientes, datos sensibles protegidos, accesibilidad.
-      2. **API.** Paginación por **cursor** (no por número de página: los movimientos nuevos desplazarían las páginas). Respuesta con `items` y `nextCursor`. Para refrescar, pedir movimientos posteriores al más reciente que tengo.
-      3. **Modelo de datos local.** Persistencia (SwiftData o Core Data) con los movimientos de los últimos meses, indexados por cuenta y fecha. El histórico completo no se descarga: se pagina bajo demanda.
-      4. **Capas.** Vista → ViewModel/estado de pantalla → repositorio. El repositorio devuelve primero lo local y luego actualiza desde red (*stale-while-revalidate*), exponiendo un flujo de estados (`cargando`, `datos(local)`, `datos(actualizados)`, `error con datos locales`).
-      5. **Sin conexión.** Mostrar lo guardado con la hora de la última sincronización. Nada de pantallas en blanco.
-      6. **Seguridad.** Base local con Data Protection `complete`, borrado al cerrar sesión, nada de montos en logs, ocultar contenido en el app switcher.
-      7. **Rendimiento.** Lista perezosa, agrupación por día calculada fuera del hilo principal, prefetch al acercarse al final.
-      8. **Observabilidad.** Métricas de tiempo a primer contenido y tasa de errores de sincronización.
+      1. **Requirements.** Functional: list transactions by date, search, filter by account, view details. Non-functional: fast launch, offline use with recent data, protected sensitive data, accessibility.
+      2. **API.** **Cursor**-based pagination (not page numbers: new transactions would shift the pages). The response has `items` and `nextCursor`. To refresh, ask for transactions newer than the most recent one I have.
+      3. **Local data model.** Persistence (SwiftData or Core Data) holding the last few months of transactions, indexed by account and date. The full history isn't downloaded; it's paged in on demand.
+      4. **Layers.** View → ViewModel/screen state → repository. The repository returns local data first and then refreshes from the network (*stale-while-revalidate*), exposing a stream of states (`loading`, `data(local)`, `data(refreshed)`, `error with local data`).
+      5. **Offline.** Show what's stored, with the time of the last sync. No blank screens.
+      6. **Security.** Local store with Data Protection `complete`, wiped on sign-out, no amounts in logs, content hidden in the app switcher.
+      7. **Performance.** A lazy list, grouping by day computed off the main thread, prefetching as you near the end.
+      8. **Observability.** Metrics for time to first content and the sync error rate.
     keyPoints:
-      - Aclaré requisitos funcionales y no funcionales primero.
-      - Elegí paginación por cursor y expliqué por qué.
-      - Estrategia local primero con actualización desde red.
-      - Estados de la pantalla incluyendo sin conexión.
-      - Protección de datos locales sensibles.
-      - Rendimiento de la lista y observabilidad.
+      - I clarified functional and non-functional requirements first.
+      - I chose cursor pagination and explained why.
+      - A local-first strategy with network refresh.
+      - Screen states, including offline.
+      - Protection for sensitive local data.
+      - List performance and observability.
     followUps:
-      - question: ¿Qué haces si un movimiento local fue corregido en el servidor?
-        answer: El backend debe exponer versiones o una marca de actualización por movimiento, o un endpoint de cambios desde un punto de sincronización. El cliente aplica actualizaciones por identificador estable y el servidor siempre gana en datos financieros.
-      - question: ¿Cómo pruebas este diseño?
-        answer: El repositorio se prueba con un cliente de red falso y una persistencia en memoria, cubriendo orden de emisión de estados, errores y paginación. La vista se prueba con estados de pantalla fijos y, si aplica, con snapshots.
+      - question: What do you do if a local transaction was corrected on the server?
+        answer: The backend should expose versions or an updated-at marker per transaction, or a changes endpoint keyed on a sync point. The client applies updates by stable identifier, and for financial data the server always wins.
+      - question: How do you test this design?
+        answer: I'd test the repository with a fake network client and in-memory persistence, covering the order states are emitted in, errors, and pagination. The view gets tested with fixed screen states and, if it makes sense, snapshots.
     related: [m48]

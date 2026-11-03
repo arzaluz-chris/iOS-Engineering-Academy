@@ -7,17 +7,17 @@ import { db, type Bookmark, type Note } from '../db/db'
 function target(type: Note['targetType'] | Bookmark['targetType'], id: string): { label: string; href: string } {
   switch (type) {
     case 'leccion':
-      return { label: `Lección: ${getLesson(id)?.title ?? id}`, href: `#/leccion/${id}` }
+      return { label: `Lesson: ${getLesson(id)?.title ?? id}`, href: `#/lesson/${id}` }
     case 'ejercicio': {
       const e = getExercise(id)
-      return { label: `Ejercicio en «${e?.lesson.title ?? '?'}»`, href: e ? `#/leccion/${e.lesson.id}/${id}` : '#/ejercicios' }
+      return { label: `Exercise in “${e?.lesson.title ?? '?'}”`, href: e ? `#/lesson/${e.lesson.id}/${id}` : '#/exercises' }
     }
     case 'reto':
-      return { label: `Reto: ${getChallenge(id)?.title ?? id}`, href: `#/reto/${id}` }
+      return { label: `Challenge: ${getChallenge(id)?.title ?? id}`, href: `#/challenge/${id}` }
     case 'pregunta':
-      return { label: `Entrevista: ${getQuestion(id)?.question ?? id}`, href: `#/entrevistas/pregunta/${id}` }
+      return { label: `Interview: ${getQuestion(id)?.question ?? id}`, href: `#/interviews/question/${id}` }
     case 'proyecto':
-      return { label: `Proyecto: ${getProject(id)?.title ?? id}`, href: `#/proyecto/${id}` }
+      return { label: `Project: ${getProject(id)?.title ?? id}`, href: `#/project/${id}` }
     case 'recurso':
       return { label: `Recurso: ${getResource(id)?.title ?? id}`, href: getResource(id)?.url ?? '#/' }
   }
@@ -28,13 +28,13 @@ export function NotesPage() {
   const bookmarks = useLiveQuery(() => db.bookmarks.toArray(), []) ?? []
   return (
     <div className="page">
-      <PageHeader title="Notas y marcadores">
-        <p>Tus notas de lecciones, ejercicios, retos, preguntas y proyectos. Se guardan solo en este navegador y viajan en el respaldo.</p>
+      <PageHeader kicker="Yours" title="Notes and bookmarks">
+        <p>Your notes on lessons, exercises, challenges, questions and projects. They live only in this browser and travel with your backup.</p>
       </PageHeader>
       <section aria-labelledby="bm">
-        <h2 id="bm" className="section-title">Marcadores</h2>
+        <h2 id="bm" className="section-title">Bookmarks</h2>
         {bookmarks.length === 0 ? (
-          <Empty title="Sin marcadores">Usa «Guardar en marcadores» en cualquier lección o reto.</Empty>
+          <Empty title="No bookmarks">Use “Bookmark” on any lesson or challenge.</Empty>
         ) : (
           <ul className="plain-list">
             {bookmarks.map((b) => {
@@ -43,7 +43,7 @@ export function NotesPage() {
                 <li key={b.key}>
                   <a href={t.href}>{t.label}</a>{' '}
                   <button type="button" className="link" onClick={() => void toggleBookmark(b.targetType, b.targetId)}>
-                    Quitar
+                    Remove
                   </button>
                 </li>
               )
@@ -52,9 +52,9 @@ export function NotesPage() {
         )}
       </section>
       <section aria-labelledby="nt">
-        <h2 id="nt" className="section-title">Notas</h2>
+        <h2 id="nt" className="section-title">Notes</h2>
         {notes.length === 0 ? (
-          <Empty title="Sin notas todavía">Cada lección y reto tiene un espacio de notas al final.</Empty>
+          <Empty title="No notes yet">Every lesson and challenge has a notes area at the bottom.</Empty>
         ) : (
           notes.map((n) => {
             const t = target(n.targetType, n.targetId)
@@ -65,9 +65,9 @@ export function NotesPage() {
                 </p>
                 <p className="note-text">{n.text}</p>
                 <div className="row note-meta">
-                  <span>{new Date(n.updatedAt).toLocaleString('es-MX', { dateStyle: 'medium', timeStyle: 'short' })}</span>
-                  <button type="button" className="link" onClick={() => n.id !== undefined && confirm('¿Eliminar esta nota?') && void deleteNote(n.id)}>
-                    Eliminar
+                  <span>{new Date(n.updatedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+                  <button type="button" className="link" onClick={() => n.id !== undefined && confirm('Delete this note?') && void deleteNote(n.id)}>
+                    Delete
                   </button>
                 </div>
               </div>

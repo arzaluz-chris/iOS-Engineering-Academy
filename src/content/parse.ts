@@ -18,7 +18,7 @@ import {
   type Stage,
 } from './schema'
 
-/** Archivos de contenido crudos, indexados por ruta relativa a la raíz del repo. */
+/** Raw content files, keyed by path relative to the repo root. */
 export interface RawContent {
   curriculum: string
   resources: string
@@ -40,14 +40,14 @@ export interface Lesson extends LessonMeta {
   path: string
   segments: Segment[]
   exercises: Exercise[]
-  /** Texto plano aproximado para el buscador. */
+  /** Rough plain text for search. */
   plain: string
 }
 
 export interface Challenge extends ChallengeMeta {
   path: string
   statement: string
-  /** Secciones que se revelan una a una, en orden. */
+  /** Sections revealed one at a time, in order. */
   reveal: Section[]
   solutionCode: string
   testCode: string
@@ -83,9 +83,9 @@ export function splitFrontmatter(raw: string): { data: unknown; body: string } |
 }
 
 /**
- * Los ejercicios se escriben dentro de la lección como bloques
- * ````exercise (cuatro comillas invertidas) con YAML, para poder incluir
- * bloques de código ``` normales dentro de sus campos.
+ * Exercises are written inside the lesson as ````exercise blocks
+ * (four backticks) holding YAML, so their fields can contain
+ * regular ``` code blocks.
  */
 const EXERCISE_BLOCK = /^````exercise[ \t]*\r?\n([\s\S]*?)\r?\n````[ \t]*$/gm
 
@@ -100,12 +100,12 @@ export function splitSegments(body: string, path: string, issues: Issue[]): Segm
     try {
       data = parseYaml(m[1] ?? '')
     } catch (e) {
-      issues.push({ path, message: `YAML inválido en ejercicio: ${(e as Error).message}` })
+      issues.push({ path, message: `Invalid YAML in exercise: ${(e as Error).message}` })
       continue
     }
     const r = exerciseSchema.safeParse(data)
     if (r.success) segments.push({ kind: 'exercise', exercise: r.data })
-    else issues.push({ path, message: `Ejercicio inválido (${describeId(data)}): ${formatZod(r.error)}` })
+    else issues.push({ path, message: `Invalid exercise (${describeId(data)}): ${formatZod(r.error)}` })
   }
   const rest = body.slice(last)
   if (rest.trim()) segments.push({ kind: 'md', text: rest })
@@ -122,7 +122,7 @@ export function splitSections(text: string): { intro: string; sections: Section[
   return { intro, sections }
 }
 
-export const REVEAL_MARKER = '<!-- revelar -->'
+export const REVEAL_MARKER = '<!-- reveal -->'
 
 export function toPlain(text: string): string {
   return text
@@ -134,11 +134,11 @@ export function toPlain(text: string): string {
 }
 
 function describeId(data: unknown): string {
-  return typeof data === 'object' && data && 'id' in data ? String((data as { id: unknown }).id) : 'sin id'
+  return typeof data === 'object' && data && 'id' in data ? String((data as { id: unknown }).id) : 'no id'
 }
 
 export function formatZod(err: z.ZodError): string {
-  return err.issues.map((i) => `${i.path.join('.') || '(raíz)'}: ${i.message}`).join('; ')
+  return err.issues.map((i) => `${i.path.join('.') || '(root)'}: ${i.message}`).join('; ')
 }
 
 function parseDoc<T>(
@@ -151,11 +151,11 @@ function parseDoc<T>(
   try {
     fm = splitFrontmatter(raw)
   } catch (e) {
-    issues.push({ path, message: `YAML inválido: ${(e as Error).message}` })
+    issues.push({ path, message: `Invalid YAML: ${(e as Error).message}` })
     return null
   }
   if (!fm) {
-    issues.push({ path, message: 'Falta el bloque de frontmatter (--- ... ---)' })
+    issues.push({ path, message: 'Missing the frontmatter block (--- ... ---)' })
     return null
   }
   const r = schema.safeParse(fm.data)
@@ -203,7 +203,7 @@ export function buildCatalog(raw: RawContent): { catalog: Catalog; issues: Issue
     if (!doc) continue
     const markerAt = doc.body.indexOf(REVEAL_MARKER)
     if (markerAt === -1) {
-      issues.push({ path, message: `Falta el marcador ${REVEAL_MARKER} que separa el enunciado de lo que se revela` })
+      issues.push({ path, message: `Missing the ${REVEAL_MARKER} marker that separates the problem statement from what gets revealed` })
       continue
     }
     const statement = doc.body.slice(0, markerAt).trim()
@@ -252,7 +252,7 @@ function safeYaml(text: string, path: string, issues: Issue[]): unknown {
   try {
     return parseYaml(text)
   } catch (e) {
-    issues.push({ path, message: `YAML inválido: ${(e as Error).message}` })
+    issues.push({ path, message: `Invalid YAML: ${(e as Error).message}` })
     return undefined
   }
 }

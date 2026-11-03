@@ -1,59 +1,59 @@
 ---
 id: contains-duplicate
 title: Contains Duplicate
-difficulty: facil
+difficulty: easy
 order: 2
-patterns: [Hash set, Ordenamiento]
+patterns: [Hash set, Sorting]
 prerequisites: [m07, m15]
-summary: ¿Algún valor se repite? El primer encuentro con el trade-off entre tiempo y memoria.
+summary: Does any value repeat? Your first run-in with the trade-off between time and memory.
 solutionFile: ContainsDuplicate.swift
 testFile: ContainsDuplicateTests.swift
 starter: |
   func containsDuplicate(_ nums: [Int]) -> Bool {
-      // Tu solución
+      // Your solution
       return false
   }
-time: O(n) en promedio
+time: O(n) on average
 space: O(n)
 edgeCases:
-  - Lista vacía
-  - Un solo elemento
-  - Negativos y valores extremos como Int.max
-  - El duplicado está al final
+  - Empty list
+  - A single element
+  - Negatives and extreme values like Int.max
+  - The duplicate is at the very end
 askInterviewer:
-  - ¿Qué tamaño puede tener la lista?
-  - ¿Puedo modificar la lista de entrada, por ejemplo ordenarla en su lugar?
-  - ¿Importa la memoria adicional?
+  - How big can the list be?
+  - Can I modify the input list, for example sort it in place?
+  - Does extra memory matter?
 hints:
-  - Comparar cada pareja funciona, pero ¿cuántas parejas hay en una lista de n elementos?
-  - ¿Qué estructura responde en tiempo constante «¿ya vi este valor?»?
+  - Comparing every pair works, but how many pairs are there in a list of n elements?
+  - Which data structure answers "have I seen this value already?" in constant time?
 followUps:
-  - Si no puedes usar memoria adicional proporcional a n, ¿qué haces y qué cuesta?
-  - "¿Qué cambia si la pregunta es «¿hay dos valores iguales a distancia máxima k?»? (Contains Duplicate II: ventana deslizante con Set.)"
-  - ¿Por qué decimos «O(n) en promedio» y no «O(n)» a secas para un Set?
+  - If you can't use extra memory proportional to n, what do you do and what does it cost?
+  - "What changes if the question is \"are there two equal values at most k positions apart?\" (Contains Duplicate II: a sliding window with a Set.)"
+  - Why do we say "O(n) on average" for a Set, and not just "O(n)"?
 rubric:
-  - Propuse primero la solución de fuerza bruta y expliqué su costo O(n²).
-  - Llegué a la solución con Set en O(n) tiempo y O(n) espacio.
-  - Mencioné la alternativa de ordenar, O(n log n), y cuándo conviene.
-codeStatus: probado
+  - I proposed the brute-force solution first and explained its O(n²) cost.
+  - I got to the Set solution with O(n) time and O(n) space.
+  - I mentioned the sorting alternative, O(n log n), and when it makes sense.
+codeStatus: tested
 ---
 
-Dada una lista de enteros `nums`, devuelve `true` si algún valor aparece al menos dos veces, y `false` si todos son distintos.
+Given a list of integers `nums`, return `true` if any value appears at least twice, and `false` if every value is distinct.
 
 ```swift
 containsDuplicate([1, 2, 3, 1])  // true
 containsDuplicate([1, 2, 3, 4])  // false
 ```
 
-**Restricciones:** `0 ≤ nums.count ≤ 10^5`; los valores caben en `Int`.
+**Constraints:** `0 ≤ nums.count ≤ 10^5`; values fit in `Int`.
 
-<!-- revelar -->
+<!-- reveal -->
 
-## Enfoque inicial
+## First approach
 
-Hay que comparar cada valor con los demás. La pregunta es cuánto cuesta esa comparación y si se puede recordar lo ya visto para no repetirla.
+You have to compare each value with the others. The question is what that comparison costs, and whether you can remember what you've already seen so you don't repeat it.
 
-## Solución ingenua
+## Naive solution
 
 ```swift
 func containsDuplicate(_ nums: [Int]) -> Bool {
@@ -66,28 +66,28 @@ func containsDuplicate(_ nums: [Int]) -> Bool {
 }
 ```
 
-## Problemas de la solución ingenua
+## Problems with the naive solution
 
-Compara todas las parejas: n·(n−1)/2 comparaciones, es decir **O(n²)**. Con 10^5 elementos son unos 5·10^9 comparaciones, demasiado para una respuesta interactiva. Usa O(1) de memoria, que es su única ventaja.
+It compares every pair: n·(n−1)/2 comparisons, which is **O(n²)**. With 10^5 elements that's about 5·10^9 comparisons, far too many for an interactive response. It uses O(1) memory, and that's its only advantage.
 
-## Solución optimizada
+## Optimized solution
 
-Recorre la lista una vez y guarda cada valor en un `Set`. Si al insertar descubres que ya estaba, hay un duplicado. Cada inserción y búsqueda en un `Set` cuesta O(1) en promedio, así que el total es O(n) de tiempo a cambio de O(n) de memoria.
+Walk the list once and put each value in a `Set`. If an insert tells you the value was already there, you've found a duplicate. Each insert and lookup in a `Set` is O(1) on average, so the total is O(n) time in exchange for O(n) memory.
 
-## Explicación línea por línea
+## Line by line
 
-- `var seen = Set<Int>()`: los valores vistos hasta ahora.
-- `seen.reserveCapacity(nums.count)`: evita que el `Set` crezca varias veces.
-- `seen.insert(value)` devuelve una tupla; su campo `inserted` es `false` si el valor ya existía. Así se busca e inserta en una sola operación.
-- `return true` en cuanto aparece el primer duplicado: no hace falta terminar el recorrido.
-- La alternativa `containsDuplicateBySorting` ordena una copia (O(n log n)) y compara vecinos: si hay duplicados, quedan juntos.
+- `var seen = Set<Int>()`: the values seen so far.
+- `seen.reserveCapacity(nums.count)`: keeps the `Set` from growing several times.
+- `seen.insert(value)` returns a tuple; its `inserted` field is `false` if the value was already there. That's a lookup and an insert in a single operation.
+- `return true` as soon as the first duplicate shows up: there's no need to finish the loop.
+- The alternative, `containsDuplicateBySorting`, sorts a copy (O(n log n)) and compares neighbors: if there are duplicates, they end up next to each other.
 
-## Errores frecuentes
+## Common mistakes
 
-- Construir `Set(nums)` y comparar `count`: funciona y es O(n), pero siempre recorre toda la lista aunque el duplicado esté en las dos primeras posiciones. Es válido mencionarlo como alternativa concisa.
-- Ordenar la lista de entrada sin preguntar si se puede modificar.
-- Decir «O(1)» sin matizar: las tablas hash tienen costo constante **promedio**, no garantizado.
+- Building `Set(nums)` and comparing `count`. It works and it's O(n), but it always walks the whole list, even when the duplicate is in the first two positions. It's fine to mention as a concise alternative.
+- Sorting the input list without asking whether you're allowed to modify it.
+- Saying "O(1)" without qualifying it: hash tables have constant **average** cost, not guaranteed.
 
-## Variante
+## Variation
 
-**Contains Duplicate II:** devuelve `true` si existen `i ≠ j` con `nums[i] == nums[j]` y `|i − j| ≤ k`. Mantén un `Set` con como máximo los últimos `k` valores: es una ventana deslizante.
+**Contains Duplicate II:** return `true` if there are `i ≠ j` with `nums[i] == nums[j]` and `|i − j| ≤ k`. Keep a `Set` holding at most the last `k` values: a sliding window.

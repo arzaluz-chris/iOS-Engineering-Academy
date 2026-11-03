@@ -1,7 +1,7 @@
 {
   "name": "ios-engineering-academy",
   "version": "1.0.0",
-  "description": "Academia personal de desarrollo iOS: de cero a iOS Engineer profesional.",
+  "description": "A personal iOS engineering academy: from zero to professional iOS engineer.",
   "scripts": {
     "dev": "vite",
     "build": "npm run validate && tsc --noEmit && vite build",
@@ -28,9 +28,6 @@
     "@codemirror/legacy-modes": "^6.5.5",
     "@codemirror/state": "^6.7.6",
     "@codemirror/view": "^6.43.15",
-    "@fontsource-variable/source-serif-4": "^5.3.1",
-    "@fontsource/ibm-plex-mono": "^5.3.0",
-    "@fontsource/ibm-plex-sans": "^5.3.0",
     "codemirror": "^6.0.2",
     "dexie": "^4.4.7",
     "dexie-react-hooks": "^4.4.0",

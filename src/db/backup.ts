@@ -2,9 +2,9 @@ import { z } from 'zod'
 import { db, now, TABLES, type TableName } from './db'
 
 /**
- * Formato de respaldo: un único JSON con todas las tablas.
- * Se valida completo antes de tocar la base; la importación reemplaza
- * los datos actuales dentro de una transacción (todo o nada).
+ * Backup format: a single JSON file with every table.
+ * It's fully validated before the database is touched; importing replaces
+ * the current data inside one transaction (all or nothing).
  */
 export const BACKUP_FORMAT = 'ios-engineering-academy/backup'
 export const BACKUP_VERSION = 1
@@ -64,12 +64,12 @@ export function parseBackup(text: string): { ok: true; backup: Backup } | { ok: 
   try {
     json = JSON.parse(text)
   } catch {
-    return { ok: false, error: 'El archivo no es JSON válido.' }
+    return { ok: false, error: 'That file isn’t valid JSON.' }
   }
   const r = backupSchema.safeParse(json)
   if (!r.success) {
     const first = r.error.issues.slice(0, 3).map((i) => `${i.path.join('.')}: ${i.message}`)
-    return { ok: false, error: `El respaldo no tiene el formato esperado. ${first.join('; ')}` }
+    return { ok: false, error: `This backup doesn’t have the expected format. ${first.join('; ')}` }
   }
   return { ok: true, backup: r.data }
 }

@@ -1,7 +1,7 @@
 import type { Catalog, Lesson } from '../content/parse'
 import type { Attempt, ChallengeState, LessonProgress } from './db'
 
-/** Último intento por ejercicio/reto/pregunta. */
+/** Latest attempt per exercise/challenge/question. */
 export function latestByRef(attempts: Attempt[]): Map<string, Attempt> {
   const m = new Map<string, Attempt>()
   for (const a of attempts) {
@@ -18,8 +18,8 @@ export function exerciseStatus(id: string, latest: Map<string, Attempt>): Exerci
 }
 
 /**
- * Una lección se considera dominada cuando está marcada como completada
- * y el último intento de cada ejercicio es correcto. Abrirla no cuenta.
+ * A lesson counts as mastered when it's marked complete and the latest
+ * attempt at each of its exercises is correct. Opening it doesn't count.
  */
 export function lessonMastery(lesson: Lesson, latest: Map<string, Attempt>) {
   const total = lesson.exercises.length
@@ -84,7 +84,7 @@ export function overview(c: Catalog, progress: LessonProgress[], attempts: Attem
   }
 }
 
-/** La lección que conviene estudiar ahora: la más reciente en curso o la primera no completada. */
+/** The lesson to study next: the most recent one in progress, or the first one not completed. */
 export function currentLesson(sequence: Lesson[], progress: LessonProgress[]): Lesson | undefined {
   const inProgress = progress.filter((p) => p.status === 'en-curso').sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0]
   if (inProgress) return sequence.find((l) => l.id === inProgress.lessonId)

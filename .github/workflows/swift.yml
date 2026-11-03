@@ -1,6 +1,6 @@
-# Compila y prueba las soluciones de los retos y ejecuta los fragmentos de las lecciones (Swift Testing) en macOS.
-# El repositorio es público: los runners estándar no consumen minutos.
-name: Swift · pruebas de los retos
+# Builds and tests the challenge solutions and runs the lesson snippets (Swift Testing) on macOS.
+# The repository is public, so standard runners don't use up minutes.
+name: Swift · challenge tests
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
         working-directory: swift
     steps:
       - uses: actions/checkout@v4
-      - name: Versiones
+      - name: Versions
         run: |
           xcodebuild -version
           swift --version

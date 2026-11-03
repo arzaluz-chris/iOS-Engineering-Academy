@@ -1,48 +1,48 @@
 ---
 id: p08
 number: 8
-title: Proyecto final
-summary: Eliges el dominio y entregas una app completa, documentada y probada, que demuestra las competencias de un iOS Engineer profesional.
+title: Final Project
+summary: You pick the domain and deliver a complete, documented and tested app that shows the skills of a professional iOS engineer.
 prerequisites: [m48]
 objectives:
-  - Definir requisitos y criterios de aceptación propios.
-  - Tomar y documentar decisiones técnicas.
-  - Entregar con calidad verificable y defender el diseño en una revisión.
+  - Define your own requirements and acceptance criteria.
+  - Make technical decisions and document them.
+  - Ship with quality you can verify, and defend the design in a review.
 requirements:
-  - "Elige un dominio: banca personal, salud y hábitos, educación o un proyecto propio aprobado por ti con los mismos criterios."
-  - Documento de requisitos con criterios de aceptación.
-  - Decisiones arquitectónicas registradas.
-  - Modelos de dominio, interfaz, networking y persistencia cuando proceda.
-  - Pruebas, accesibilidad, rendimiento y gestión de errores.
-  - README con instrucciones de compilación y checklist de calidad.
+  - "Pick a domain: personal banking, health and habits, education, or a project of your own that you hold to the same criteria."
+  - A requirements document with acceptance criteria.
+  - Recorded architecture decisions.
+  - Domain models, UI, networking and persistence where they apply.
+  - Tests, accessibility, performance and error handling.
+  - A README with build instructions and a quality checklist.
 acceptance:
-  - Otra persona puede clonar, compilar y ejecutar siguiendo solo el README.
-  - Todos los criterios de aceptación del documento de requisitos están verificados.
-  - La revisión final de código no deja hallazgos críticos abiertos.
-  - Puedes explicar en 10 minutos la arquitectura y responder preguntas de seguimiento.
+  - Someone else can clone, build and run the app by following only the README.
+  - Every acceptance criterion in the requirements document has been verified.
+  - The final code review leaves no critical findings open.
+  - You can explain the architecture in 10 minutes and answer follow-up questions.
 milestones:
   - id: p08-h1
-    title: Requisitos
-    tasks: ["Escribe el documento de requisitos y los criterios de aceptación."]
-    concepts: [Requisitos]
+    title: Requirements
+    tasks: ["Write the requirements document and the acceptance criteria."]
+    concepts: [Requirements]
   - id: p08-h2
-    title: Diseño
-    tasks: ["Documenta arquitectura, modelos y API."]
+    title: Design
+    tasks: ["Document the architecture, models and API."]
     concepts: [Mobile system design]
   - id: p08-h3
-    title: Implementación por incrementos
-    tasks: ["Entrega funcionalidades verticales completas, cada una con pruebas."]
-    concepts: [Desarrollo incremental]
+    title: Incremental implementation
+    tasks: ["Deliver complete vertical slices, each with tests."]
+    concepts: [Incremental development]
   - id: p08-h4
-    title: Calidad
-    tasks: ["Aplica la checklist de calidad completa."]
-    concepts: [Calidad profesional]
+    title: Quality
+    tasks: ["Work through the full quality checklist."]
+    concepts: [Professional quality]
   - id: p08-h5
-    title: Revisión y defensa
-    tasks: ["Haz una revisión final de código y prepara la explicación técnica."]
-    concepts: [Code review, Comunicación técnica]
+    title: Review and defense
+    tasks: ["Do a final code review and prepare your technical walkthrough."]
+    concepts: [Code review, Technical communication]
 ---
 
-## Cómo se evalúa
+## How it's evaluated
 
-Con los mismos criterios de una entrevista de system design y de una revisión de código: claridad de requisitos, decisiones justificadas, pruebas significativas y capacidad de explicar los trade-offs.
+With the same criteria as a system design interview and a code review: clear requirements, justified decisions, meaningful tests, and the ability to explain the trade-offs.

@@ -1,0 +1,52 @@
+questions:
+  - id: q-arch-mvvm-tradeoffs
+    category: architecture
+    difficulty: medium
+    question: What problem does MVVM solve compared with MVC in UIKit, and when is it unnecessary complexity?
+    answer: |
+      In UIKit's MVC, the view controller tends to soak up everything: view setup, presentation logic, network calls, navigation. The result is hard to test because the logic is tied to `UIViewController`.
+
+      MVVM pulls the **presentation logic** out into a ViewModel that has no UIKit dependencies. It turns domain data into what the view needs (formatted text, loading states, whether a button is enabled) and exposes actions. What you get: you can cover it with plain unit tests, and the controller becomes a thin binding layer.
+
+      It's unnecessary complexity when the screen has almost no logic (a static settings screen), when the ViewModel just forwards model properties without transforming them, or when the team adds layers out of habit (ViewModel, Presenter, Interactor, UseCase) for a screen with one text field. In SwiftUI, a simple view that reads an `@Observable` model often doesn't need a separate ViewModel at all.
+    keyPoints:
+      - The massive view controller problem and why it's hard to test.
+      - What a ViewModel does and what it doesn't know about (UIKit).
+      - Testability as a concrete benefit.
+      - Examples of when it's too many layers.
+    followUps:
+      - question: Who should own navigation in MVVM?
+        answer: The ViewModel shouldn't know about `UIViewController`. Common options are a **coordinator** that receives events from the ViewModel (through a closure or a delegate) and decides what to present, or in SwiftUI a navigation state (`NavigationPath`) that the ViewModel updates. Which one I'd pick depends on the size of the app.
+    related: [m32]
+
+  - id: q-arch-di
+    category: architecture
+    difficulty: easy
+    question: What is dependency injection, and how would you do it in Swift without a framework?
+    writesCode: true
+    answer: |
+      It means **receiving** your dependencies instead of creating them inside. The type depends on an abstraction (a protocol), and something outside hands it the implementation. That lets you swap in a test double, and it cuts down coupling.
+
+      ```swift
+      protocol AccountsService: Sendable {
+          func balance(for accountID: String) async throws -> Decimal
+      }
+
+      @MainActor
+      final class BalanceViewModel {
+          private let service: any AccountsService
+          init(service: any AccountsService) { self.service = service }
+      }
+      ```
+
+      The usual ways: through the initializer (the most explicit, and the one I prefer), through a property, or through a container or environment (like `@Environment` in SwiftUI). Composition, meaning deciding which concrete implementation gets used, happens in one place, close to app startup.
+    keyPoints:
+      - Receive dependencies instead of creating them.
+      - Depend on a protocol.
+      - Initializer injection as the preferred option.
+      - The payoff in tests with doubles.
+      - A single composition root.
+    followUps:
+      - question: What's the problem with using a singleton like `NetworkManager.shared` inside a ViewModel?
+        answer: It couples the ViewModel to one global concrete implementation, makes it impossible to swap out in tests, and hides the dependency (it doesn't show up in the initializer). On top of that, shared global state makes concurrency harder.
+    related: [m32, m33]

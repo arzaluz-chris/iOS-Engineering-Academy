@@ -1,9 +1,9 @@
 import Dexie, { type EntityTable } from 'dexie'
 
 /**
- * Todo el progreso vive en IndexedDB, en este navegador. No hay servidor.
- * GitHub Pages comparte el origen <usuario>.github.io entre repositorios,
- * por eso el nombre de la base lleva prefijo propio.
+ * All progress lives in IndexedDB, in this browser. There's no server.
+ * GitHub Pages shares the <user>.github.io origin across repositories,
+ * so the database name has its own prefix.
  */
 
 export type LessonStatus = 'en-curso' | 'completada'
@@ -12,7 +12,7 @@ export interface LessonProgress {
   status: LessonStatus
   startedAt: string
   completedAt?: string
-  /** Última sección visible (id del encabezado) para retomar la lectura. */
+  /** Last visible section (heading id), used to resume reading. */
   lastAnchor?: string
 }
 
@@ -24,9 +24,9 @@ export interface Attempt {
   refId: string
   at: string
   result: AttemptResult
-  /** 0..1. En ejercicios autoevaluados es la fracción de criterios de la rúbrica cumplidos. */
+  /** 0..1. For self-assessed exercises, the fraction of rubric criteria met. */
   score: number
-  /** Cómo se calificó: automática (respuesta estructurada) o autoevaluación con rúbrica. */
+  /** How it was graded: automatica (structured answer) or autoevaluacion (self-assessed with a rubric). */
   grading: 'automatica' | 'autoevaluacion'
   answer?: string
 }
@@ -58,7 +58,7 @@ export type ChallengeStatus = 'intentado' | 'resuelto' | 'dominado'
 export interface ChallengeState {
   challengeId: string
   status: ChallengeStatus
-  /** Cuántas secciones de pistas/solución se han revelado. */
+  /** How many hint/solution sections have been revealed. */
   revealed: number
   hintsUsed: number
   updatedAt: string
@@ -83,13 +83,13 @@ export interface ReviewCard {
   id: string
   source: CardSource
   refId: string
-  /** Tarjeta FSRS serializada (fechas como ISO). */
+  /** Serialized FSRS card (dates as ISO strings). */
   fsrs: Record<string, unknown>
   dueAt: string
-  /** Marcada por el estudiante como tema difícil: se prioriza. */
+  /** Marked by the learner as a hard topic: it gets priority. */
   difficult: boolean
   addedAt: string
-  /** Por qué entró al repaso: lo agregó el estudiante o un fallo. */
+  /** Why it entered review: the learner added it, or it came from a miss. */
   reason: 'manual' | 'fallo' | 'leccion'
 }
 
@@ -144,7 +144,7 @@ export type TableName = (typeof TABLES)[number]
 
 export let db = new AcademyDB()
 
-/** Solo para tests: usar una base aislada. */
+/** Tests only: use an isolated database. */
 export function useTestDatabase(name: string) {
   db = new AcademyDB(name)
   return db

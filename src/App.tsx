@@ -1,6 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useEffect, useRef, useState } from 'react'
-import { content } from './content'
 import { db } from './db/db'
 import { ChallengePage, ChallengesPage } from './pages/Challenges'
 import { CurriculumPage, ModulePage } from './pages/Curriculum'
@@ -12,19 +11,16 @@ import { NotesPage } from './pages/Notes'
 import { ProjectPage, ProjectsPage } from './pages/Projects'
 import { ReviewPage } from './pages/Review'
 import { SearchPage } from './pages/Search'
-import { SettingsPage } from './pages/Settings'
+import { applyTheme, readTheme, SettingsPage, type Theme } from './pages/Settings'
 import { navigate, useRoute, type Route } from './router'
 
 const NAV: { to: string; label: string; match: string[] }[] = [
-  { to: '#/', label: 'Inicio', match: [''] },
-  { to: '#/curriculo', label: 'Currículo', match: ['curriculo', 'modulo', 'leccion'] },
-  { to: '#/ejercicios', label: 'Ejercicios', match: ['ejercicios'] },
-  { to: '#/retos', label: 'Retos de código', match: ['retos', 'reto'] },
-  { to: '#/entrevistas', label: 'Entrevistas', match: ['entrevistas'] },
-  { to: '#/proyectos', label: 'Proyectos', match: ['proyectos', 'proyecto'] },
-  { to: '#/repaso', label: 'Repaso', match: ['repaso'] },
-  { to: '#/notas', label: 'Notas y marcadores', match: ['notas'] },
-  { to: '#/ajustes', label: 'Ajustes y respaldo', match: ['ajustes'] },
+  { to: '#/curriculum', label: 'Curriculum', match: ['curriculum', 'module', 'lesson'] },
+  { to: '#/exercises', label: 'Exercises', match: ['exercises'] },
+  { to: '#/challenges', label: 'Challenges', match: ['challenges', 'challenge'] },
+  { to: '#/interviews', label: 'Interviews', match: ['interviews'] },
+  { to: '#/projects', label: 'Projects', match: ['projects', 'project'] },
+  { to: '#/review', label: 'Review', match: ['review'] },
 ]
 
 function Page({ route }: { route: Route }) {
@@ -32,40 +28,40 @@ function Page({ route }: { route: Route }) {
   switch (a) {
     case '':
       return <Dashboard />
-    case 'curriculo':
+    case 'curriculum':
       return <CurriculumPage />
-    case 'modulo':
+    case 'module':
       return <ModulePage id={b} />
-    case 'leccion':
+    case 'lesson':
       return <LessonPage id={b} focus={c} />
-    case 'ejercicios':
+    case 'exercises':
       return <ExercisesPage query={route.query} />
-    case 'retos':
+    case 'challenges':
       return <ChallengesPage query={route.query} />
-    case 'reto':
+    case 'challenge':
       return <ChallengePage id={b} />
-    case 'entrevistas':
-      if (b === 'simulacion') return <SimulationPage query={route.query} />
-      if (b === 'pregunta') return <QuestionPage id={c} />
+    case 'interviews':
+      if (b === 'simulation') return <SimulationPage query={route.query} />
+      if (b === 'question') return <QuestionPage id={c} />
       return <InterviewPage />
-    case 'proyectos':
+    case 'projects':
       return <ProjectsPage />
-    case 'proyecto':
+    case 'project':
       return <ProjectPage id={b} />
-    case 'repaso':
+    case 'review':
       return <ReviewPage />
-    case 'notas':
+    case 'notes':
       return <NotesPage />
-    case 'buscar':
+    case 'search':
       return <SearchPage q={route.query.get('q') ?? ''} />
-    case 'ajustes':
+    case 'settings':
       return <SettingsPage />
     default:
       return (
         <div className="page">
-          <h1>Esta página no existe</h1>
+          <h1>Page not found</h1>
           <p>
-            La dirección <code>{window.location.hash}</code> no corresponde a ningún contenido. <a href="#/">Vuelve al inicio</a> o usa el buscador.
+            Nothing lives at <code>{window.location.hash}</code>. <a href="#/">Go home</a> or try searching.
           </p>
         </div>
       )
@@ -81,8 +77,8 @@ export function App() {
 
   useEffect(() => {
     setMenuOpen(false)
-    // Al cambiar de página: arriba y foco en el contenido, salvo anclas internas.
-    if (!(route.path[0] === 'leccion' && route.path[2])) window.scrollTo(0, 0)
+    // On navigation: scroll to top and focus the content, except for in-page anchors.
+    if (!(route.path[0] === 'lesson' && route.path[2])) window.scrollTo(0, 0)
     main.current?.focus({ preventScroll: true })
     const title = document.querySelector('main h1')?.textContent
     document.title = title ? `${title} · iOS Engineering Academy` : 'iOS Engineering Academy'
@@ -105,75 +101,132 @@ export function App() {
   const section = route.path[0] ?? ''
 
   return (
-    <div className={`shell ${menuOpen ? 'menu-open' : ''}`}>
-      <a className="skip" href="#contenido" onClick={(e) => { e.preventDefault(); main.current?.focus() }}>
-        Saltar al contenido
+    <div className={`shell ${menuOpen ? 'menu-open' : ''} ${section === '' ? 'is-home' : ''}`}>
+      <a className="skip" href="#content" onClick={(e) => { e.preventDefault(); main.current?.focus() }}>
+        Skip to content
       </a>
-      <header className="topbar">
-        <button type="button" className="btn btn-quiet menu-btn" aria-expanded={menuOpen} aria-controls="sidebar" onClick={() => setMenuOpen((o) => !o)}>
-          Menú
-        </button>
-        <a href="#/" className="brand-small">
-          iOS Engineering Academy
-        </a>
-      </header>
-      <aside className="sidebar" id="sidebar">
-        <a href="#/" className="brand">
-          <span className="brand-mark" aria-hidden="true">
-            <svg viewBox="0 0 32 32" width="28" height="28">
-              <rect width="32" height="32" rx="7" fill="currentColor" />
-              <path d="M9 22 16 9l7 13" stroke="var(--bg)" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <header className="site-nav">
+        <div className="site-nav-inner">
+          <a href="#/" className="brand" aria-label="iOS Engineering Academy, home">
+            <BrandMark />
+            <span className="brand-name">iOS Engineering Academy</span>
+          </a>
+          <button type="button" className="menu-btn" aria-expanded={menuOpen} aria-controls="site-menu" onClick={() => setMenuOpen((o) => !o)}>
+            <span className="sr-only">Menu</span>
+            <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+              <path d={menuOpen ? 'M4 4l12 12M16 4L4 16' : 'M3 6h14M3 10h14M3 14h14'} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
-          </span>
-          <span>
-            iOS Engineering
-            <br />
-            Academy
-          </span>
-        </a>
-        <form
-          className="search-box"
-          role="search"
-          onSubmit={(e) => {
-            e.preventDefault()
-            const q = searchRef.current?.value.trim()
-            if (q) navigate(`/buscar?q=${encodeURIComponent(q)}`)
-          }}
-        >
-          <label htmlFor="global-search" className="sr-only">
-            Buscar en el curso
-          </label>
-          <input id="global-search" ref={searchRef} type="search" placeholder="Buscar  ( / )" autoComplete="off" />
-        </form>
-        <nav aria-label="Secciones">
-          <ul className="nav">
-            {NAV.map((n) => (
-              <li key={n.to}>
-                <a href={n.to} aria-current={n.match.includes(section) ? 'page' : undefined}>
-                  {n.label}
-                  {n.to === '#/repaso' && due > 0 && <span className="nav-count">{due}</span>}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <nav aria-label="Etapas del currículo" className="stage-nav">
-          <p className="nav-heading">Etapas</p>
-          <ol>
-            {content.stages.map((s) => (
-              <li key={s.id}>
-                <a href={`#/curriculo?etapa=${s.id}`} onClick={(e) => { e.preventDefault(); navigate('/curriculo'); setTimeout(() => document.getElementById(s.id)?.scrollIntoView(), 30) }}>
-                  <span className="stage-num">{s.number}</span>
-                  {s.title}
-                </a>
-              </li>
-            ))}
-          </ol>
-        </nav>
-      </aside>
-      <main id="contenido" ref={main} tabIndex={-1}>
+          </button>
+          <div className="site-menu" id="site-menu">
+            <nav aria-label="Sections">
+              <ul className="nav">
+                {NAV.map((n) => (
+                  <li key={n.to}>
+                    <a href={n.to} aria-current={n.match.includes(section) ? 'page' : undefined}>
+                      {n.label}
+                      {n.to === '#/review' && due > 0 && <span className="nav-count" aria-label={`${due} due`}>{due}</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <span className="nav-divider" aria-hidden="true" />
+            <form
+              className="search-box"
+              role="search"
+              onSubmit={(e) => {
+                e.preventDefault()
+                const q = searchRef.current?.value.trim()
+                if (q) navigate(`/search?q=${encodeURIComponent(q)}`)
+              }}
+            >
+              <label htmlFor="global-search" className="sr-only">
+                Search the course
+              </label>
+              <input id="global-search" ref={searchRef} type="search" placeholder="Search" autoComplete="off" />
+              <kbd aria-hidden="true">/</kbd>
+            </form>
+          </div>
+        </div>
+      </header>
+      <main id="content" ref={main} tabIndex={-1}>
         <Page route={route} />
       </main>
+      <SiteFooter />
+    </div>
+  )
+}
+
+function BrandMark() {
+  return (
+    <span className="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="30" height="30">
+        <defs>
+          <linearGradient id="brand-grad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#ff7f00" />
+            <stop offset="1" stopColor="#f05238" />
+          </linearGradient>
+        </defs>
+        <rect width="32" height="32" rx="7.5" fill="url(#brand-grad)" />
+        <path d="M8.5 22.5 16 8.5l7.5 14" stroke="#fff" strokeWidth="2.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M11.6 17.5h8.8" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
+      </svg>
+    </span>
+  )
+}
+
+const FOOTER: { title: string; links: [string, string][] }[] = [
+  { title: 'Learn', links: [['Curriculum', '#/curriculum'], ['Exercises', '#/exercises'], ['Coding challenges', '#/challenges']] },
+  { title: 'Practice', links: [['Interview prep', '#/interviews'], ['Projects', '#/projects'], ['Spaced review', '#/review']] },
+  { title: 'Yours', links: [['Notes and bookmarks', '#/notes'], ['Settings and backup', '#/settings']] },
+]
+
+function SiteFooter() {
+  return (
+    <footer className="site-footer">
+      <div className="site-footer-inner">
+        <div className="footer-brand">
+          <a href="#/" className="brand">
+            <BrandMark />
+            <span className="brand-name">iOS Engineering Academy</span>
+          </a>
+          <p>A personal course from zero to professional iOS engineer. Your progress stays in this browser.</p>
+        </div>
+        {FOOTER.map((col) => (
+          <nav key={col.title} aria-label={col.title} className="footer-col">
+            <h2>{col.title}</h2>
+            <ul>
+              {col.links.map(([label, to]) => (
+                <li key={to}>
+                  <a href={to}>{label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))}
+        <div className="footer-col">
+          <h2>Appearance</h2>
+          <ThemeSwitch />
+        </div>
+      </div>
+      <div className="site-footer-legal">
+        <p>Swift, Xcode, iPhone and iOS are trademarks of Apple Inc. This academy isn’t affiliated with Apple or the Swift project.</p>
+      </div>
+    </footer>
+  )
+}
+
+function ThemeSwitch() {
+  const [theme, setTheme] = useState<Theme>(readTheme)
+  useEffect(() => applyTheme(theme), [theme])
+  const options: [Theme, string][] = [['light', 'Light'], ['dark', 'Dark'], ['system', 'Auto']]
+  return (
+    <div className="theme-switch" role="radiogroup" aria-label="Color scheme">
+      {options.map(([value, label]) => (
+        <button key={value} type="button" role="radio" aria-checked={theme === value} onClick={() => setTheme(value)}>
+          {label}
+        </button>
+      ))}
     </div>
   )
 }

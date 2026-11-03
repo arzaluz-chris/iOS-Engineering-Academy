@@ -24,7 +24,7 @@ function read(dir: string, ext: string): Record<string, string> {
   return Object.fromEntries(walk(join(ROOT, dir), ext).map((p) => [relative(ROOT, p), readFileSync(p, 'utf8')]))
 }
 
-/** Carga el contenido desde disco con la misma lógica que el navegador. */
+/** Loads the content from disk with the same logic the browser uses. */
 export function loadFromDisk() {
   return buildCatalog({
     curriculum: readFileSync(join(ROOT, 'content/curriculum.yaml'), 'utf8'),

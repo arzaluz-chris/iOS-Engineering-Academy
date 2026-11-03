@@ -10,25 +10,25 @@ import { db, type AttemptResult } from '../db/db'
 import { gradeBlanks, gradeChoices, gradePrediction, splitBlanks } from './grade'
 
 export const TYPE_LABEL: Record<Exercise['type'], string> = {
-  comprension: 'Comprensión',
-  prediccion: 'Predicción',
-  completar: 'Completar código',
-  errores: 'Encontrar errores',
-  resolver: 'Resolver un problema',
-  explicar: 'Explicar una solución',
-  refactorizar: 'Refactorización',
-  diseno: 'Diseño',
+  comprehension: 'Comprehension',
+  prediction: 'Predict the output',
+  'fill-in': 'Fill in the code',
+  'find-errors': 'Find the bugs',
+  solve: 'Solve a problem',
+  explain: 'Explain the code',
+  refactor: 'Refactor',
+  design: 'Design',
 }
 
 const TYPE_LETTER: Record<Exercise['type'], string> = {
-  comprension: 'A',
-  prediccion: 'B',
-  completar: 'C',
-  errores: 'D',
-  resolver: 'E',
-  explicar: 'F',
-  refactorizar: 'G',
-  diseno: 'H',
+  comprehension: 'A',
+  prediction: 'B',
+  'fill-in': 'C',
+  'find-errors': 'D',
+  solve: 'E',
+  explain: 'F',
+  refactor: 'G',
+  design: 'H',
 }
 
 export function ExerciseBlock({ exercise, label }: { exercise: Exercise; label: string }) {
@@ -43,13 +43,13 @@ export function ExerciseBlock({ exercise, label }: { exercise: Exercise; label: 
       <header className="exercise-head">
         <h3 id={`${exercise.id}-t`}>
           <span className="exercise-type">
-            Tipo {TYPE_LETTER[exercise.type]} · {TYPE_LABEL[exercise.type]}
+            Type {TYPE_LETTER[exercise.type]} · {TYPE_LABEL[exercise.type]}
           </span>
         </h3>
         <div className="row">
-          <Badge tone={auto ? 'accent' : 'neutral'}>{auto ? 'Calificación automática' : 'Autoevaluación con rúbrica'}</Badge>
-          {last && <Badge tone={RESULT_TONE[last.result]}>Último intento: {RESULT_LABEL[last.result]}</Badge>}
-          {attempts.length > 0 && <span className="muted small">{attempts.length} intento{attempts.length === 1 ? '' : 's'}</span>}
+          <Badge tone={auto ? 'accent' : 'neutral'}>{auto ? 'Auto-graded' : 'Self-assessed with a rubric'}</Badge>
+          {last && <Badge tone={RESULT_TONE[last.result]}>Last attempt: {RESULT_LABEL[last.result]}</Badge>}
+          {attempts.length > 0 && <span className="muted small">{attempts.length} attempt{attempts.length === 1 ? '' : 's'}</span>}
         </div>
       </header>
       <Markdown text={exercise.prompt} />
@@ -57,16 +57,16 @@ export function ExerciseBlock({ exercise, label }: { exercise: Exercise; label: 
       {exercise.hints.length > 0 && <Hints hints={exercise.hints} />}
       <div className="solution">
         <Reveal
-          label="Mostrar solución explicada"
-          confirmText={attempts.length === 0 ? 'Todavía no registras un intento. ¿Quieres ver la solución de todos modos?' : undefined}
+          label="Show the worked solution"
+          confirmText={attempts.length === 0 ? 'You haven’t tried this one yet. See the solution anyway?' : undefined}
         >
-          <h4>Solución</h4>
+          <h4>Solution</h4>
           <Markdown text={exercise.solution} />
         </Reveal>
       </div>
       <details className="exercise-notes">
-        <summary>Notas de este ejercicio</summary>
-        <NotesPanel type="ejercicio" id={exercise.id} title="Notas del ejercicio" />
+        <summary>Notes on this exercise</summary>
+        <NotesPanel type="ejercicio" id={exercise.id} title="Exercise notes" />
       </details>
     </section>
   )
@@ -76,51 +76,51 @@ type RecordFn = (result: AttemptResult, score: number, grading: 'automatica' | '
 
 function Body({ exercise: e, record, attempted }: { exercise: Exercise; record: RecordFn; attempted: boolean }) {
   switch (e.type) {
-    case 'comprension':
+    case 'comprehension':
       return <Choices choices={e.choices} multiple={e.multiple} record={record} />
-    case 'prediccion':
+    case 'prediction':
       return <Prediction code={e.code} lang={e.lang} output={e.output} accept={e.accept} record={record} />
-    case 'completar':
+    case 'fill-in':
       return <Blanks code={e.code} blanks={e.blanks} record={record} />
-    case 'errores':
+    case 'find-errors':
       return (
         <>
-          <CodeView code={e.code} label="Código con problemas" />
-          <Choices choices={e.choices} multiple record={record} prompt="Selecciona todos los problemas reales:" />
-          <SelfGraded id={e.id} starter={e.code} rubric={e.rubric} record={record} editorLabel="Escribe la versión corregida" attempted={attempted} />
+          <CodeView code={e.code} label="Code with problems" />
+          <Choices choices={e.choices} multiple record={record} prompt="Select every real problem:" />
+          <SelfGraded id={e.id} starter={e.code} rubric={e.rubric} record={record} editorLabel="Write the fixed version" attempted={attempted} />
         </>
       )
-    case 'resolver':
+    case 'solve':
       return (
         <>
-          <SelfGraded id={e.id} starter={e.starter} rubric={e.rubric} record={record} editorLabel="Tu solución en Swift" attempted={attempted} />
+          <SelfGraded id={e.id} starter={e.starter} rubric={e.rubric} record={record} editorLabel="Your Swift solution" attempted={attempted} />
           {e.tests && (
             <details className="tests">
-              <summary>Pruebas para ejecutar en Xcode o con swift test</summary>
+              <summary>Tests to run in Xcode or with swift test</summary>
               <CodeView code={e.tests} label="Swift Testing" />
               <p className="muted small">
-                El navegador no compila Swift. Copia tu solución y estas pruebas a un Swift Package (por ejemplo en <code>swift/</code> del repositorio) y ejecuta <code>swift test</code>.
+                The browser can’t compile Swift. Copy your solution and these tests into a Swift package (the repository’s <code>swift/</code> folder works) and run <code>swift test</code>.
               </p>
             </details>
           )}
         </>
       )
-    case 'explicar':
+    case 'explain':
       return (
         <>
           <CodeView code={e.code} />
-          <SelfGraded id={e.id} starter="" rubric={e.rubric} record={record} editorLabel="Tu explicación" language="text" attempted={attempted} />
+          <SelfGraded id={e.id} starter="" rubric={e.rubric} record={record} editorLabel="Your explanation" language="text" attempted={attempted} />
         </>
       )
-    case 'refactorizar':
+    case 'refactor':
       return (
         <>
-          <CodeView code={e.code} label="Código original" />
-          <SelfGraded id={e.id} starter={e.code} rubric={e.rubric} record={record} editorLabel="Tu versión refactorizada" attempted={attempted} />
+          <CodeView code={e.code} label="Original code" />
+          <SelfGraded id={e.id} starter={e.code} rubric={e.rubric} record={record} editorLabel="Your refactored version" attempted={attempted} />
         </>
       )
-    case 'diseno':
-      return <SelfGraded id={e.id} starter="" rubric={e.rubric} record={record} editorLabel="Tu diseño" language="text" attempted={attempted} />
+    case 'design':
+      return <SelfGraded id={e.id} starter="" rubric={e.rubric} record={record} editorLabel="Your design" language="text" attempted={attempted} />
   }
 }
 
@@ -158,7 +158,7 @@ function Choices({ choices, multiple, record, prompt }: { choices: { text: strin
             void record(ok ? 'correcto' : 'incorrecto', ok ? 1 : 0, 'automatica', JSON.stringify(selected))
           }}
         >
-          Comprobar respuesta
+          Check answer
         </button>
         {checked !== null && <Verdict ok={checked} />}
       </div>
@@ -169,7 +169,7 @@ function Choices({ choices, multiple, record, prompt }: { choices: { text: strin
 function Verdict({ ok }: { ok: boolean }) {
   return (
     <span className={`verdict ${ok ? 'ok' : 'bad'}`} role="status">
-      {ok ? 'Correcto.' : 'No es correcto. Revisa las explicaciones e inténtalo de nuevo.'}
+      {ok ? 'Correct.' : 'Not quite. Read the explanations and try again.'}
     </span>
   )
 }
@@ -183,8 +183,8 @@ function Prediction({ code, lang, output, accept, record }: { code: string; lang
       <label className="field">
         <span>
           {lang === 'pseudo'
-            ? '¿Qué muestra este algoritmo? Escribe la salida exacta, una línea por cada «Muestra».'
-            : '¿Qué imprime este programa? Escribe la salida exacta, una línea por cada print.'}
+            ? 'What does this algorithm print? Write the exact output, one line per Print.'
+            : 'What does this program print? Write the exact output, one line per print.'}
         </span>
         <textarea className="mono" rows={Math.max(3, output.split('\n').length + 1)} value={answer} onChange={(e) => { setAnswer(e.target.value); setChecked(null) }} spellCheck={false} />
       </label>
@@ -199,13 +199,13 @@ function Prediction({ code, lang, output, accept, record }: { code: string; lang
             void record(ok ? 'correcto' : 'incorrecto', ok ? 1 : 0, 'automatica', answer)
           }}
         >
-          Comprobar salida
+          Check output
         </button>
         {checked !== null && <Verdict ok={checked} />}
       </div>
       {checked === false && (
-        <Reveal label="Ver la salida esperada">
-          <CodeView code={output} lang="output" label="Salida esperada" />
+        <Reveal label="Show the expected output">
+          <CodeView code={output} lang="output" label="Expected output" />
         </Reveal>
       )}
     </div>
@@ -227,7 +227,7 @@ function Blanks({ code, blanks, record }: { code: string; blanks: { id: string; 
               <input
                 key={i}
                 className={`blank ${result ? (result[p.id] ? 'is-correct' : 'is-wrong') : ''}`}
-                aria-label={`Hueco ${p.id}`}
+                aria-label={`Blank ${p.id}`}
                 size={Math.max(4, (values[p.id] ?? '').length + 1)}
                 value={values[p.id] ?? ''}
                 spellCheck={false}
@@ -250,7 +250,7 @@ function Blanks({ code, blanks, record }: { code: string; blanks: { id: string; 
             void record(score === 1 ? 'correcto' : score > 0 ? 'parcial' : 'incorrecto', score, 'automatica', JSON.stringify(values))
           }}
         >
-          Comprobar huecos
+          Check blanks
         </button>
         {result && <Verdict ok={Object.values(result).every(Boolean)} />}
       </div>
@@ -278,12 +278,12 @@ function SelfGraded({ id, starter, rubric, record, editorLabel, language = 'swif
       <p className="field-label">{editorLabel}</p>
       <CodeEditor value={value} onChange={onChange} language={language} label={editorLabel} />
       <p className="muted small">
-        Se guarda automáticamente en este navegador{draft ? ` (último guardado: ${new Date(draft.updatedAt).toLocaleTimeString('es-MX', { timeStyle: 'short' })})` : ''}.
-        {language === 'swift' && ' El navegador no ejecuta Swift: compila y prueba en Xcode.'}
+        Saved automatically in this browser{draft ? ` (last saved ${new Date(draft.updatedAt).toLocaleTimeString('en-US', { timeStyle: 'short' })})` : ''}.
+        {language === 'swift' && ' The browser can’t run Swift: build and test it in Xcode.'}
       </p>
       <Rubric
         items={rubric}
-        submitLabel={attempted ? 'Registrar nueva autoevaluación' : 'Registrar autoevaluación'}
+        submitLabel={attempted ? 'Record a new self-assessment' : 'Record self-assessment'}
         onSubmit={(score) => {
           setGraded(score)
           void record(scoreToResult(score), score, 'autoevaluacion', value)
@@ -291,7 +291,7 @@ function SelfGraded({ id, starter, rubric, record, editorLabel, language = 'swif
       />
       {graded !== null && (
         <p className="verdict" role="status">
-          Autoevaluación registrada: {Math.round(graded * 100)}% de los criterios. {graded < 1 && 'El ejercicio queda en tu repaso.'}
+          Self-assessment recorded: {Math.round(graded * 100)}% of the criteria. {graded < 1 && 'This exercise stays in your review queue.'}
         </p>
       )}
     </div>
@@ -304,13 +304,13 @@ function Hints({ hints }: { hints: string[] }) {
     <div className="hints">
       {hints.slice(0, shown).map((h, i) => (
         <div key={i} className="hint">
-          <p className="hint-label">Pista {i + 1}</p>
+          <p className="hint-label">Hint {i + 1}</p>
           <Markdown text={h} />
         </div>
       ))}
       {shown < hints.length && (
         <button type="button" className="btn btn-quiet" onClick={() => setShown((n) => n + 1)}>
-          {shown === 0 ? 'Ver una pista' : 'Ver otra pista'} ({shown}/{hints.length})
+          {shown === 0 ? 'Show a hint' : 'Show another hint'} ({shown}/{hints.length})
         </button>
       )}
     </div>

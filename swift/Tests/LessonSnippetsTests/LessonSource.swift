@@ -1,28 +1,28 @@
 import Foundation
 
-/// Lee las lecciones de `content/lessons/` y extrae los fragmentos Swift que deben ejecutarse.
+/// Reads the lessons in `content/lessons/` and pulls out the Swift code that has to run.
 ///
-/// Reglas (documentadas en docs/CONTENIDO.md):
-/// - Todo ejercicio `prediccion` de cualquier lección: su `code` se compila y ejecuta, y la salida
-///   debe ser exactamente `output`.
-/// - En lecciones con `codeStatus: probado`, además, cada bloque ```swift del texto y de las
-///   soluciones de los ejercicios:
-///   - ```swift                    → debe compilar y ejecutarse sin fallar. Si el siguiente bloque
-///                                   cercado es ```output, la salida debe coincidir exactamente.
-///   - ```swift no-compila <texto> → debe fallar al compilar y el diagnóstico debe contener <texto>.
-///   - ```swift advertencia <texto> → debe compilar con una advertencia que contenga <texto> y
-///                                    ejecutarse sin fallar (con ```output, se compara la salida).
-///   - ```swift falla-en-ejecucion <texto> → debe compilar, terminar con error en ejecución y
-///                                    escribir <texto> en stderr (con ```output, se compara stdout).
-///   - ```swift ilustrativo        → no se ejecuta (fragmentos que dependen de otro contexto,
-///                                   código de Apple que no compila fuera de Xcode, etc.).
+/// Rules (documented in docs/CONTENT.md):
+/// - Every `prediction` exercise in any lesson: its `code` is compiled and run, and what it prints
+///   must be exactly `output`.
+/// - In lessons with `codeStatus: tested`, also every ```swift block in the prose and in exercise
+///   solutions:
+///   - ```swift                    → must compile and run cleanly. If the next fenced block is
+///                                   ```output, what it prints must match exactly.
+///   - ```swift no-compile <text>  → must fail to compile with a diagnostic containing <text>.
+///   - ```swift warning <text>     → must compile with a warning containing <text> and run cleanly
+///                                   (with ```output, the output is compared).
+///   - ```swift runtime-error <text> → must compile, stop with a runtime error and
+///                                   write <text> to stderr (with ```output, stdout is compared).
+///   - ```swift illustrative       → not run (code that depends on another block, Apple
+///                                   frameworks that don't build outside Xcode, and so on).
 struct Snippet: Sendable, CustomStringConvertible {
     enum Expectation: Sendable, Equatable {
         case runs(output: String?, warning: String? = nil)
         case failsToCompile(containing: String)
         case crashes(containing: String, output: String?)
-        /// Ejercicio de predicción: debe compilar y su salida estándar debe ser exactamente esta.
-        /// Puede terminar con un error en ejecución si el ejercicio trata de eso.
+        /// Prediction exercise: must compile and its standard output must be exactly this.
+        /// It may stop with a runtime error if that's what the exercise is about.
         case prints(String)
     }
 
@@ -46,7 +46,7 @@ enum LessonSource {
         .deletingLastPathComponent() // LessonSnippetsTests
         .deletingLastPathComponent() // Tests
         .deletingLastPathComponent() // swift
-        .deletingLastPathComponent() // raíz
+        .deletingLastPathComponent() // repository root
 
     static func lessonFiles() throws -> [LessonFile] {
         let dir = repoRoot.appendingPathComponent("content/lessons")
@@ -83,39 +83,39 @@ enum LessonSource {
     static func predictionSnippets() throws -> [Snippet] {
         try lessonFiles().flatMap { lesson in
             try exercises(in: lesson).compactMap { ex -> Snippet? in
-                guard ex.fields["type"] == "prediccion" else { return nil }
+                guard ex.fields["type"] == "prediction" else { return nil }
                 guard let code = ex.blocks["code"], let output = ex.blocks["output"] else {
                     throw SnippetError.format("\(lesson.path) \(ex.id): code y output deben ser bloques `|`")
                 }
                 if ex.fields["lang"] == "pseudo" {
-                    // El pseudocódigo no se ejecuta: se ejecuta su traducción a Swift de la solución.
+                    // Pseudocode can't run, so run the Swift translation from the solution instead.
                     guard let swift = fences(in: ex.blocks["solution"] ?? "").first(where: { $0.info == "swift" }) else {
-                        throw SnippetError.format("\(lesson.path) \(ex.id): falta la traducción a Swift en la solución")
+                        throw SnippetError.format("\(lesson.path) \(ex.id): the solution is missing its Swift translation")
                     }
-                    return Snippet(lesson: lesson.id, location: "\(ex.id) (predicción, traducción a Swift)", code: swift.content, expectation: .prints(output))
+                    return Snippet(lesson: lesson.id, location: "\(ex.id) (prediction, Swift translation)", code: swift.content, expectation: .prints(output))
                 }
-                return Snippet(lesson: lesson.id, location: "\(ex.id) (predicción)", code: code, expectation: .prints(output))
+                return Snippet(lesson: lesson.id, location: "\(ex.id) (prediction)", code: code, expectation: .prints(output))
             }
         }
     }
 
-    /// Bloques de salida dentro de la solución de un ejercicio de predicción: deben repetir `output`.
+    /// Output blocks inside a prediction solution, which must repeat `output`.
     static func predictionSolutionOutputs() throws -> [(id: String, output: String, inSolution: String)] {
         try lessonFiles().flatMap { lesson in
             try exercises(in: lesson).flatMap { ex -> [(id: String, output: String, inSolution: String)] in
-                guard ex.fields["type"] == "prediccion", let output = ex.blocks["output"], let sol = ex.blocks["solution"] else { return [] }
+                guard ex.fields["type"] == "prediction", let output = ex.blocks["output"], let sol = ex.blocks["solution"] else { return [] }
                 return fences(in: sol).filter { $0.info == "output" }.map { (ex.id, output, $0.content) }
             }
         }
     }
 
     static func proseSnippets() throws -> [Snippet] {
-        try lessonFiles().filter { $0.codeStatus == "probado" }.flatMap { lesson -> [Snippet] in
+        try lessonFiles().filter { $0.codeStatus == "tested" }.flatMap { lesson -> [Snippet] in
             let (prose, exs) = splitExercises(lesson.body)
-            var result = snippets(fromMarkdown: prose, lesson: lesson.id, prefix: "texto")
+            var result = snippets(fromMarkdown: prose, lesson: lesson.id, prefix: "prose")
             for ex in try exs.map(parseExercise) {
                 if let sol = ex.blocks["solution"] {
-                    result += snippets(fromMarkdown: sol, lesson: lesson.id, prefix: "\(ex.id) solución")
+                    result += snippets(fromMarkdown: sol, lesson: lesson.id, prefix: "\(ex.id) solution")
                 }
             }
             return result
@@ -129,10 +129,10 @@ enum LessonSource {
             let words = f.info.split(separator: " ", maxSplits: 1).map(String.init)
             guard words.first == "swift" else { continue }
             let modifier = words.count > 1 ? words[1] : ""
-            let location = "\(prefix), bloque Swift en la línea \(f.line)"
-            if modifier == "ilustrativo" { continue }
-            if modifier.hasPrefix("no-compila") {
-                let expected = modifier.dropFirst("no-compila".count).trimmingCharacters(in: .whitespaces)
+            let location = "\(prefix), Swift block at line \(f.line)"
+            if modifier == "illustrative" { continue }
+            if modifier.hasPrefix("no-compile") {
+                let expected = modifier.dropFirst("no-compile".count).trimmingCharacters(in: .whitespaces)
                 result.append(Snippet(lesson: lesson, location: location, code: f.content, expectation: .failsToCompile(containing: expected)))
                 continue
             }
@@ -142,15 +142,15 @@ enum LessonSource {
                 modifier.dropFirst(prefix.count).trimmingCharacters(in: .whitespaces)
             }
             let expectation: Snippet.Expectation
-            if modifier.hasPrefix("advertencia") {
-                expectation = .runs(output: output, warning: rest("advertencia"))
-            } else if modifier.hasPrefix("falla-en-ejecucion") {
-                expectation = .crashes(containing: rest("falla-en-ejecucion"), output: output)
+            if modifier.hasPrefix("warning") {
+                expectation = .runs(output: output, warning: rest("warning"))
+            } else if modifier.hasPrefix("runtime-error") {
+                expectation = .crashes(containing: rest("runtime-error"), output: output)
             } else if modifier.isEmpty {
                 expectation = .runs(output: output)
             } else {
-                // Un modificador desconocido es un error de escritura en la lección: que la prueba lo diga.
-                expectation = .failsToCompile(containing: "modificador desconocido «\(modifier)»")
+                // An unknown marker is a typo in the lesson, so make the test say so.
+                expectation = .failsToCompile(containing: "unknown block marker \"\(modifier)\"")
             }
             result.append(Snippet(lesson: lesson, location: location, code: f.content, expectation: expectation))
         }
@@ -182,7 +182,7 @@ enum LessonSource {
         return result
     }
 
-    /// Separa la prosa de los bloques ````exercise.
+    /// Splits the prose from the ````exercise blocks.
     static func splitExercises(_ body: String) -> (prose: String, exercises: [String]) {
         var prose: [String] = []
         var exercises: [String] = []
@@ -202,12 +202,12 @@ enum LessonSource {
         return (prose.joined(separator: "\n"), exercises)
     }
 
-    // MARK: YAML mínimo de los ejercicios
+    // MARK: Minimal YAML for exercises
 
     struct ParsedExercise {
         var id: String { fields["id"] ?? "sin id" }
         var fields: [String: String] = [:]
-        /// Valores escritos como bloque literal `|` o `|-`, ya sin sangría.
+        /// Values written as `|` or `|-` literal blocks, with the indentation removed.
         var blocks: [String: String] = [:]
     }
 
@@ -215,8 +215,8 @@ enum LessonSource {
         try splitExercises(lesson.body).exercises.map(parseExercise)
     }
 
-    /// Lee solo las claves de primer nivel. Los bloques literales siguen las reglas de YAML:
-    /// la sangría la fija la primera línea no vacía; `|` deja un único salto final y `|-` ninguno.
+    /// Reads top-level keys only. Literal blocks follow YAML's rules: the first non-empty line sets
+    /// the indentation; `|` keeps a single trailing newline and `|-` keeps none.
     static func parseExercise(_ yaml: String) throws -> ParsedExercise {
         var ex = ParsedExercise()
         let lines = yaml.components(separatedBy: "\n")
@@ -228,7 +228,7 @@ enum LessonSource {
                   let colon = line.firstIndex(of: ":") else { continue }
             let key = String(line[..<colon])
             let value = line[line.index(after: colon)...].trimmingCharacters(in: .whitespaces)
-            // Bloque literal: `|`, `|-` y, con indicador de sangría, `|2`, `|2-` o `|-2`.
+            // Literal block: `|`, `|-`, or with an indentation indicator `|2`, `|2-` or `|-2`.
             guard value.first == "|", value.count <= 3,
                   value.dropFirst().allSatisfy({ $0 == "-" || $0.isNumber }) else {
                 ex.fields[key] = value.trimmingCharacters(in: CharacterSet(charactersIn: "\"'"))

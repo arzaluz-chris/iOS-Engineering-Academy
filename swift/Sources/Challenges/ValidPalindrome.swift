@@ -1,8 +1,8 @@
-/// Indica si `s` es un palíndromo considerando solo letras y dígitos, sin distinguir mayúsculas.
+/// Returns whether `s` is a palindrome, counting only letters and digits and ignoring case.
 ///
-/// Dos índices avanzan desde los extremos hacia el centro, saltando lo que no es letra ni dígito.
-/// Tiempo O(n); espacio O(n) por la copia en `Array` (indexar `String` directamente
-/// por posición entera no es O(1) en Swift).
+/// Two indices move from the ends toward the middle, skipping anything that isn't a letter or digit.
+/// O(n) time; O(n) space for the `Array` copy (indexing a `String` directly
+/// by integer position isn't O(1) in Swift).
 public func isPalindrome(_ s: String) -> Bool {
     let characters = Array(s.lowercased())
     var left = 0

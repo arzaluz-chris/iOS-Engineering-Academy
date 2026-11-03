@@ -1,668 +1,668 @@
-# Mapa del curso. Cada módulo declara sus prerrequisitos (deben ir antes en la numeración).
-# Las lecciones viven en content/lessons/<módulo>/ y referencian el id del módulo.
+# Course map. Each module declares its prerequisites (they must come earlier in the numbering).
+# Lessons live in content/lessons/<module>/ and reference the module id.
 
 stages:
   - id: s01
     number: 1
-    title: Fundamentos de programación
-    summary: Qué es programar, cómo pensar un problema antes de escribir código y cómo es el entorno donde vas a trabajar.
-    outcome: describes cómo se convierte un programa en algo que ejecuta la computadora y resuelves problemas simples con pseudocódigo.
+    title: Programming Fundamentals
+    summary: What programming is, how to think through a problem before writing code, and what the environment you'll work in looks like.
+    outcome: you can describe how a program becomes something the computer runs, and you solve simple problems in pseudocode.
   - id: s02
     number: 2
-    title: Swift esencial
-    summary: Valores, tipos, decisiones, repetición, funciones, colecciones y optionals. La base sobre la que se apoya todo lo demás.
-    outcome: escribes programas de consola correctos en Swift y lees los errores del compilador sin miedo.
+    title: Swift Essentials
+    summary: Values, types, decisions, repetition, functions, collections and optionals. Everything else is built on this.
+    outcome: you write correct console programs in Swift and read compiler errors without fear.
   - id: s03
     number: 3
-    title: Swift intermedio y avanzado
-    summary: Modelar datos con struct, class y enum; protocolos, generics, closures, errores y la memoria con ARC.
-    outcome: eliges el tipo adecuado para cada modelo, diseñas APIs con protocolos y genéricos y evitas ciclos de retención.
+    title: Intermediate and Advanced Swift
+    summary: Modeling data with struct, class and enum; protocols, generics, closures, errors, and memory with ARC.
+    outcome: you pick the right type for each model, design APIs with protocols and generics, and avoid retain cycles.
   - id: s04
     number: 4
-    title: Herramientas e ingeniería de software
-    summary: Swift Package Manager, Git, revisión de código y principios de diseño aplicados a Swift.
-    outcome: trabajas en un repositorio con ramas y pull requests, organizas código en módulos y justificas decisiones de diseño.
+    title: Tools and Software Engineering
+    summary: Swift Package Manager, Git, code review, and design principles applied to Swift.
+    outcome: you work in a repository with branches and pull requests, organize code into modules, and justify design decisions.
   - id: s05
     number: 5
-    title: Algoritmos y estructuras de datos
-    summary: Complejidad y los patrones que más aparecen en entrevistas, implementados y probados en Swift.
-    outcome: reconoces el patrón de un problema a partir del enunciado, lo resuelves en Swift y defiendes su complejidad.
+    title: Algorithms and Data Structures
+    summary: Complexity and the patterns that come up most in interviews, implemented and tested in Swift.
+    outcome: you recognize a problem's pattern from its statement, solve it in Swift, and defend its complexity.
   - id: s06
     number: 6
-    title: Fundamentos del desarrollo iOS
-    summary: Cómo vive una app en iOS antes de dibujar la primera pantalla. Qué pertenece al lenguaje y qué al sistema.
-    outcome: explicas el ciclo de vida de una app y de sus escenas, y configuras firma, targets y entornos.
+    title: iOS Development Fundamentals
+    summary: How an app lives on iOS before you draw the first screen. What belongs to the language and what belongs to the system.
+    outcome: you explain the life cycle of an app and its scenes, and you set up signing, targets and environments.
   - id: s07
     number: 7
-    title: UIKit de cero a avanzado
-    summary: El framework de interfaz con el que se construyó y se mantiene la mayoría de las apps en producción.
-    outcome: construyes y mantienes interfaces UIKit complejas, programáticas o con Storyboards, con listas modernas y navegación.
+    title: UIKit from Zero to Advanced
+    summary: The UI framework that most production apps were built with and are still maintained in.
+    outcome: you build and maintain complex UIKit interfaces, in code or with Storyboards, with modern lists and navigation.
   - id: s08
     number: 8
-    title: Concurrencia y memoria
-    summary: Hilos, colas y Swift Concurrency con el modelo de aislamiento estricto de Swift 6.
-    outcome: escribes código asíncrono libre de data races y migras APIs basadas en callbacks a async/await.
+    title: Concurrency and Memory
+    summary: Threads, queues, and Swift Concurrency under Swift 6's strict isolation model.
+    outcome: you write asynchronous code free of data races and migrate callback-based APIs to async/await.
   - id: s09
     number: 9
-    title: Datos, arquitectura y testing en iOS
-    summary: Networking, persistencia, arquitectura de pantallas y servicios, y pruebas automatizadas.
-    outcome: construyes una capa de datos testeable, eliges una arquitectura por sus trade-offs y la cubres con pruebas.
+    title: Data, Architecture and Testing on iOS
+    summary: Networking, persistence, screen and service architecture, and automated tests.
+    outcome: you build a testable data layer, choose an architecture by its trade-offs, and cover it with tests.
   - id: s10
     number: 10
-    title: SwiftUI de cero a producción
-    summary: El modelo declarativo, el flujo de estado con Observation y la arquitectura de apps SwiftUI reales.
-    outcome: construyes apps SwiftUI con estado bien ubicado, navegación por valores y datos remotos y locales.
+    title: SwiftUI from Zero to Production
+    summary: The declarative model, state flow with Observation, and the architecture of real SwiftUI apps.
+    outcome: you build SwiftUI apps with well-placed state, value-based navigation, and remote and local data.
   - id: s11
     number: 11
-    title: Integración UIKit y SwiftUI
-    summary: Apps híbridas, que son la norma en empresas con código existente.
-    outcome: integras vistas SwiftUI en UIKit y componentes UIKit en SwiftUI con ciclos de vida bien gestionados.
+    title: UIKit and SwiftUI Integration
+    summary: Hybrid apps, which are the norm at companies with an existing codebase.
+    outcome: you embed SwiftUI views in UIKit and UIKit components in SwiftUI, with their life cycles handled correctly.
   - id: s12
     number: 12
-    title: Calidad profesional y seguridad
-    summary: Lo que separa una app que funciona de una lista para producción, incluida la seguridad exigida en banca.
-    outcome: preparas una app para distribución, la proteges según OWASP MASVS y mides rendimiento y accesibilidad.
+    title: Professional Quality and Security
+    summary: What separates an app that works from one that's ready for production, including the security banks require.
+    outcome: you prepare an app for distribution, protect it according to OWASP MASVS, and measure performance and accessibility.
   - id: s13
     number: 13
-    title: Tecnologías del sistema (rutas opcionales)
-    summary: Frameworks de Apple que se estudian según el producto. No son requisito para avanzar.
-    outcome: integras widgets, Live Activities, notificaciones y otros frameworks con sus permisos y entitlements.
+    title: System Technologies (Optional Tracks)
+    summary: Apple frameworks you study depending on the product. You don't need them to move forward.
+    outcome: you integrate widgets, Live Activities, notifications and other frameworks with their permissions and entitlements.
   - id: s14
     number: 14
-    title: Entrevistas técnicas de iOS
-    summary: Método de resolución en voz alta, banco de preguntas, simulaciones y mobile system design.
-    outcome: resuelves retos de nivel medio en tiempo de entrevista y defiendes decisiones técnicas ante seguimientos.
+    title: iOS Technical Interviews
+    summary: A method for solving problems out loud, a question bank, mock interviews, and mobile system design.
+    outcome: you solve medium-level challenges within interview time and defend technical decisions under follow-up questions.
   - id: s15
     number: 15
-    title: Ejercer como iOS Engineer
-    summary: Proyecto final y hábitos del trabajo profesional en un equipo.
-    outcome: entregas un proyecto completo documentado y te desenvuelves en código heredado, revisiones e incidentes.
+    title: Working as an iOS Engineer
+    summary: A final project and the habits of professional work on a team.
+    outcome: you deliver a complete, documented project and hold your own with legacy code, reviews and incidents.
 
 modules:
-  # ---------------- Etapa 1 ----------------
+  # ---------------- Stage 1 ----------------
   - id: m01
     stage: s01
     number: 1
-    title: Introducción a la programación
-    summary: Qué es un programa, qué hace un compilador y cómo se relacionan Swift, Xcode e iOS.
+    title: Introduction to Programming
+    summary: What a program is, what a compiler does, and how Swift, Xcode and iOS fit together.
     objectives:
-      - Explicar qué es un algoritmo y qué hace a uno correcto.
-      - Describir el camino del código fuente al código máquina y el papel del compilador y del runtime.
-      - Distinguir aplicación, sistema operativo, frontend y backend.
-      - Describir el ciclo de desarrollo de una app iOS.
-    topics: [Qué es programar, Qué es un algoritmo, Cómo se ejecuta un programa, Lenguajes compilados e interpretados, Código fuente y código máquina, Compilador, Runtime, IDE, Terminal, Aplicación, Frontend backend y sistema operativo, Swift Xcode e iOS, Ciclo de desarrollo]
+      - Explain what an algorithm is and what makes one correct.
+      - Describe the path from source code to machine code and the roles of the compiler and the runtime.
+      - Tell apart an application, the operating system, the frontend and the backend.
+      - Describe the development cycle of an iOS app.
+    topics: [What programming is, What an algorithm is, How a program runs, Compiled and interpreted languages, Source code and machine code, Compiler, Runtime, IDE, Terminal, Application, Frontend backend and operating system, Swift Xcode and iOS, Development cycle]
   - id: m02
     stage: s01
     number: 2
-    title: Pensamiento computacional
-    summary: Herramientas para pensar un problema antes de escribir una sola línea de código.
+    title: Computational Thinking
+    summary: Tools for thinking through a problem before you write a single line of code.
     prerequisites: [m01]
     objectives:
-      - Descomponer un problema en pasos pequeños y verificables.
-      - Escribir pseudocódigo y diagramas de flujo para un algoritmo.
-      - Ejecutar un algoritmo a mano con una tabla de seguimiento.
-      - Identificar casos límite antes de programar.
-    topics: [Descomposición, Reconocimiento de patrones, Abstracción, Diseño de algoritmos, Pseudocódigo, Diagramas de flujo, Tablas de seguimiento, Descomposición en funciones, Ejecución manual, Casos límite]
+      - Break a problem into small, checkable steps.
+      - Write pseudocode and flowcharts for an algorithm.
+      - Run an algorithm by hand with a trace table.
+      - Identify edge cases before you start coding.
+    topics: [Decomposition, Pattern recognition, Abstraction, Algorithm design, Pseudocode, Flowcharts, Trace tables, Breaking a problem into functions, Running by hand, Edge cases]
   - id: m03
     stage: s01
     number: 3
-    title: Entorno de desarrollo
-    summary: Instalar y usar Xcode, ejecutar código, depurar y leer los mensajes del compilador.
+    title: Development Environment
+    summary: Installing and using Xcode, running code, debugging, and reading compiler messages.
     prerequisites: [m01]
     objectives:
-      - Crear y ejecutar un proyecto en Xcode y un Swift Package desde la terminal.
-      - Usar breakpoints y la consola para inspeccionar un programa.
-      - Distinguir errores de compilación, errores de ejecución y advertencias.
-      - Encontrar una API en la documentación oficial.
-    topics: [Xcode, Organización de proyectos, Archivos fuente, Compilación y ejecución, Simuladores, Consola, Breakpoints, Variables de depuración, Errores de compilación, Errores de ejecución, Advertencias, Mensajes del compilador, Documentación]
+      - Create and run a project in Xcode and a Swift package from the terminal.
+      - Use breakpoints and the console to inspect a program.
+      - Tell apart compile errors, runtime errors and warnings.
+      - Find an API in the official documentation.
+    topics: [Xcode, Project organization, Source files, Building and running, Simulators, Console, Breakpoints, Debug variables, Compile errors, Runtime errors, Warnings, Compiler messages, Documentation]
 
-  # ---------------- Etapa 2 ----------------
+  # ---------------- Stage 2 ----------------
   - id: m04
     stage: s02
     number: 4
-    title: Primeros programas
-    summary: Valores, operadores, variables, constantes y tipos. Tus primeras líneas de Swift.
+    title: First Programs
+    summary: Values, operators, variables, constants and types. Your first lines of Swift.
     prerequisites: [m03]
     objectives:
-      - Escribir y predecir la salida de programas con print e interpolación.
-      - Usar let y var correctamente y explicar la inferencia de tipos.
-      - Evaluar expresiones con precedencia de operadores.
-      - Convertir entre tipos numéricos y texto de forma explícita.
-    topics: [print, Comentarios, Literales, Expresiones, Operadores aritméticos, Operadores de comparación, Operadores lógicos, Precedencia, Variables, Constantes, Tipos de datos, Inferencia de tipos, Anotaciones de tipos, Conversión de tipos, Interpolación]
+      - Write programs with print and interpolation, and predict their output.
+      - Use let and var correctly and explain type inference.
+      - Evaluate expressions using operator precedence.
+      - Convert explicitly between numeric types and text.
+    topics: [print, Comments, Literals, Expressions, Arithmetic operators, Comparison operators, Logical operators, Precedence, Variables, Constants, Data types, Type inference, Type annotations, Type conversion, Interpolation]
   - id: m05
     stage: s02
     number: 5
-    title: Control del flujo
-    summary: Tomar decisiones y repetir trabajo sin perder el control del programa.
+    title: Control Flow
+    summary: Making decisions and repeating work without losing control of the program.
     prerequisites: [m04]
     objectives:
-      - Elegir entre if, switch y guard según el problema.
-      - Escribir ciclos for-in, while y repeat-while que terminan.
-      - Usar break y continue con intención.
-      - Validar entradas antes de usarlas.
-    topics: [if, else, else if, switch, for-in, while, repeat-while, break, continue, Bucles anidados, Condiciones compuestas, Validación de entradas, Errores comunes con ciclos]
+      - Choose between if, switch and guard based on the problem.
+      - Write for-in, while and repeat-while loops that terminate.
+      - Use break and continue on purpose.
+      - Validate input before you use it.
+    topics: [if, else, else if, switch, for-in, while, repeat-while, break, continue, Nested loops, Compound conditions, Input validation, Common loop mistakes]
   - id: m06
     stage: s02
     number: 6
-    title: Funciones
-    summary: Nombrar un procedimiento, recibir datos y devolver resultados. La herramienta principal para descomponer problemas.
+    title: Functions
+    summary: Naming a procedure, taking in data and returning results. Your main tool for breaking problems apart.
     prerequisites: [m05]
     objectives:
-      - Declarar funciones con parámetros, etiquetas y valores de retorno.
-      - Explicar el alcance de una variable.
-      - Pasar funciones como argumentos.
-      - Escribir funciones recursivas con caso base.
-    topics: [Declaración, Parámetros, Argumentos, Valores de retorno, Funciones sin retorno, Etiquetas externas e internas, Valores predeterminados, Tuplas como retorno, Funciones que reciben funciones, Alcance, Recursión, Funciones puras]
+      - Declare functions with parameters, argument labels and return values.
+      - Explain the scope of a variable.
+      - Pass functions as arguments.
+      - Write recursive functions with a base case.
+    topics: [Declaration, Parameters, Arguments, Return values, Functions without a return value, Argument labels and parameter names, Default values, Tuples as return values, Functions that take functions, Scope, Recursion, Pure functions]
   - id: m07
     stage: s02
     number: 7
-    title: Colecciones
-    summary: Array, Set y Dictionary, y las transformaciones que se usan a diario y en entrevistas.
+    title: Collections
+    summary: Array, Set and Dictionary, and the transformations you use every day and in interviews.
     prerequisites: [m06]
     objectives:
-      - Elegir la colección correcta según orden, unicidad y búsqueda.
-      - Acceder a elementos de forma segura.
-      - Transformar colecciones con map, filter, reduce y compañía.
-      - Contar frecuencias y agrupar datos.
-    topics: [Arrays, Sets, Dictionaries, Índices, Inserción y eliminación, Búsqueda, Iteración, Mutabilidad, Copia y modificación, Acceso seguro, map, filter, reduce, compactMap, flatMap, sorted, contains, first(where:), allSatisfy, zip, Colecciones anidadas, Frecuencias, Agrupación]
+      - Pick the right collection based on order, uniqueness and lookup.
+      - Access elements safely.
+      - Transform collections with map, filter, reduce and friends.
+      - Count frequencies and group data.
+    topics: [Arrays, Sets, Dictionaries, Indices, Insertion and removal, Searching, Iteration, Mutability, Copying and modifying, Safe access, map, filter, reduce, compactMap, flatMap, sorted, contains, first(where:), allSatisfy, zip, Nested collections, Frequencies, Grouping]
   - id: m08
     stage: s02
     number: 8
-    title: Optionals y manejo seguro de valores
-    summary: Cómo representa Swift la ausencia de un valor y por qué eso evita una categoría entera de fallos.
+    title: Optionals and Safe Value Handling
+    summary: How Swift represents a missing value and why that rules out a whole category of crashes.
     prerequisites: [m07]
     objectives:
-      - Desempaquetar optionals con if let, guard let y switch.
-      - Usar optional chaining y nil-coalescing.
-      - Justificar cuándo nunca usar force unwrapping.
-      - Diseñar funciones que devuelven optionals.
-    topics: [Por qué existen, Optional, nil, if let, guard let, switch sobre optionals, Optional chaining, Nil-coalescing, Force unwrapping, Optionals anidados, Cuándo devolver nil, Diseño de APIs]
+      - Unwrap optionals with if let, guard let and switch.
+      - Use optional chaining and nil-coalescing.
+      - Justify when never to force unwrap.
+      - Design functions that return optionals.
+    topics: [Why they exist, Optional, nil, if let, guard let, switch on optionals, Optional chaining, Nil-coalescing, Force unwrapping, Nested optionals, When to return nil, API design]
 
-  # ---------------- Etapa 3 ----------------
+  # ---------------- Stage 3 ----------------
   - id: m09
     stage: s03
     number: 9
-    title: Modelado de datos
-    summary: struct, class y enum, sus propiedades, métodos e inicializadores.
+    title: Data Modeling
+    summary: struct, class and enum, with their properties, methods and initializers.
     prerequisites: [m08]
     objectives:
-      - Modelar un dominio con structs y enums.
-      - Escribir inicializadores y propiedades calculadas.
-      - Usar property observers y miembros de tipo.
-      - Modelar estados con associated values y pattern matching.
-    topics: [struct, class, enum, Propiedades almacenadas, Propiedades calculadas, Métodos, Inicializadores, self, mutating, Tipos anidados, Property observers, willSet, didSet, Type properties, Type methods, Raw values, Associated values, Pattern matching]
+      - Model a domain with structs and enums.
+      - Write initializers and computed properties.
+      - Use property observers and type members.
+      - Model states with associated values and pattern matching.
+    topics: [struct, class, enum, Stored properties, Computed properties, Methods, Initializers, self, mutating, Nested types, Property observers, willSet, didSet, Type properties, Type methods, Raw values, Associated values, Pattern matching]
   - id: m10
     stage: s03
     number: 10
-    title: Programación orientada a objetos y protocolos
-    summary: Semántica de valor y de referencia, herencia, composición y diseño orientado a protocolos.
+    title: Object-Oriented Programming and Protocols
+    summary: Value and reference semantics, inheritance, composition, and protocol-oriented design.
     prerequisites: [m09]
     objectives:
-      - Explicar la diferencia entre tipos por valor y por referencia con ejemplos.
-      - Diseñar abstracciones con protocolos y extensiones.
-      - Distinguir any de some.
-      - Elegir entre struct, class y enum con criterios explícitos.
-    topics: [Tipos por valor, Tipos por referencia, Stack y heap como modelo conceptual, Identidad y equivalencia, Herencia, Polimorfismo, Encapsulación, Composición, Protocolos, Extensiones, Protocol extensions, Associated types, Existentials, any, some, Protocol-oriented programming, Dependency inversion]
+      - Explain the difference between value types and reference types with examples.
+      - Design abstractions with protocols and extensions.
+      - Tell any apart from some.
+      - Choose between struct, class and enum with explicit criteria.
+    topics: [Value types, Reference types, Stack and heap as a mental model, Identity and equality, Inheritance, Polymorphism, Encapsulation, Composition, Protocols, Extensions, Protocol extensions, Associated types, Existentials, any, some, Protocol-oriented programming, Dependency inversion]
   - id: m11
     stage: s03
     number: 11
-    title: Generics y programación funcional
-    summary: Código reutilizable con tipos genéricos y funciones como valores.
+    title: Generics and Functional Programming
+    summary: Reusable code with generic types and functions as values.
     prerequisites: [m10]
     objectives:
-      - Escribir funciones y tipos genéricos con restricciones.
-      - Explicar la captura de variables en closures y usar capture lists.
-      - Distinguir closures escapantes de no escapantes.
-      - Decidir entre una solución funcional y una imperativa.
-    topics: [Funciones genéricas, Tipos genéricos, Constraints, where, Associated types, Higher-order functions, Closures, Captura de variables, Capture lists, "@escaping", "@autoclosure", Funciones como valores, Composición]
+      - Write generic functions and types with constraints.
+      - Explain how closures capture variables and use capture lists.
+      - Tell escaping closures apart from non-escaping ones.
+      - Decide between a functional and an imperative solution.
+    topics: [Generic functions, Generic types, Constraints, where, Associated types, Higher-order functions, Closures, Capturing variables, Capture lists, "@escaping", "@autoclosure", Functions as values, Composition]
   - id: m12
     stage: s03
     number: 12
-    title: Manejo de errores
-    summary: Diseñar, lanzar, propagar y manejar errores, incluidos typed throws.
+    title: Error Handling
+    summary: Designing, throwing, propagating and handling errors, including typed throws.
     prerequisites: [m11]
     objectives:
-      - Diseñar tipos de error de dominio.
-      - Elegir entre try, try? y try! con justificación.
-      - Separar errores de dominio de errores de infraestructura.
-    topics: [Error, Enums de error, throw, throws, try, try?, try!, do-catch, Propagación, Typed throws, Errores recuperables, Validación, Errores de dominio e infraestructura]
+      - Design domain error types.
+      - Choose between try, try? and try! and justify the choice.
+      - Keep domain errors separate from infrastructure errors.
+    topics: [Error, Error enums, throw, throws, try, try?, try!, do-catch, Propagation, Typed throws, Recoverable errors, Validation, Domain and infrastructure errors]
   - id: m13
     stage: s03
     number: 13
-    title: Memoria y ARC
-    summary: Quién es dueño de un objeto, cuándo se libera y cómo se fuga.
+    title: Memory and ARC
+    summary: Who owns an object, when it's freed, and how it leaks.
     prerequisites: [m12]
     objectives:
-      - Explicar cómo ARC cuenta referencias fuertes.
-      - Romper ciclos de retención con weak y unowned.
-      - Detectar fugas con el Memory Graph Debugger.
-    topics: [Gestión de memoria, ARC, Ciclo de vida de objetos, strong, weak, unowned, Reference cycles, Captura de self, Memory leaks, Diagnóstico, Propiedad de recursos]
+      - Explain how ARC counts strong references.
+      - Break retain cycles with weak and unowned.
+      - Find leaks with the Memory Graph Debugger.
+    topics: [Memory management, ARC, Object life cycle, strong, weak, unowned, Reference cycles, Capturing self, Memory leaks, Diagnosis, Resource ownership]
 
-  # ---------------- Etapa 4 ----------------
+  # ---------------- Stage 4 ----------------
   - id: m14
     stage: s04
     number: 14
-    title: Herramientas profesionales
-    summary: Paquetes, control de versiones y principios de diseño que usarás todos los días en un equipo.
+    title: Professional Tools
+    summary: Packages, version control, and the design principles you'll use every day on a team.
     prerequisites: [m13]
     objectives:
-      - Crear un Swift Package con varios targets y dependencias.
-      - Trabajar con ramas, merges, conflictos y pull requests.
-      - Revisar código con criterios explícitos.
-      - Aplicar SOLID sin sobrediseñar.
-    topics: [Swift Package Manager, Módulos, Dependencias, Git, Commits, Branches, Merge, Conflictos, Pull requests, .gitignore, Code review, Convenciones de nombres, Refactorización, SOLID, Separación de responsabilidades, Documentación]
+      - Create a Swift package with several targets and dependencies.
+      - Work with branches, merges, conflicts and pull requests.
+      - Review code against explicit criteria.
+      - Apply SOLID without overengineering.
+    topics: [Swift Package Manager, Modules, Dependencies, Git, Commits, Branches, Merge, Conflicts, Pull requests, .gitignore, Code review, Naming conventions, Refactoring, SOLID, Separation of concerns, Documentation]
 
-  # ---------------- Etapa 5 ----------------
+  # ---------------- Stage 5 ----------------
   - id: m15
     stage: s05
     number: 15
-    title: Complejidad algorítmica
-    summary: Medir cuánto crece el trabajo y la memoria de un algoritmo y comparar soluciones.
+    title: Algorithmic Complexity
+    summary: Measuring how an algorithm's work and memory grow, and comparing solutions.
     prerequisites: [m07]
     objectives:
-      - Derivar la complejidad de ciclos simples y anidados.
-      - Conocer el costo de las operaciones de Array, Set, Dictionary y String en Swift.
-      - Argumentar trade-offs entre tiempo y memoria.
-    topics: [Big O, Tiempo y espacio, "O(1)", "O(log n)", "O(n)", "O(n log n)", "O(n²)", Complejidades superiores, Análisis de bucles, Costo de colecciones, Trade-offs]
+      - Derive the complexity of simple and nested loops.
+      - Know the cost of Array, Set, Dictionary and String operations in Swift.
+      - Argue time and memory trade-offs.
+    topics: [Big O, Time and space, "O(1)", "O(log n)", "O(n)", "O(n log n)", "O(n²)", Higher complexities, Loop analysis, Cost of collections, Trade-offs]
   - id: m16
     stage: s05
     number: 16
-    title: Arrays, hashing y ventanas
-    summary: Los patrones de entrevista más frecuentes sobre secuencias.
+    title: Arrays, Hashing and Windows
+    summary: The most common interview patterns on sequences.
     prerequisites: [m15, m08]
     objectives:
-      - Resolver problemas con hash maps y contadores de frecuencia.
-      - Aplicar two pointers y sliding window.
-      - Usar prefix sums y búsqueda binaria.
-    topics: [Recorrido lineal, Búsqueda lineal, Búsqueda binaria, Two pointers, Sliding window, Hash maps, Frequency counters, Prefix sums]
+      - Solve problems with hash maps and frequency counters.
+      - Apply two pointers and sliding window.
+      - Use prefix sums and binary search.
+    topics: [Linear traversal, Linear search, Binary search, Two pointers, Sliding window, Hash maps, Frequency counters, Prefix sums]
   - id: m17
     stage: s05
     number: 17
-    title: Pilas, colas y listas enlazadas
-    summary: Estructuras lineales implementadas desde cero en Swift.
+    title: Stacks, Queues and Linked Lists
+    summary: Linear data structures built from scratch in Swift.
     prerequisites: [m16, m10]
     objectives:
-      - Implementar Stack y Queue con sus complejidades.
-      - Manipular listas enlazadas con punteros rápido y lento.
-      - Reconocer problemas de pila monótona.
-    topics: [Stack, Queue, Deque, Linked lists, Fast y slow pointers, Pila monótona]
+      - Implement Stack and Queue and state their complexities.
+      - Manipulate linked lists with fast and slow pointers.
+      - Recognize monotonic stack problems.
+    topics: [Stack, Queue, Deque, Linked lists, Fast and slow pointers, Monotonic stack]
   - id: m18
     stage: s05
     number: 18
-    title: Recursión, backtracking y ordenamiento
-    summary: Pensar en subproblemas, explorar alternativas y ordenar datos.
+    title: Recursion, Backtracking and Sorting
+    summary: Thinking in subproblems, exploring alternatives, and sorting data.
     prerequisites: [m17]
     objectives:
-      - Escribir soluciones recursivas y backtracking con poda.
-      - Implementar merge sort y quicksort y analizar su costo.
-      - Aplicar divide y vencerás.
-    topics: [Recursión, Backtracking, Sorting, Merge sort, Quicksort, Divide and conquer]
+      - Write recursive and backtracking solutions with pruning.
+      - Implement merge sort and quicksort and analyze their cost.
+      - Apply divide and conquer.
+    topics: [Recursion, Backtracking, Sorting, Merge sort, Quicksort, Divide and conquer]
   - id: m19
     stage: s05
     number: 19
-    title: Árboles, heaps y grafos
-    summary: Estructuras no lineales y sus recorridos.
+    title: Trees, Heaps and Graphs
+    summary: Nonlinear data structures and how to traverse them.
     prerequisites: [m18]
     objectives:
-      - Recorrer árboles con DFS y BFS.
-      - Implementar un heap y usarlo como priority queue.
-      - Modelar grafos y recorrerlos con BFS y DFS.
-    topics: [Árboles, Binary search trees, Tries, Heaps, Priority queues, Grafos, BFS, DFS, Topological sort, Union-find]
+      - Traverse trees with DFS and BFS.
+      - Implement a heap and use it as a priority queue.
+      - Model graphs and traverse them with BFS and DFS.
+    topics: [Trees, Binary search trees, Tries, Heaps, Priority queues, Graphs, BFS, DFS, Topological sort, Union-find]
   - id: m20
     stage: s05
     number: 20
-    title: Algoritmos voraces y programación dinámica
-    summary: Decisiones locales y subproblemas solapados.
+    title: Greedy Algorithms and Dynamic Programming
+    summary: Local decisions and overlapping subproblems.
     prerequisites: [m19]
     objectives:
-      - Justificar cuándo un algoritmo voraz es correcto.
-      - Resolver problemas con memoization y tabulation.
-      - Reconocer problemas de programación dinámica en el enunciado.
-    topics: [Greedy, Introducción a dynamic programming, Memoization, Tabulation, DP 1-D, DP 2-D, Intervalos]
+      - Justify when a greedy algorithm is correct.
+      - Solve problems with memoization and tabulation.
+      - Spot dynamic programming problems from the statement.
+    topics: [Greedy, Introduction to dynamic programming, Memoization, Tabulation, 1-D DP, 2-D DP, Intervals]
 
-  # ---------------- Etapa 6 ----------------
+  # ---------------- Stage 6 ----------------
   - id: m21
     stage: s06
     number: 21
-    title: Cómo funciona una app iOS
-    summary: Proceso, bundle, ciclo de vida de la app y de las escenas, hilo principal, firma y configuración.
+    title: How an iOS App Works
+    summary: The process, the bundle, the app and scene life cycles, the main thread, signing and configuration.
     prerequisites: [m14]
     objectives:
-      - Explicar el ciclo de vida de app y de escena, obligatorio en apps compiladas con el SDK de iOS 27.
-      - Describir el hilo principal y el run loop.
-      - Configurar targets, firma, deployment target y entornos.
-      - Distinguir qué es del lenguaje Swift y qué del SDK.
-    topics: [Arquitectura de una app, Targets, Bundle, Assets, Info.plist, Entry point, App lifecycle, Scene lifecycle, Main thread, Run loop, Renderizado, Eventos, Permisos, Sandboxing, Signing, Provisioning profiles, Deployment target, Frameworks, Configuración por entorno, Secretos de configuración, Logs, Símbolos, Introducción al profiling]
+      - Explain the app and scene life cycles, which are required for apps built with the iOS 27 SDK.
+      - Describe the main thread and the run loop.
+      - Configure targets, signing, the deployment target and environments.
+      - Tell what belongs to the Swift language from what belongs to the SDK.
+    topics: [App architecture, Targets, Bundle, Assets, Info.plist, Entry point, App lifecycle, Scene lifecycle, Main thread, Run loop, Rendering, Events, Permissions, Sandboxing, Signing, Provisioning profiles, Deployment target, Frameworks, Per-environment configuration, Configuration secrets, Logs, Symbols, Introduction to profiling]
 
-  # ---------------- Etapa 7 ----------------
+  # ---------------- Stage 7 ----------------
   - id: m22
     stage: s07
     number: 22
-    title: Fundamentos de UIKit
-    summary: Ventanas, escenas, view controllers, vistas y la cadena de respondedores.
+    title: UIKit Fundamentals
+    summary: Windows, scenes, view controllers, views and the responder chain.
     prerequisites: [m21]
     objectives:
-      - Construir una pantalla programática y otra con Storyboard.
-      - Explicar el ciclo de vida de UIViewController.
-      - Usar target-action y delegation.
+      - Build one screen in code and another with a Storyboard.
+      - Explain the UIViewController life cycle.
+      - Use target-action and delegation.
     topics: [UIApplication, UIWindowScene, UIWindow, UIViewController, UIView, View hierarchy, viewDidLoad, viewWillAppear, viewDidAppear, viewWillDisappear, viewDidDisappear, Responder chain, Target-action, Delegation, IBAction, IBOutlet, Programmatic UI, Storyboards, XIBs]
   - id: m23
     stage: s07
     number: 23
-    title: Layout en UIKit
-    summary: Frames, Auto Layout y adaptación a cualquier pantalla y tamaño de texto.
+    title: Layout in UIKit
+    summary: Frames, Auto Layout, and adapting to any screen and text size.
     prerequisites: [m22]
     objectives:
-      - Distinguir frame de bounds.
-      - Escribir constraints sin ambigüedad.
-      - Resolver conflictos con hugging y compression resistance.
-      - Adaptar layouts a Dynamic Type.
-    topics: [Frames, Bounds, Center, Sistemas de coordenadas, Auto Layout, Constraints, Intrinsic content size, Content hugging, Compression resistance, Safe areas, Layout margins, Stack views, Scroll views, Dynamic Type, Layout debugging]
+      - Tell frame apart from bounds.
+      - Write constraints without ambiguity.
+      - Resolve conflicts with hugging and compression resistance.
+      - Adapt layouts to Dynamic Type.
+    topics: [Frames, Bounds, Center, Coordinate systems, Auto Layout, Constraints, Intrinsic content size, Content hugging, Compression resistance, Safe areas, Layout margins, Stack views, Scroll views, Dynamic Type, Layout debugging]
   - id: m24
     stage: s07
     number: 24
-    title: Componentes y listas
-    summary: Controles estándar y listas modernas con collection views, diffable data sources y compositional layout.
+    title: Components and Lists
+    summary: Standard controls and modern lists with collection views, diffable data sources and compositional layout.
     prerequisites: [m23]
     objectives:
-      - Usar los controles estándar con accesibilidad.
-      - Construir listas con UITableView y con UICollectionView moderno.
-      - Explicar la reutilización de celdas.
+      - Use the standard controls with accessibility in mind.
+      - Build lists with UITableView and with modern UICollectionView.
+      - Explain cell reuse.
     topics: [UILabel, UIButton, UITextField, UITextView, UIImageView, UISwitch, UISlider, UISegmentedControl, UIActivityIndicatorView, UIAlertController, UIStackView, UIScrollView, UITableView, UICollectionView, Diffable data sources, Cell registration, Reusable cells, Compositional layout]
   - id: m25
     stage: s07
     number: 25
-    title: Navegación en UIKit
-    summary: Navigation controllers, tabs, modales, coordinators y deep links.
+    title: Navigation in UIKit
+    summary: Navigation controllers, tabs, modals, coordinators and deep links.
     prerequisites: [m24]
     objectives:
-      - Pasar datos entre pantallas y devolver resultados.
-      - Implementar el patrón coordinator.
-      - Manejar deep links.
-    topics: [UINavigationController, UITabBarController, Modal presentation, Push y pop, Coordinators, Deep links, Estado de navegación, Paso de datos, Devolución de resultados]
+      - Pass data between screens and send results back.
+      - Implement the coordinator pattern.
+      - Handle deep links.
+    topics: [UINavigationController, UITabBarController, Modal presentation, Push and pop, Coordinators, Deep links, Navigation state, Passing data, Returning results]
   - id: m26
     stage: s07
     number: 26
-    title: Eventos y comunicación entre componentes
-    summary: Delegates, closures, NotificationCenter y cuándo usar cada uno.
+    title: Events and Communication Between Components
+    summary: Delegates, closures, NotificationCenter, and when to use each one.
     prerequisites: [m25, m13]
     objectives:
-      - Elegir el mecanismo de comunicación adecuado.
-      - Evitar ciclos de retención en closures y delegates.
-    topics: [Delegates, Closures, NotificationCenter, Target-action, Data sources, Callbacks, Retain cycles, Selección de mecanismos]
+      - Choose the right communication mechanism.
+      - Avoid retain cycles in closures and delegates.
+    topics: [Delegates, Closures, NotificationCenter, Target-action, Data sources, Callbacks, Retain cycles, Choosing a mechanism]
   - id: m27
     stage: s07
     number: 27
-    title: UIKit avanzado
-    summary: Animaciones, gestos, dibujo, rendimiento de scroll, accesibilidad y localización.
+    title: Advanced UIKit
+    summary: Animations, gestures, drawing, scroll performance, accessibility and localization.
     prerequisites: [m26]
     objectives:
-      - Animar con UIView y Core Animation.
-      - Implementar gestos personalizados.
-      - Lograr scroll fluido con carga y caché de imágenes.
-      - Hacer una pantalla accesible y localizable.
-    topics: [Animaciones, Core Animation, Gestures, Drawing, Core Graphics, Renderizado, Scroll performance, Caché de imágenes, Accesibilidad, Localización, Internacionalización, Dynamic Type, Universal links]
+      - Animate with UIView and Core Animation.
+      - Implement custom gestures.
+      - Get smooth scrolling with image loading and caching.
+      - Make a screen accessible and localizable.
+    topics: [Animations, Core Animation, Gestures, Drawing, Core Graphics, Rendering, Scroll performance, Image caching, Accessibility, Localization, Internationalization, Dynamic Type, Universal links]
 
-  # ---------------- Etapa 8 ----------------
+  # ---------------- Stage 8 ----------------
   - id: m28
     stage: s08
     number: 28
-    title: Hilos, colas y GCD
-    summary: Proceso, hilo, bloqueo, concurrencia y paralelismo, y el modelo clásico con Grand Central Dispatch.
+    title: Threads, Queues and GCD
+    summary: Processes, threads, blocking, concurrency and parallelism, and the classic Grand Central Dispatch model.
     prerequisites: [m26]
     objectives:
-      - Distinguir proceso, hilo, concurrencia y paralelismo.
-      - Usar DispatchQueue y OperationQueue con completion handlers.
-      - Identificar race conditions y deadlocks.
-    topics: [Operación, Bloqueo, Trabajo asíncrono, Proceso, Hilo, Concurrencia y paralelismo, Main thread, GCD, DispatchQueue, OperationQueue, Completion handlers, Race conditions, Deadlocks]
+      - Tell apart process, thread, concurrency and parallelism.
+      - Use DispatchQueue and OperationQueue with completion handlers.
+      - Identify race conditions and deadlocks.
+    topics: [Operations, Blocking, Asynchronous work, Process, Thread, Concurrency and parallelism, Main thread, GCD, DispatchQueue, OperationQueue, Completion handlers, Race conditions, Deadlocks]
   - id: m29
     stage: s08
     number: 29
     title: Swift Concurrency
-    summary: async/await, tareas estructuradas, actors y Sendable, con el aislamiento estricto de Swift 6.
+    summary: async/await, structured tasks, actors and Sendable, under Swift 6's strict isolation.
     prerequisites: [m28]
     objectives:
-      - Distinguir con precisión un thread de una Task.
-      - Usar async let, TaskGroup y cancelación.
-      - Aislar estado con actors y @MainActor.
-      - Corregir diagnósticos de Sendable y de aislamiento.
-      - Migrar APIs de callbacks con continuations.
-    topics: [Structured concurrency, async, await, Task, TaskGroup, async let, Actors, "@MainActor", Sendable, Data races, Cancellation, Task priority, Aislamiento, Default MainActor isolation, Continuations, Migración a Swift 6]
+      - Tell a thread apart from a Task, precisely.
+      - Use async let, TaskGroup and cancellation.
+      - Isolate state with actors and @MainActor.
+      - Fix Sendable and isolation diagnostics.
+      - Migrate callback APIs with continuations.
+    topics: [Structured concurrency, async, await, Task, TaskGroup, async let, Actors, "@MainActor", Sendable, Data races, Cancellation, Task priority, Isolation, Default MainActor isolation, Continuations, Migrating to Swift 6]
 
-  # ---------------- Etapa 9 ----------------
+  # ---------------- Stage 9 ----------------
   - id: m30
     stage: s09
     number: 30
     title: Networking
-    summary: HTTP, JSON y URLSession con async/await, errores, cancelación, paginación y autenticación.
+    summary: HTTP, JSON and URLSession with async/await, errors, cancellation, pagination and authentication.
     prerequisites: [m29]
     objectives:
-      - Construir un cliente HTTP testeable.
-      - Decodificar respuestas y manejar respuestas inválidas.
-      - Implementar reintentos, paginación y cancelación.
-    topics: [HTTP, REST, Métodos, Status codes, Headers, JSON, Codable, URLRequest, URLSession, Errores de red, Timeouts, Cancelación, Reintentos, Paginación, Autenticación, Repository pattern, Mocking]
+      - Build a testable HTTP client.
+      - Decode responses and handle invalid ones.
+      - Implement retries, pagination and cancellation.
+    topics: [HTTP, REST, Methods, Status codes, Headers, JSON, Codable, URLRequest, URLSession, Network errors, Timeouts, Cancellation, Retries, Pagination, Authentication, Repository pattern, Mocking]
   - id: m31
     stage: s09
     number: 31
-    title: Persistencia
-    summary: UserDefaults, archivos, Keychain, Core Data y SwiftData, y cómo elegir entre ellos.
+    title: Persistence
+    summary: UserDefaults, files, Keychain, Core Data and SwiftData, and how to choose between them.
     prerequisites: [m30]
     objectives:
-      - Elegir almacenamiento según el tipo y sensibilidad del dato.
-      - Persistir modelos con Core Data y SwiftData.
-      - Planear migraciones y caché.
-    topics: [UserDefaults, FileManager, Codable y JSON, Keychain, Core Data, SwiftData, Migraciones, Cache, Sincronización, Conflictos]
+      - Choose storage based on the kind of data and how sensitive it is.
+      - Persist models with Core Data and SwiftData.
+      - Plan migrations and caching.
+    topics: [UserDefaults, FileManager, Codable and JSON, Keychain, Core Data, SwiftData, Migrations, Cache, Sync, Conflicts]
   - id: m32
     stage: s09
     number: 32
-    title: Arquitectura de apps
-    summary: MVC, MVVM, MVP, Clean Architecture y coordinators, comparados en la misma app.
+    title: App Architecture
+    summary: MVC, MVVM, MVP, Clean Architecture and coordinators, compared in the same app.
     prerequisites: [m31]
     objectives:
-      - Comparar arquitecturas por los problemas que resuelven.
-      - Separar dominio, presentación e infraestructura.
-      - Inyectar dependencias sin frameworks.
-    topics: [MVC, MVVM, MVP, Clean Architecture, Coordinators, Dependency Injection, Repository, Service layer, Use cases, Modularización, Trade-offs]
+      - Compare architectures by the problems they solve.
+      - Separate domain, presentation and infrastructure.
+      - Inject dependencies without a framework.
+    topics: [MVC, MVVM, MVP, Clean Architecture, Coordinators, Dependency Injection, Repository, Service layer, Use cases, Modularization, Trade-offs]
   - id: m33
     stage: s09
     number: 33
-    title: Testing y depuración
-    summary: Swift Testing y XCTest, dobles de prueba, pruebas asíncronas, UI tests e Instruments.
+    title: Testing and Debugging
+    summary: Swift Testing and XCTest, test doubles, async tests, UI tests and Instruments.
     prerequisites: [m32]
     objectives:
-      - Escribir pruebas unitarias con Swift Testing y XCTest.
-      - Usar mocks, stubs y fakes por inyección.
-      - Probar código asíncrono.
-      - Perfilar con Instruments y el Memory Graph.
-    topics: [XCTest, Swift Testing, Unit tests, Integration tests, UI tests, Test doubles, Mocks, Stubs, Fakes, Tests asíncronos, Testing de ViewModels, Instruments, Memory Graph, Performance tests]
+      - Write unit tests with Swift Testing and XCTest.
+      - Use mocks, stubs and fakes through injection.
+      - Test asynchronous code.
+      - Profile with Instruments and the Memory Graph.
+    topics: [XCTest, Swift Testing, Unit tests, Integration tests, UI tests, Test doubles, Mocks, Stubs, Fakes, Async tests, Testing ViewModels, Instruments, Memory Graph, Performance tests]
 
-  # ---------------- Etapa 10 ----------------
+  # ---------------- Stage 10 ----------------
   - id: m34
     stage: s10
     number: 34
-    title: Fundamentos de SwiftUI
-    summary: El modelo declarativo, vistas, modificadores y contenedores.
+    title: SwiftUI Fundamentals
+    summary: The declarative model, views, modifiers and containers.
     prerequisites: [m27, m29]
     objectives:
-      - Explicar en qué difiere el modelo declarativo del de UIKit.
-      - Componer vistas pequeñas y reutilizables.
-      - Usar listas, grids y stacks perezosos.
-    topics: [Modelo declarativo, App, Scene, View, body, Modifiers, ViewBuilder, Result builders, Controles, List, ForEach, ScrollView, Lazy stacks, Grids, Stacks, GeometryReader, safeAreaInset, Layout priorities]
+      - Explain how the declarative model differs from UIKit's.
+      - Compose small, reusable views.
+      - Use lists, grids and lazy stacks.
+    topics: [Declarative model, App, Scene, View, body, Modifiers, ViewBuilder, Result builders, Controls, List, ForEach, ScrollView, Lazy stacks, Grids, Stacks, GeometryReader, safeAreaInset, Layout priorities]
   - id: m35
     stage: s10
     number: 35
-    title: Diseño y navegación en SwiftUI
-    summary: Layout, estilos, NavigationStack, presentación y estado de navegación.
+    title: Layout and Navigation in SwiftUI
+    summary: Layout, styling, NavigationStack, presentation and navigation state.
     prerequisites: [m34]
     objectives:
-      - Navegar por valores con NavigationStack y NavigationPath.
-      - Presentar sheets, alerts y confirmation dialogs.
-      - Adaptar a iPhone y iPad con NavigationSplitView.
-    topics: [Layout, Padding, Alignment, Shapes, SF Symbols, NavigationStack, NavigationSplitView, NavigationPath, NavigationLink, Sheet, Full-screen cover, Alerts, Confirmation dialogs, TabView, Toolbars, Deep links, Transiciones]
+      - Navigate by value with NavigationStack and NavigationPath.
+      - Present sheets, alerts and confirmation dialogs.
+      - Adapt to iPhone and iPad with NavigationSplitView.
+    topics: [Layout, Padding, Alignment, Shapes, SF Symbols, NavigationStack, NavigationSplitView, NavigationPath, NavigationLink, Sheet, Full-screen cover, Alerts, Confirmation dialogs, TabView, Toolbars, Deep links, Transitions]
   - id: m36
     stage: s10
     number: 36
-    title: Gestión del estado
-    summary: "@State, @Binding, @Environment, Observation y las APIs heredadas: cuándo usar cada una."
+    title: State Management
+    summary: "@State, @Binding, @Environment, Observation and the older APIs: when to use each one."
     prerequisites: [m35]
     objectives:
-      - Ubicar cada estado en el dueño correcto.
-      - Elegir entre @Observable y ObservableObject según la versión de iOS objetivo.
-      - Explicar identidad y ciclo de vida de las vistas.
-    topics: ["@State", "@Binding", "@Environment", "@EnvironmentObject", "@ObservedObject", "@StateObject", ObservableObject, "@Published", "@Observable", "@Bindable", Observation, Flujo de datos, Identidad, Invalidación, Estado derivado]
+      - Put each piece of state in the right owner.
+      - Choose between @Observable and ObservableObject based on the target iOS version.
+      - Explain view identity and life cycle.
+    topics: ["@State", "@Binding", "@Environment", "@EnvironmentObject", "@ObservedObject", "@StateObject", ObservableObject, "@Published", "@Observable", "@Bindable", Observation, Data flow, Identity, Invalidation, Derived state]
   - id: m37
     stage: s10
     number: 37
-    title: Arquitectura y datos en SwiftUI
-    summary: Servicios, repositorios, estados de carga y SwiftData en apps SwiftUI.
+    title: Architecture and Data in SwiftUI
+    summary: Services, repositories, loading states and SwiftData in SwiftUI apps.
     prerequisites: [m36, m33]
     objectives:
-      - Separar UI y lógica sin abstracciones innecesarias.
-      - Manejar carga, error, vacío, refresco y paginación.
-      - Persistir con SwiftData.
-    topics: [MVVM en SwiftUI, Cuándo no hace falta un ViewModel, Servicios, Repositorios, Dependency Injection, task, refreshable, Estados de carga, Paginación, SwiftData, Offline-first]
+      - Separate UI from logic without unnecessary abstractions.
+      - Handle loading, error, empty, refresh and pagination.
+      - Persist with SwiftData.
+    topics: [MVVM in SwiftUI, When you don't need a ViewModel, Services, Repositories, Dependency Injection, task, refreshable, Loading states, Pagination, SwiftData, Offline-first]
   - id: m38
     stage: s10
     number: 38
-    title: Interacción y experiencia de usuario en SwiftUI
-    summary: Animaciones, gestos, formularios, foco, accesibilidad y localización.
+    title: Interaction and User Experience in SwiftUI
+    summary: Animations, gestures, forms, focus, accessibility and localization.
     prerequisites: [m37]
     objectives:
-      - Animar con intención y respetar Reduce Motion.
-      - Construir formularios con validación y FocusState.
-      - Verificar VoiceOver y Dynamic Type.
-    topics: [Gestures, Animations, Transitions, matchedGeometryEffect, Haptics, FocusState, Formularios, Validación, VoiceOver, Dynamic Type, Localización, Estados vacíos y de error]
+      - Animate with purpose and respect Reduce Motion.
+      - Build forms with validation and FocusState.
+      - Check VoiceOver and Dynamic Type.
+    topics: [Gestures, Animations, Transitions, matchedGeometryEffect, Haptics, FocusState, Forms, Validation, VoiceOver, Dynamic Type, Localization, Empty and error states]
   - id: m39
     stage: s10
     number: 39
-    title: SwiftUI avanzado
-    summary: Layout personalizado, preferencias, control de identidad y rendimiento.
+    title: Advanced SwiftUI
+    summary: Custom layout, preferences, identity control and performance.
     prerequisites: [m38]
     objectives:
-      - Escribir un Layout personalizado.
-      - Usar PreferenceKey y ViewThatFits.
-      - Diagnosticar actualizaciones excesivas con Instruments.
-    topics: [Custom Layout, PreferenceKey, Anchor preferences, ViewThatFits, AnyLayout, ScrollPosition, containerRelativeFrame, Identidad, Rendimiento, Instruments, Snapshot testing]
+      - Write a custom Layout.
+      - Use PreferenceKey and ViewThatFits.
+      - Diagnose excessive updates with Instruments.
+    topics: [Custom Layout, PreferenceKey, Anchor preferences, ViewThatFits, AnyLayout, ScrollPosition, containerRelativeFrame, Identity, Performance, Instruments, Snapshot testing]
 
-  # ---------------- Etapa 11 ----------------
+  # ---------------- Stage 11 ----------------
   - id: m40
     stage: s11
     number: 40
-    title: Interoperabilidad UIKit y SwiftUI
-    summary: UIHostingController, representables y coordinators en apps híbridas.
+    title: UIKit and SwiftUI Interoperability
+    summary: UIHostingController, representables and coordinators in hybrid apps.
     prerequisites: [m39]
     objectives:
-      - Integrar SwiftUI en una app UIKit existente.
-      - Envolver vistas y view controllers UIKit con representables.
-      - Gestionar ciclos de vida híbridos.
-    topics: [UIHostingController, UIViewRepresentable, UIViewControllerRepresentable, Coordinators de representables, Ciclos de vida híbridos, Migración incremental]
+      - Add SwiftUI to an existing UIKit app.
+      - Wrap UIKit views and view controllers with representables.
+      - Manage hybrid life cycles.
+    topics: [UIHostingController, UIViewRepresentable, UIViewControllerRepresentable, Representable coordinators, Hybrid life cycles, Incremental migration]
 
-  # ---------------- Etapa 12 ----------------
+  # ---------------- Stage 12 ----------------
   - id: m41
     stage: s12
     number: 41
-    title: Calidad de producción y distribución
-    summary: CI/CD, firma, versionado, crash reporting, TestFlight y App Store Connect.
+    title: Production Quality and Distribution
+    summary: CI/CD, signing, versioning, crash reporting, TestFlight and App Store Connect.
     prerequisites: [m33]
     objectives:
-      - Automatizar builds y pruebas con GitHub Actions.
-      - Gestionar certificados, versiones y releases.
-      - Preparar una app para la revisión de App Store.
-    topics: [Code review, CI/CD, GitHub Actions, Automatización de builds, Certificados, Code signing, Versionado, Crash reporting, Logging, Telemetría, Release management, TestFlight, App Store Connect, Review Guidelines, Resolución de incidentes]
+      - Automate builds and tests with GitHub Actions.
+      - Manage certificates, versions and releases.
+      - Prepare an app for App Store review.
+    topics: [Code review, CI/CD, GitHub Actions, Build automation, Certificates, Code signing, Versioning, Crash reporting, Logging, Telemetry, Release management, TestFlight, App Store Connect, Review Guidelines, Incident response]
   - id: m42
     stage: s12
     number: 42
-    title: Desarrollo seguro en iOS
-    summary: Seguridad de aplicaciones móviles con el enfoque de OWASP MASVS y MASTG, con el rigor que piden banca y fintech.
+    title: Secure iOS Development
+    summary: Mobile application security through the lens of OWASP MASVS and MASTG, with the rigor banking and fintech demand.
     prerequisites: [m31]
     objectives:
-      - Modelar amenazas de una app móvil y priorizar controles.
-      - Guardar secretos y credenciales en Keychain con la clase de protección correcta.
-      - Asegurar las comunicaciones con ATS y explicar los trade-offs del certificate pinning.
-      - Proteger datos sensibles frente a logs, capturas, pasteboard y respaldos.
-      - Validar entradas, deep links y contenido web.
-      - Explicar los límites de la detección de jailbreak y de la ofuscación.
-    topics: [OWASP MASVS y MASTG, Modelado de amenazas, Keychain y kSecAttrAccessible, Data Protection, LocalAuthentication y biometría, CryptoKit y Secure Enclave, App Transport Security, Certificate y public key pinning, Secretos en el binario, Logs y datos personales, Capturas y app switcher, Pasteboard, Validación de deep links y universal links, WKWebView seguro, Jailbreak detection y sus límites, Anti-tampering, Cadena de suministro de dependencias, Privacy manifests, Contexto regulatorio en banca]
+      - Threat-model a mobile app and prioritize controls.
+      - Store secrets and credentials in the Keychain with the right protection class.
+      - Secure network traffic with ATS and explain the trade-offs of certificate pinning.
+      - Keep sensitive data out of logs, screenshots, the pasteboard and backups.
+      - Validate input, deep links and web content.
+      - Explain the limits of jailbreak detection and obfuscation.
+    topics: [OWASP MASVS and MASTG, Threat modeling, Keychain and kSecAttrAccessible, Data Protection, LocalAuthentication and biometrics, CryptoKit and the Secure Enclave, App Transport Security, Certificate and public key pinning, Secrets in the binary, Logs and personal data, Screenshots and the app switcher, Pasteboard, Validating deep links and universal links, Secure WKWebView, Jailbreak detection and its limits, Anti-tampering, Dependency supply chain, Privacy manifests, Regulatory context in banking]
   - id: m43
     stage: s12
     number: 43
-    title: Rendimiento, accesibilidad e internacionalización
-    summary: Medir antes de optimizar y construir para todas las personas y regiones.
+    title: Performance, Accessibility and Internationalization
+    summary: Measure before you optimize, and build for every person and region.
     prerequisites: [m40]
     objectives:
-      - Perfilar CPU, memoria, hangs y batería.
-      - Auditar accesibilidad con herramientas de Xcode.
-      - Internacionalizar con String Catalogs.
-    topics: [Rendimiento, Hangs, Memoria, Batería, Networking resiliente, Accesibilidad, Internacionalización, String Catalogs, Compatibilidad entre versiones, Lectura de código heredado, Refactorización segura]
+      - Profile CPU, memory, hangs and battery.
+      - Audit accessibility with Xcode's tools.
+      - Internationalize with String Catalogs.
+    topics: [Performance, Hangs, Memory, Battery, Resilient networking, Accessibility, Internationalization, String Catalogs, Compatibility across OS versions, Reading legacy code, Safe refactoring]
 
-  # ---------------- Etapa 13 ----------------
+  # ---------------- Stage 13 ----------------
   - id: m44
     stage: s13
     number: 44
-    title: Extensiones del sistema
-    summary: WidgetKit, Live Activities, notificaciones y App Intents.
+    title: System Extensions
+    summary: WidgetKit, Live Activities, notifications and App Intents.
     prerequisites: [m37]
     optional: true
     objectives:
-      - Crear un widget y una Live Activity con sus entitlements.
-      - Pedir permisos de notificación de forma respetuosa.
-      - Exponer acciones con App Intents.
+      - Build a widget and a Live Activity with their entitlements.
+      - Ask for notification permission respectfully.
+      - Expose actions with App Intents.
     topics: [WidgetKit, ActivityKit, Live Activities, UserNotifications, App Intents, Background tasks]
   - id: m45
     stage: s13
     number: 45
-    title: Frameworks de la plataforma
-    summary: StoreKit, ubicación, fotos, audio y video, iCloud, Sign in with Apple y Combine.
+    title: Platform Frameworks
+    summary: StoreKit, location, photos, audio and video, iCloud, Sign in with Apple, and Combine.
     prerequisites: [m37]
     optional: true
     objectives:
-      - Integrar un framework con sus permisos y casos de error.
-      - Reconocer Combine en código existente.
+      - Integrate a framework along with its permissions and error cases.
+      - Recognize Combine in existing code.
     topics: [StoreKit, Core Location, PhotosUI, AVFoundation, BackgroundTasks, Sign in with Apple, CloudKit, Combine]
 
-  # ---------------- Etapa 14 ----------------
+  # ---------------- Stage 14 ----------------
   - id: m46
     stage: s14
     number: 46
-    title: Método para coding challenges
-    summary: Cómo se resuelve un reto en entrevista, en voz alta y bajo tiempo.
+    title: A Method for Coding Challenges
+    summary: How to solve an interview problem out loud, against the clock.
     prerequisites: [m20]
     objectives:
-      - Aplicar un método de 15 pasos de forma consistente.
-      - Comunicar razonamiento, trade-offs y pruebas.
-      - Recuperarte cuando te atoras.
-    topics: [Método de resolución, Preguntas aclaratorias, Pensar en voz alta, Pruebas manuales, Particularidades de Swift en entrevistas, Gestión del tiempo]
+      - Apply a 15-step method consistently.
+      - Communicate your reasoning, trade-offs and tests.
+      - Recover when you get stuck.
+    topics: [Problem-solving method, Clarifying questions, Thinking out loud, Testing by hand, Swift quirks in interviews, Time management]
   - id: m47
     stage: s14
     number: 47
-    title: Preguntas técnicas de iOS
-    summary: Swift, UIKit, SwiftUI, concurrencia, arquitectura, testing y seguridad, con seguimientos.
+    title: iOS Technical Questions
+    summary: Swift, UIKit, SwiftUI, concurrency, architecture, testing and security, with follow-ups.
     prerequisites: [m42, m43]
     objectives:
-      - Responder con precisión y ejemplos a preguntas técnicas de plataforma.
-      - Sostener una respuesta ante preguntas de seguimiento.
-    topics: [Swift, UIKit, SwiftUI, Concurrencia, Arquitectura, Testing, Seguridad, Simulaciones]
+      - Answer technical platform questions precisely and with examples.
+      - Hold up an answer under follow-up questions.
+    topics: [Swift, UIKit, SwiftUI, Concurrency, Architecture, Testing, Security, Mock interviews]
   - id: m48
     stage: s14
     number: 48
-    title: Mobile system design
-    summary: Diseñar apps completas en una entrevista, del requisito a la caché offline.
+    title: Mobile System Design
+    summary: Designing a complete app in an interview, from requirements to the offline cache.
     prerequisites: [m47]
     objectives:
-      - Estructurar una respuesta de diseño en 45 minutos.
-      - Diseñar API, modelos, capas, caché y sincronización.
-      - Cubrir rendimiento, accesibilidad, privacidad y observabilidad.
-    topics: [Requisitos, API cliente-servidor, Modelos de datos, Capas, Offline y sincronización, Conflictos, Caché de imágenes, Paginación, Observabilidad, Casos de estudio]
+      - Structure a design answer in 45 minutes.
+      - Design the API, models, layers, cache and sync.
+      - Cover performance, accessibility, privacy and observability.
+    topics: [Requirements, Client-server API, Data models, Layers, Offline and sync, Conflicts, Image caching, Pagination, Observability, Case studies]
 
-  # ---------------- Etapa 15 ----------------
+  # ---------------- Stage 15 ----------------
   - id: m49
     stage: s15
     number: 49
-    title: El trabajo profesional
-    summary: Proyecto final y hábitos de un iOS Engineer en un equipo.
+    title: Professional Work
+    summary: A final project and the habits of an iOS engineer on a team.
     prerequisites: [m48]
     objectives:
-      - Entregar un proyecto con requisitos, decisiones documentadas y pruebas.
-      - Trabajar con código heredado y revisiones de código.
-      - Participar en la resolución de incidentes.
-    topics: [Proyecto final, Documentos de decisión, Código heredado, Revisiones, Incidentes, Estimación, Comunicación técnica]
+      - Deliver a project with requirements, documented decisions and tests.
+      - Work with legacy code and code reviews.
+      - Take part in incident response.
+    topics: [Final project, Decision records, Legacy code, Reviews, Incidents, Estimation, Technical communication]

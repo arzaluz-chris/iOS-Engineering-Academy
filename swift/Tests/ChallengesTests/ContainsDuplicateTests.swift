@@ -13,18 +13,18 @@ struct ContainsDuplicateTests {
         ([0, Int.max, Int.min], false),
     ]
 
-    @Test("Con Set", arguments: ContainsDuplicateTests.cases)
-    func conSet(input: [Int], expected: Bool) {
+    @Test("With a Set", arguments: ContainsDuplicateTests.cases)
+    func withSet(input: [Int], expected: Bool) {
         #expect(containsDuplicate(input) == expected)
     }
 
-    @Test("Ordenando", arguments: ContainsDuplicateTests.cases)
-    func ordenando(input: [Int], expected: Bool) {
+    @Test("By sorting", arguments: ContainsDuplicateTests.cases)
+    func bySorting(input: [Int], expected: Bool) {
         #expect(containsDuplicateBySorting(input) == expected)
     }
 
-    @Test("El duplicado al final de una lista grande")
-    func duplicadoAlFinal() {
+    @Test("Duplicate at the end of a large list")
+    func duplicateAtEnd() {
         let input = Array(0..<10_000) + [9_999]
         #expect(containsDuplicate(input))
     }

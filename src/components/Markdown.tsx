@@ -11,7 +11,7 @@ hljs.registerLanguage('bash', bash)
 hljs.registerLanguage('json', json)
 hljs.registerLanguage('plaintext', plaintext)
 
-const ALIASES: Record<string, string> = { sh: 'bash', shell: 'bash', zsh: 'bash', pseudo: 'plaintext', text: 'plaintext', output: 'plaintext', salida: 'plaintext' }
+const ALIASES: Record<string, string> = { sh: 'bash', shell: 'bash', zsh: 'bash', pseudo: 'plaintext', text: 'plaintext', output: 'plaintext' }
 
 export function slugify(text: string) {
   return text
@@ -34,17 +34,17 @@ export function escapeHtml(s: string) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
 
-const LANG_LABEL: Record<string, string> = { swift: 'Swift', bash: 'Terminal', json: 'JSON', plaintext: 'Texto', pseudo: 'Pseudocódigo', output: 'Salida', salida: 'Salida' }
+const LANG_LABEL: Record<string, string> = { swift: 'Swift', bash: 'Terminal', json: 'JSON', plaintext: 'Text', pseudo: 'Pseudocode', output: 'Output' }
 
 /**
- * Avisos dentro de blockquotes:
- *   > [!error] Título     → diagnóstico estilo compilador (errores frecuentes)
- *   > [!aviso] ...        → advertencia
- *   > [!nota] ...         → nota
- *   > [!practica] ...     → buena práctica
- *   > [!version] ...      → disponibilidad por versión
+ * Callouts inside blockquotes:
+ *   > [!error] Title      → compiler-style diagnostic (common mistakes)
+ *   > [!warning] ...      → warning
+ *   > [!note] ...         → note
+ *   > [!tip] ...          → good practice
+ *   > [!version] ...      → availability by version
  */
-const CALLOUTS: Record<string, string> = { error: 'Error frecuente', aviso: 'Advertencia', nota: 'Nota', practica: 'Buena práctica', version: 'Disponibilidad' }
+const CALLOUTS: Record<string, string> = { error: 'Common mistake', warning: 'Warning', note: 'Note', tip: 'Good practice', version: 'Availability' }
 
 const marked = new Marked({
   gfm: true,
@@ -54,7 +54,7 @@ const marked = new Marked({
       const key = raw || 'plaintext'
       const label = LANG_LABEL[key] ?? key
       const html = highlight(text, key)
-      return `<figure class="code"><figcaption><span>${escapeHtml(label)}</span><button type="button" class="copy" data-copy>Copiar</button></figcaption><pre><code class="hljs">${html}</code></pre></figure>`
+      return `<figure class="code"><figcaption><span>${escapeHtml(label)}</span><button type="button" class="copy" data-copy>Copy</button></figcaption><pre><code class="hljs">${html}</code></pre></figure>`
     },
     heading({ tokens, depth }) {
       const inner = this.parser.parseInline(tokens)
@@ -96,14 +96,14 @@ function onClick(e: React.MouseEvent<HTMLDivElement>) {
   if (copy) {
     const code = copy.closest('figure')?.querySelector('code')?.textContent ?? ''
     void navigator.clipboard?.writeText(code).then(() => {
-      copy.textContent = 'Copiado'
-      setTimeout(() => (copy.textContent = 'Copiar'), 1500)
+      copy.textContent = 'Copied'
+      setTimeout(() => (copy.textContent = 'Copy'), 1500)
     })
     return
   }
   const anchor = target.closest<HTMLAnchorElement>('[data-anchor]')
   if (anchor) {
-    // Los anclajes no deben cambiar el hash de la ruta.
+    // Anchor links must not change the route hash.
     e.preventDefault()
     document.getElementById(anchor.getAttribute('href')?.slice(1) ?? '')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
@@ -121,7 +121,7 @@ export function CodeView({ code, lang = 'swift', label }: { code: string; lang?:
       <figcaption>
         <span>{label ?? LANG_LABEL[lang] ?? lang}</span>
         <button type="button" className="copy" data-copy>
-          Copiar
+          Copy
         </button>
       </figcaption>
       <pre>

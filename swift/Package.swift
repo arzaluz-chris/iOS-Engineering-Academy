@@ -1,7 +1,7 @@
 // swift-tools-version: 6.0
-// Soluciones de referencia de los retos de código y sus pruebas (Swift Testing).
-// Ejecuta todas las pruebas con:  swift test
-// Solo un reto:                    swift test --filter TwoSumTests
+// Reference solutions for the coding challenges and their tests (Swift Testing).
+// Run every test with:  swift test
+// Just one challenge:   swift test --filter TwoSumTests
 import PackageDescription
 
 let package = Package(
@@ -12,7 +12,7 @@ let package = Package(
     targets: [
         .target(name: "Challenges"),
         .testTarget(name: "ChallengesTests", dependencies: ["Challenges"]),
-        // Compila y ejecuta los fragmentos de content/lessons/ y compara su salida.
+        // Compiles and runs the snippets in content/lessons/ and compares their output.
         .testTarget(name: "LessonSnippetsTests"),
     ]
 )

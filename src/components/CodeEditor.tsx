@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react'
 
-/** CodeMirror se carga bajo demanda: solo las páginas con editor descargan su código. */
+/** CodeMirror loads on demand: only pages with an editor download its code. */
 const Impl = lazy(() => import('./CodeEditorImpl'))
 
 export interface CodeEditorProps {

@@ -1,8 +1,8 @@
 import { useSyncExternalStore } from 'react'
 
 /**
- * Enrutador mínimo basado en el hash (#/ruta). GitHub Pages no reescribe rutas,
- * así que el hash evita 404 al recargar cualquier página.
+ * Minimal hash-based router (#/path). GitHub Pages doesn't rewrite paths,
+ * so the hash avoids a 404 when any page is reloaded.
  */
 
 function subscribe(cb: () => void) {

@@ -1,9 +1,9 @@
 /**
- * Verifica los enlaces de content/resources.yaml.
- * La documentación de Apple es una aplicación JavaScript que puede responder 200
- * para rutas inexistentes; para esas URL se consulta su JSON de datos, que sí da 404.
- * Uso: npm run check-links            (solo informa)
- *      npm run check-links -- --strict (falla si hay enlaces rotos)
+ * Checks the links in content/resources.yaml.
+ * Apple's documentation is a JavaScript app that can answer 200 for paths
+ * that don't exist; for those URLs we request its data JSON, which does return 404.
+ * Usage: npm run check-links            (report only)
+ *        npm run check-links -- --strict (fail if any link is broken)
  */
 import { loadFromDisk } from './load-content'
 
@@ -35,7 +35,7 @@ let broken = 0
 for (const { r, status } of results) {
   const ok = status >= 200 && status < 400
   if (!ok) broken++
-  console.log(`${ok ? 'ok   ' : 'ROTO '} ${String(status).padStart(3)}  ${r.id}  ${r.url}`)
+  console.log(`${ok ? 'ok    ' : 'BROKEN'} ${String(status).padStart(3)}  ${r.id}  ${r.url}`)
 }
-console.log(`\n${results.length - broken}/${results.length} enlaces responden. Fecha: ${new Date().toISOString().slice(0, 10)}`)
+console.log(`\n${results.length - broken}/${results.length} links respond. Date: ${new Date().toISOString().slice(0, 10)}`)
 if (broken && process.argv.includes('--strict')) process.exit(1)

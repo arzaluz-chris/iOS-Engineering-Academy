@@ -36,13 +36,13 @@ export function Empty({ title, children }: { title: string; children?: ReactNode
   )
 }
 
-export const DIFFICULTY_LABEL = { facil: 'Fácil', medio: 'Medio', dificil: 'Difícil' } as const
-export const LEVEL_LABEL = { inicial: 'Inicial', intermedio: 'Intermedio', avanzado: 'Avanzado' } as const
+export const DIFFICULTY_LABEL = { easy: 'Easy', medium: 'Medium', hard: 'Hard' } as const
+export const LEVEL_LABEL = { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced' } as const
 export const CODE_STATUS_LABEL = {
-  probado: 'Código compilado y probado en CI',
-  revisado: 'Código revisado estáticamente, no compilado',
-  ilustrativo: 'Ejemplos ilustrativos, no ejecutados',
-  'sin-codigo': 'Sin código',
+  tested: 'Code compiled and run by the tests',
+  reviewed: 'Code reviewed, not compiled',
+  illustrative: 'Illustrative examples, not run',
+  'no-code': 'No code',
 } as const
 
 export function Badge({ children, tone = 'neutral' }: { children: ReactNode; tone?: 'neutral' | 'ok' | 'warn' | 'bad' | 'accent' }) {
@@ -53,12 +53,12 @@ export function BookmarkButton({ type, id }: { type: NoteTarget | 'recurso'; id:
   const marked = useLiveQuery(() => db.bookmarks.get(`${type}:${id}`), [type, id])
   return (
     <button type="button" className="btn btn-quiet" aria-pressed={!!marked} onClick={() => void toggleBookmark(type, id)}>
-      {marked ? 'Guardado en marcadores' : 'Guardar en marcadores'}
+      {marked ? 'Bookmarked' : 'Bookmark'}
     </button>
   )
 }
 
-export function NotesPanel({ type, id, title = 'Mis notas' }: { type: NoteTarget; id: string; title?: string }) {
+export function NotesPanel({ type, id, title = 'My notes' }: { type: NoteTarget; id: string; title?: string }) {
   const notes = useLiveQuery(() => db.notes.where('[targetType+targetId]').equals([type, id]).toArray(), [type, id]) ?? []
   const [draft, setDraft] = useState('')
   const [editing, setEditing] = useState<number | null>(null)
@@ -70,13 +70,13 @@ export function NotesPanel({ type, id, title = 'Mis notas' }: { type: NoteTarget
       {notes.map((n) =>
         editing === n.id ? (
           <div key={n.id} className="note">
-            <textarea value={editText} onChange={(e) => setEditText(e.target.value)} rows={4} aria-label="Editar nota" />
+            <textarea value={editText} onChange={(e) => setEditText(e.target.value)} rows={4} aria-label="Edit note" />
             <div className="row">
               <button className="btn" type="button" onClick={() => void saveNote(type, id, editText, n.id).then(() => setEditing(null))}>
-                Guardar nota
+                Save note
               </button>
               <button className="btn btn-quiet" type="button" onClick={() => setEditing(null)}>
-                Cancelar
+                Cancel
               </button>
             </div>
           </div>
@@ -84,20 +84,20 @@ export function NotesPanel({ type, id, title = 'Mis notas' }: { type: NoteTarget
           <div key={n.id} className="note">
             <p className="note-text">{n.text}</p>
             <div className="row note-meta">
-              <span>{new Date(n.updatedAt).toLocaleString('es-MX', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+              <span>{new Date(n.updatedAt).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</span>
               <button className="link" type="button" onClick={() => { setEditing(n.id ?? null); setEditText(n.text) }}>
-                Editar
+                Edit
               </button>
-              <button className="link" type="button" onClick={() => n.id !== undefined && confirm('¿Eliminar esta nota?') && void deleteNote(n.id)}>
-                Eliminar
+              <button className="link" type="button" onClick={() => n.id !== undefined && confirm('Delete this note?') && void deleteNote(n.id)}>
+                Delete
               </button>
             </div>
           </div>
         ),
       )}
-      <textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={3} placeholder="Escribe una nota para ti…" aria-label="Nueva nota" />
+      <textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={3} placeholder="Write a note to yourself…" aria-label="New note" />
       <button className="btn" type="button" disabled={!draft.trim()} onClick={() => void saveNote(type, id, draft.trim()).then(() => setDraft(''))}>
-        Guardar nota
+        Save note
       </button>
     </section>
   )
@@ -121,13 +121,13 @@ export function Reveal({ label, children, onReveal, initiallyOpen = false, confi
   )
 }
 
-export function Rubric({ items, onSubmit, submitLabel = 'Registrar autoevaluación' }: { items: string[]; onSubmit: (score: number, checked: boolean[]) => void; submitLabel?: string }) {
+export function Rubric({ items, onSubmit, submitLabel = 'Record self-assessment' }: { items: string[]; onSubmit: (score: number, checked: boolean[]) => void; submitLabel?: string }) {
   const [checked, setChecked] = useState<boolean[]>(() => items.map(() => false))
   const done = checked.filter(Boolean).length
   return (
     <fieldset className="rubric">
-      <legend>Rúbrica de autoevaluación</legend>
-      <p className="muted small">Marca solo lo que tu respuesta cumple de verdad. Esto no es una calificación automática.</p>
+      <legend>Self-assessment rubric</legend>
+      <p className="muted small">Check only what your answer actually does. This isn't graded automatically.</p>
       {items.map((it, i) => (
         <label key={i} className="check">
           <input type="checkbox" checked={checked[i] ?? false} onChange={(e) => setChecked((c) => c.map((v, j) => (j === i ? e.target.checked : v)))} />
@@ -145,5 +145,7 @@ export function scoreToResult(score: number) {
   return score >= 1 ? 'correcto' : score >= 0.5 ? 'parcial' : 'incorrecto'
 }
 
-export const RESULT_LABEL = { correcto: 'Correcto', parcial: 'Parcial', incorrecto: 'Incorrecto' } as const
+export const RESULT_LABEL = { correcto: 'Correct', parcial: 'Partial', incorrecto: 'Incorrect' } as const
 export const RESULT_TONE = { correcto: 'ok', parcial: 'warn', incorrecto: 'bad' } as const
+
+export const EXERCISE_STATUS_LABEL = { 'sin-intento': 'Not tried', correcto: 'Correct', parcial: 'Partial', incorrecto: 'Incorrect' } as const

@@ -1,8 +1,8 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
-// base './' + hash routing: el sitio funciona en cualquier subruta de GitHub Pages
-// (arzaluz-chris.github.io/<repo>/) y también al abrir dist/ con `vite preview`.
+// base './' + hash routing: the site works under any GitHub Pages subpath
+// (arzaluz-chris.github.io/<repo>/) and also when serving dist/ with `vite preview`.
 export default defineConfig({
   base: './',
   plugins: [react()],

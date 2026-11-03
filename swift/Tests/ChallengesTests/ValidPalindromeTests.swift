@@ -3,9 +3,9 @@ import Testing
 
 @Suite("Valid Palindrome")
 struct ValidPalindromeTests {
-    @Test("Palíndromos", arguments: [
+    @Test("Palindromes", arguments: [
         "A man, a plan, a canal: Panama",
-        "Anita lava la tina",
+        "Was it a car or a cat I saw?",
         "",
         " ",
         ".,!",
@@ -13,17 +13,17 @@ struct ValidPalindromeTests {
         "No 'x' in Nixon",
         "12321",
     ])
-    func palindromos(input: String) {
+    func palindromes(input: String) {
         #expect(isPalindrome(input))
     }
 
-    @Test("No palíndromos", arguments: [
+    @Test("Not palindromes", arguments: [
         "race a car",
         "0P",
         "ab",
         "12 3 4 1",
     ])
-    func noPalindromos(input: String) {
+    func notPalindromes(input: String) {
         #expect(!isPalindrome(input))
     }
 }

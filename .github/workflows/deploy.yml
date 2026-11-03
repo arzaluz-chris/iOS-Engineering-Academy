@@ -1,5 +1,5 @@
-# Valida el contenido, corre las pruebas web, compila y publica en GitHub Pages.
-name: Web · validar, probar y publicar
+# Validates the content, runs the web tests, builds and deploys to GitHub Pages.
+name: Web · validate, test and deploy
 
 on:
   push:
@@ -27,13 +27,13 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Validar contenido
+      - name: Validate content
         run: npm run validate
-      - name: Comprobar tipos
+      - name: Type check
         run: npm run typecheck
-      - name: Pruebas
+      - name: Tests
         run: npm test
-      - name: Compilar
+      - name: Build
         run: npx vite build
       - if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
