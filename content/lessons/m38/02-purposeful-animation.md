@@ -411,7 +411,29 @@ struct SaveButton: View {
     @State private var failures = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    // Under Reduce Motion the trigger never changes, so the shake never plays.
+    private var shakeTrigger: Int { reduceMotion ? 0 : failures }
+
     var body: some View {
+        button
+            .keyframeAnimator(initialValue: CGFloat(0), trigger: shakeTrigger) { content, offset in
+                content.offset(x: offset)
+            } keyframes: { _ in
+                KeyframeTrack {
+                    LinearKeyframe(CGFloat(-10), duration: 0.06)
+                    LinearKeyframe(CGFloat(10), duration: 0.08)
+                    LinearKeyframe(CGFloat(-6), duration: 0.08)
+                    SpringKeyframe(CGFloat(0), duration: 0.2)
+                }
+            }
+            .sensoryFeedback(.success, trigger: status) { _, new in new == .saved }
+            .sensoryFeedback(.error, trigger: status) { old, new in old == .saving && new == .failed }
+            .onChange(of: status) { _, new in
+                if new == .failed { failures += 1 }
+            }
+    }
+
+    private var button: some View {
         Button(action: save) {
             switch status {
             case .saving:
@@ -424,27 +446,12 @@ struct SaveButton: View {
         }
         .buttonStyle(.borderedProminent)
         .disabled(status == .saving)
-        .keyframeAnimator(initialValue: 0.0, trigger: reduceMotion ? 0 : failures) { content, offset in
-            content.offset(x: offset)
-        } keyframes: { _ in
-            KeyframeTrack {
-                LinearKeyframe(-10, duration: 0.06)
-                LinearKeyframe(10, duration: 0.08)
-                LinearKeyframe(-6, duration: 0.08)
-                SpringKeyframe(0, duration: 0.2)
-            }
-        }
-        .sensoryFeedback(.success, trigger: status) { _, new in new == .saved }
-        .sensoryFeedback(.error, trigger: status) { old, new in old == .saving && new == .failed }
-        .onChange(of: status) { _, new in
-            if new == .failed { failures += 1 }
-        }
     }
 }
 ```
 
 - **Two haptics, two conditions.** Success plays only on arriving at `.saved`; error only on `saving → failed`. Going back to `.idle` plays nothing.
-- **The shake** is a keyframe animation on a single `Double` (a track with no key path animates the whole value). It's triggered by a failure counter, so two failures in a row shake twice, which a `status` trigger wouldn't do if the status were already `.failed`.
+- **The shake** is a keyframe animation on a single `CGFloat` (a track with no key path animates the whole value). The values are typed explicitly and the button is a separate property because, written as one long chain with untyped literals, this `body` made the Swift 6.3 compiler give up with "unable to type-check this expression in reasonable time" when it was checked against the iOS SDK. Splitting a long modifier chain and naming literal types is the standard fix. It's triggered by a failure counter, so two failures in a row shake twice, which a `status` trigger wouldn't do if the status were already `.failed`.
 - **Reduce Motion** stops the shake but not the haptic. The failure is also visible in whatever error text the screen shows; a shake alone isn't enough for someone who isn't looking at the button.
 
 Use haptics the way you'd use sound: for outcomes and for physical-feeling interactions (snapping to a detent, reaching a limit). A haptic on every scroll or every keystroke becomes noise, and people stop noticing the ones that matter. The Human Interface Guidelines have a Playing haptics page with Apple's guidance.
