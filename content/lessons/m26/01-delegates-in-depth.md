@@ -209,7 +209,7 @@ final class ThemeViewController: UIViewController, ColorPickerViewDelegate {
 
 The call site is the interesting part: `delegate?.colorPicker?(self, shouldSelect: color)`. The second `?` asks "is this method implemented?" and the whole expression is `nil` when it isn't, so `?? true` supplies the default. `ThemeViewController` skips the optional method and the code still compiles.
 
-The advantage: the caller **knows** whether the delegate implemented the method, and can behave differently (`UITableView` uses its own row height when `tableView(_:heightForRowAt:)` is missing). The costs: `@objc` limits the protocol to classes, the parameter and return types must be representable in Objective-C (no Swift structs with generics, no enums with associated values), and it doesn't exist on Linux.
+The advantage: the caller **knows** whether the delegate implemented the method, and can behave differently (`UITableView` uses its own row height when `tableView(_:heightForRowAt:)` is missing). The costs: `@objc` limits the protocol to classes, the parameter and return types must be representable in Objective-C (no Swift structs except bridged ones like `String` and `Array`, no enums with associated values), and it doesn't exist on Linux.
 
 ### Default implementations
 
@@ -274,7 +274,7 @@ looping
 
 Each conformer wrote only the method it cares about. `ProgressLabel` gets the default `playerShouldLoop`, which says `false`, so the first run stops. `Jukebox` gets the empty default `player(_:didReach:)`, so the second run prints nothing until it loops.
 
-This works with any Swift type and on every platform, and the call site is an ordinary call. What you lose is knowledge: the player can't tell whether `Jukebox` *chose* to return `false` or never thought about it. That's fine when the default is a real answer. When "not implemented" must mean something different from any value, use an `@objc optional` requirement or return an optional (`-> Int?`, where `nil` means "use your own default").
+This works with any Swift type and on every platform, and the call site is an ordinary call. What you lose is knowledge: the player can't tell whether `ProgressLabel` *chose* to return `false` or never thought about it. That's fine when the default is a real answer. When "not implemented" must mean something different from any value, use an `@objc optional` requirement or return an optional (`-> Int?`, where `nil` means "use your own default").
 
 ### The extension trap
 
@@ -856,7 +856,7 @@ rubric:
   - Reports at least "did complete with code" and a change event; asks at least one sensible question (should accept a character, or similar) with a safe default.
   - Optional methods are made optional with default implementations (or @objc optional), and the choice is justified.
   - The protocol is @MainActor and AnyObject; the property is weak and optional.
-  - Explains whether a data source is needed (it usually isn't: the view's content is what the user typed).
+  - "Explains whether a data source is needed (it usually isn't: the view's content is what the user typed)."
 solution: |
   A good answer:
 
