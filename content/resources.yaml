@@ -2325,3 +2325,129 @@ resources:
     why: "Observing network reachability changes."
     status: unverified
     verifiedAt: null
+  - id: swiftui-composing-gestures
+    title: "Composing SwiftUI gestures"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/composing-swiftui-gestures
+    kind: official
+    topic: "Gesture composition"
+    why: "Combining gestures simultaneously, in sequence or exclusively."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-gesturestate
+    title: "GestureState"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/gesturestate
+    kind: official
+    topic: "Gesture state"
+    why: "State that lives only while a gesture is active and resets afterward."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-magnifygesture
+    title: "MagnifyGesture"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/magnifygesture
+    kind: official
+    topic: "Pinch gestures"
+    why: "The iOS 17 magnification gesture."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-spring
+    title: "Spring"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/spring
+    kind: official
+    topic: "Springs"
+    why: "Spring parameters, presets and how duration and bounce map to stiffness and damping."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-phaseanimator
+    title: "phaseAnimator(_:trigger:content:animation:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/phaseanimator(_:trigger:content:animation:)
+    kind: official
+    topic: "Multi-step animation"
+    why: "Animating through a sequence of phases when a trigger changes."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-sensoryfeedback
+    title: "sensoryFeedback(_:trigger:condition:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/sensoryfeedback(_:trigger:condition:)
+    kind: official
+    topic: "Haptics"
+    why: "Playing haptic and other sensory feedback when a value changes."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-form
+    title: "Form"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/form
+    kind: official
+    topic: "Forms"
+    why: "Grouping controls for data entry with platform-appropriate styling."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-focusstate
+    title: "FocusState"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/focusstate
+    kind: official
+    topic: "Focus"
+    why: "Reading and moving focus between fields."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-accessibilityelement
+    title: "accessibilityElement(children:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/accessibilityelement(children:)
+    kind: official
+    topic: "Accessibility grouping"
+    why: "Combining or ignoring child views for assistive technologies."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-scaledmetric
+    title: "ScaledMetric"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/scaledmetric
+    kind: official
+    topic: "Dynamic Type"
+    why: "Scaling custom sizes with the user's text size."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-preparing-localization
+    title: "Preparing views for localization"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/preparing-views-for-localization
+    kind: official
+    topic: "SwiftUI localization"
+    why: "How Text, LocalizedStringKey and String Catalogs work together."
+    status: unverified
+    verifiedAt: null
+  - id: foundation-inflectionrule
+    title: "InflectionRule"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/inflectionrule
+    kind: official
+    topic: "Grammar agreement"
+    why: "Automatic grammar agreement in localized strings."
+    status: unverified
+    verifiedAt: null
+  - id: hig-playing-haptics
+    title: "Playing haptics"
+    source: Human Interface Guidelines
+    url: https://developer.apple.com/design/human-interface-guidelines/playing-haptics
+    kind: official
+    topic: "Haptics"
+    why: "When haptic feedback helps and when it's noise."
+    status: unverified
+    verifiedAt: null
+  - id: hig-right-to-left
+    title: "Right to left"
+    source: Human Interface Guidelines
+    url: https://developer.apple.com/design/human-interface-guidelines/right-to-left
+    kind: official
+    topic: "Right-to-left layout"
+    why: "Which elements flip in right-to-left languages and which don't."
+    status: unverified
+    verifiedAt: null
