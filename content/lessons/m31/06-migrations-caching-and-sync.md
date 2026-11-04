@@ -32,7 +32,7 @@ mastery:
   - Write a file loader that reads the version first, applies each step in order and throws for a future version.
   - Predict which reads of a memory-plus-disk cache come from memory, from disk or miss, given the times.
   - Explain why server versions beat device timestamps for ordering writes, and pick a strategy per field for a conflict.
-resources: [foundation-nscache, swift-actor, swift-testing-docs]
+resources: [coredata-staged-migrations, swiftdata-schemamigrationplan, foundation-nscache, swift-actor, swift-testing-docs]
 cards:
   - id: m31-l06-c1
     front: Which Core Data changes can lightweight migration infer?

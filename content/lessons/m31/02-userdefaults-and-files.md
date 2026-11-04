@@ -32,7 +32,7 @@ mastery:
   - Test a settings type against UserDefaults(suiteName:) and clean up with removePersistentDomain(forName:).
   - Save and load a Codable value with .atomic writes and handle CocoaError.fileReadNoSuchFile.
   - Pick complete, completeUnlessOpen or completeUntilFirstUserAuthentication for a file from when the app needs to read it.
-resources: [apple-platform-security, swift-book-properties, swift-book-error-handling]
+resources: [foundation-userdefaults, uikit-encrypting-files, apple-platform-security, swift-book-properties, swift-book-error-handling]
 cards:
   - id: m31-l02-c1
     front: What does register(defaults:) do, and when do you call it?

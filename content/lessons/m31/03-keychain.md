@@ -32,7 +32,7 @@ mastery:
   - Treat errSecItemNotFound as "no value" when reading and as success when deleting, and throw on any other non-success status.
   - Pick the accessibility class for a token that a background refresh must read, and for a secret used only in the foreground.
   - Test code that uses secrets against an in-memory store that satisfies the same protocol as the Keychain store.
-resources: [keychain-services, apple-platform-security, swift-actor, swift-book-protocols]
+resources: [security-keychain-accessibility, keychain-services, apple-platform-security, swift-actor, swift-book-protocols]
 cards:
   - id: m31-l03-c1
     front: What identifies a generic password item in the Keychain?

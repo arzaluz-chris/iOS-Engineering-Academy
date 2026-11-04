@@ -30,7 +30,7 @@ mastery:
   - Explain why a refresh token belongs in the Keychain and a thumbnail belongs in a cache, using what each store guarantees.
   - Justify SwiftData or Core Data for a given project, citing deployment target, UI framework and existing code.
   - Draw a storage plan for a feature with one store per piece of data and the source of truth marked.
-resources: [keychain-services, apple-platform-security, foundation-nscache]
+resources: [foundation-userdefaults, swiftdata, keychain-services, apple-platform-security, foundation-nscache]
 cards:
   - id: m31-l01-c1
     front: Name the five questions that pick a store.

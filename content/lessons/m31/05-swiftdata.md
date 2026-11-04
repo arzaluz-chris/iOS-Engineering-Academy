@@ -35,7 +35,7 @@ mastery:
   - Write a FetchDescriptor with a #Predicate that captures local constants, a sort order and a fetch limit.
   - Predict which values a predicate matches, including optional properties.
   - Write a @ModelActor that imports records, saves, and returns persistent identifiers.
-resources: [swift-actor, swift-sendable, swift-book-concurrency]
+resources: [swiftdata, swiftdata-modelcontext, swiftdata-modelactor, foundation-predicate, swift-actor, swift-sendable, swift-book-concurrency]
 cards:
   - id: m31-l05-c1
     front: What does @Model add to a class?

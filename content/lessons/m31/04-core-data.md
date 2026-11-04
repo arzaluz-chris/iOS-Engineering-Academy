@@ -32,7 +32,7 @@ mastery:
   - Import data on a background context inside perform, save there, and return object IDs instead of objects.
   - Explain why the compiler rejects capturing a managed object in a perform closure.
   - Choose a merge policy for a background sync and predict which values survive a conflict.
-resources: [swift-sendable, swift-book-concurrency]
+resources: [coredata-stack, coredata-background, swift-sendable, swift-book-concurrency]
 cards:
   - id: m31-l04-c1
     front: What are the parts of the Core Data stack?
