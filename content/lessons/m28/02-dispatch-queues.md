@@ -35,7 +35,7 @@ mastery:
   - Choose a QoS class for loading an email the user just tapped, for a prefetch, and for a cleanup job.
   - Create a labeled serial queue that targets a global queue.
   - Cancel a queued DispatchWorkItem and predict which items still run.
-resources: [understanding-hangs, swift-mainactor]
+resources: [dispatch-dispatchqueue, dispatch-dispatchworkitem, understanding-hangs, swift-mainactor]
 cards:
   - id: m28-l02-c1
     front: Serial vs concurrent dispatch queue?

@@ -38,7 +38,7 @@ mastery:
   - Explain why queue.sync from inside a block on the same serial queue never returns.
   - Fix a lock-ordering deadlock by imposing one order.
   - Turn on Thread Sanitizer and say where it can't run.
-resources: [understanding-hangs]
+resources: [foundation-nslock, os-allocated-unfair-lock, synchronization-mutex, xcode-data-races, understanding-hangs]
 cards:
   - id: m28-l06-c1
     front: Data race vs race condition?

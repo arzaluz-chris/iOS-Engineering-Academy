@@ -36,7 +36,7 @@ mastery:
   - Write a shake with an additive CAKeyframeAnimation.
   - Predict what's on screen and what the model holds at several moments of an explicit animation.
   - Hit-test a moving layer with its presentation layer.
-resources: [uikit-uiview, uikit-uiview-frame]
+resources: [quartzcore-calayer, quartzcore-cabasicanimation, uikit-uiview, uikit-uiview-frame]
 cards:
   - id: m27-l02-c1
     front: Why does a layer snap back when a CABasicAnimation ends?

@@ -32,7 +32,7 @@ mastery:
   - Write a thread-safe dictionary wrapper with sync reads and barrier writes.
   - Cap simultaneous downloads at two with a semaphore and verify the cap.
   - Explain why semaphore.wait() on the main thread for a result delivered on the main queue never returns.
-resources: [understanding-hangs]
+resources: [dispatch-dispatchgroup, dispatch-dispatchsemaphore, dispatch-barrier-flag, understanding-hangs]
 cards:
   - id: m28-l03-c1
     front: DispatchGroup notify vs wait?

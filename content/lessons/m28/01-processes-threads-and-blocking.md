@@ -34,7 +34,7 @@ mastery:
   - Predict the print order when a handler starts background work that reports back on the main queue.
   - Explain to a colleague why "concurrent" and "parallel" aren't synonyms, with a single-core example.
   - Move a slow step out of a main-thread handler and deliver its result back on the main queue.
-resources: [understanding-hangs, swift-mainactor]
+resources: [dispatch-dispatchqueue, understanding-hangs, swift-mainactor]
 cards:
   - id: m28-l01-c1
     front: Process vs thread?

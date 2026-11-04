@@ -38,7 +38,7 @@ mastery:
   - Build a star rating that VoiceOver users adjust by swiping up and down.
   - Compute a contrast ratio and say whether it meets the minimum for a given text size and weight.
   - Plan an accessibility test pass with Accessibility Inspector audits and VoiceOver on a device.
-resources: [uikit-accessibility-traits, hig, uikit-scaling-fonts, uikit-uiview]
+resources: [uikit-supporting-voiceover, accessibility-inspector, uikit-accessibility-traits, hig, uikit-scaling-fonts, uikit-uiview]
 cards:
   - id: m27-l06-c1
     front: How do you make VoiceOver read a cell as one element?

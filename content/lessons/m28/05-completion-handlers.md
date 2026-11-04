@@ -30,7 +30,7 @@ mastery:
   - Write a loader that takes a callbackQueue parameter defaulting to .main.
   - Rewrite a function that calls its handler synchronously on one path and asynchronously on another so it's always asynchronous.
   - Fix "capture of 'completion' with non-Sendable type" by marking the parameter @Sendable.
-resources: [swift-result, swift-book-closures, swift-mainactor]
+resources: [dispatch-dispatchqueue, swift-sendable, swift-result, swift-book-closures, swift-mainactor]
 cards:
   - id: m28-l05-c1
     front: On which thread does a completion handler run?

@@ -36,7 +36,7 @@ mastery:
   - Predict the state, on-screen value and final value of a property animator after pause, scrub, stop and finish calls.
   - Compute where an ease-in-ease-out curve is at a given fraction of its duration.
   - Make an existing animation respect Reduce Motion.
-resources: [uikit-uiview, uikit-nslayoutconstraint, uikit-target-action, hig]
+resources: [uikit-uiviewpropertyanimator, uikit-reduce-motion, uikit-uiview, uikit-nslayoutconstraint, uikit-target-action, hig]
 cards:
   - id: m27-l01-c1
     front: How do you animate an Auto Layout change?

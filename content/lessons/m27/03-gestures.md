@@ -34,7 +34,7 @@ mastery:
   - Configure a single tap and a double tap on the same view and say why the single tap now fires later.
   - Predict the state sequence of a long-press recognizer for a given touch sequence.
   - Write a custom recognizer with touchesBegan, touchesMoved, touchesEnded, touchesCancelled and reset.
-resources: [uikit-target-action, uikit-responder-chain, uikit-uiview]
+resources: [uikit-gesture-state-machine, uikit-gesture-recognizer-delegate, uikit-target-action, uikit-responder-chain, uikit-uiview]
 cards:
   - id: m27-l03-c1
     front: What does translation(in:) return on each .changed call?

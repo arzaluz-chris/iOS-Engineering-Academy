@@ -32,7 +32,7 @@ mastery:
   - Write an Operation subclass that stops at the next item after being cancelled.
   - Predict that an operation still runs when its dependency was cancelled, and guard against it.
   - Argue for OperationQueue or GCD given a feature's needs.
-resources: [understanding-hangs]
+resources: [foundation-operationqueue, foundation-operation, understanding-hangs]
 cards:
   - id: m28-l04-c1
     front: How do you make operation B run only after A has finished?

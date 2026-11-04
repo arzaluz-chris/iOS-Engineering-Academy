@@ -37,7 +37,7 @@ mastery:
   - Format a price, a large number and a date for a given locale, and explain why tests pin the locale and time zone.
   - Lay out a row with leading and trailing constraints and decide which views must not mirror.
   - Compute where a view lands when a manual layout is mirrored for right-to-left.
-resources: [uikit-nslayoutanchor, uikit-scaling-fonts, swift-book-strings, uikit-uiview]
+resources: [xcode-string-catalog, uikit-semantic-content-attribute, uikit-nslayoutanchor, uikit-scaling-fonts, swift-book-strings, uikit-uiview]
 cards:
   - id: m27-l07-c1
     front: How does text get into a String Catalog?

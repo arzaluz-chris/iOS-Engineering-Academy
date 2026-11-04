@@ -37,7 +37,7 @@ mastery:
   - Predict how many times layoutSubviews() and draw(_:) run after a series of invalidation calls and a resize.
   - Convert data values into drawing coordinates with a flipped y axis.
   - Explain a render hitch caused by a shadow without a path and fix it.
-resources: [uikit-uiview, understanding-hangs, xcode-reduce-memory]
+resources: [uikit-uigraphicsimagerenderer, xcode-understanding-hitches, uikit-uiview, understanding-hangs, xcode-reduce-memory]
 cards:
   - id: m27-l04-c1
     front: setNeedsDisplay() vs setNeedsLayout()?

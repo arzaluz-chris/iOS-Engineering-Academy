@@ -35,7 +35,7 @@ mastery:
   - Write an image loader that checks a cache, coalesces in-flight loads and downsamples.
   - Compute the decoded size of a photo and of its thumbnail, and pick a maximum pixel size for a cell.
   - Write a reference-counted request tracker that only cancels a load nobody needs.
-resources: [uikit-prepareforreuse, uikit-cell-registration, uikit-diffable-data-sources, xcode-reduce-memory, understanding-hangs]
+resources: [foundation-nscache, uikit-prefetching, xcode-understanding-hitches, uikit-prepareforreuse, uikit-cell-registration, uikit-diffable-data-sources, xcode-reduce-memory, understanding-hangs]
 cards:
   - id: m27-l05-c1
     front: How does the wrong-image bug happen?
