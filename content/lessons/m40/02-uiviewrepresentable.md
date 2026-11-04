@@ -33,7 +33,7 @@ mastery:
   - Predict the sequence of make, update and dismantle calls for a series of state changes.
   - Make a multi-line UILabel wrap correctly inside SwiftUI with sizeThatFits.
   - Move clean-up into dismantleUIView and explain why it can't use self.
-resources: [uikit-uiview, uikit-intrinsic-content-size, swiftui-layout, swiftui-environment, swiftui-environmentvalues, swiftui-declaring-custom-view]
+resources: [swiftui-uiviewrepresentable, uikit-uiview, uikit-intrinsic-content-size, swiftui-layout, swiftui-environment, swiftui-environmentvalues, swiftui-declaring-custom-view]
 cards:
   - id: m40-l02-c1
     front: When does SwiftUI call makeUIView and when updateUIView?

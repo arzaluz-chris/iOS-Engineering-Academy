@@ -2550,3 +2550,84 @@ resources:
     why: "A widely used open-source snapshot testing library; its README explains setup, recording and strategies."
     status: unverified
     verifiedAt: null
+  - id: swiftui-uihostingcontroller
+    title: "UIHostingController"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/uihostingcontroller
+    kind: official
+    topic: "Hosting SwiftUI"
+    why: "Embedding SwiftUI views in a UIKit view controller hierarchy."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-uihostingconfiguration
+    title: "UIHostingConfiguration"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/uihostingconfiguration
+    kind: official
+    topic: "SwiftUI in cells"
+    why: "Using SwiftUI as the content of collection and table view cells."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-uikit-integration
+    title: "UIKit integration"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/uikit-integration
+    kind: official
+    topic: "Interoperability"
+    why: "Apple's overview of mixing SwiftUI and UIKit."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-uiviewrepresentable
+    title: "UIViewRepresentable"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/uiviewrepresentable
+    kind: official
+    topic: "Wrapping UIKit views"
+    why: "Creating, updating and tearing down a UIKit view from SwiftUI."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-uiviewcontrollerrepresentable
+    title: "UIViewControllerRepresentable"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/uiviewcontrollerrepresentable
+    kind: official
+    topic: "Wrapping view controllers"
+    why: "Presenting UIKit view controllers from SwiftUI."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-uiapplicationdelegateadaptor
+    title: "UIApplicationDelegateAdaptor"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/uiapplicationdelegateadaptor
+    kind: official
+    topic: "App delegate in SwiftUI"
+    why: "Using a UIKit app delegate in a SwiftUI app."
+    status: unverified
+    verifiedAt: null
+  - id: photosui-phpickerviewcontroller
+    title: "PHPickerViewController"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/photosui/phpickerviewcontroller
+    kind: official
+    topic: "Photo picker"
+    why: "The system photo picker and its delegate."
+    status: unverified
+    verifiedAt: null
+  - id: uikit-observation-tracking
+    title: "Updating views automatically with observation tracking in UIKit"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/updating-views-automatically-with-observation-tracking-in-uikit
+    kind: official
+    topic: "UIKit observation"
+    why: "How UIKit tracks @Observable reads and updates views automatically."
+    status: unverified
+    verifiedAt: null
+  - id: uikit-updateproperties
+    title: "updateProperties()"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiviewcontroller/updateproperties()
+    kind: official
+    topic: "UIKit observation"
+    why: "The iOS 26 method UIKit calls to apply observed property changes."
+    status: unverified
+    verifiedAt: null

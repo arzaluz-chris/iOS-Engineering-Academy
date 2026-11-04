@@ -30,7 +30,7 @@ mastery:
   - Refresh context.coordinator.parent in updateUIView and predict what goes wrong without it.
   - Choose between comparing with the view's state, ignoring own writes, and tracking the last applied value.
   - Fix the "main actor-isolated property can not be mutated from a nonisolated context" error on a coordinator.
-resources: [uikit-target-action, uikit-uitextfielddelegate, swiftui-binding, swift-mainactor, swift-book-protocols, swift-book-arc]
+resources: [swiftui-uiviewrepresentable, uikit-target-action, uikit-uitextfielddelegate, swiftui-binding, swift-mainactor, swift-book-protocols, swift-book-arc]
 cards:
   - id: m40-l03-c1
     front: Why does a UIViewRepresentable need a coordinator to receive delegate callbacks?

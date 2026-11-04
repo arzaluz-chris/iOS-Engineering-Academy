@@ -32,7 +32,7 @@ mastery:
   - Dismiss a SwiftUI-presented controller by setting its presentation state to false.
   - Predict which result a flow reports when the delegate and the sheet's onDismiss both fire.
   - Push an existing UIKit view controller onto a SwiftUI NavigationStack and wire its closure.
-resources: [uikit-uiviewcontroller, swiftui-sheet-item, swiftui-navigationstack, requesting-protected-resources, swift-book-closures, swift-book-enumerations]
+resources: [swiftui-uiviewcontrollerrepresentable, photosui-phpickerviewcontroller, uikit-uiviewcontroller, swiftui-sheet-item, swiftui-navigationstack, requesting-protected-resources, swift-book-closures, swift-book-enumerations]
 cards:
   - id: m40-l04-c1
     front: What's the difference between UIViewRepresentable and UIViewControllerRepresentable?

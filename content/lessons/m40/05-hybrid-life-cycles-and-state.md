@@ -32,7 +32,7 @@ mastery:
   - Use updateProperties() on iOS 26, viewWillLayoutSubviews() with the Info.plist key on iOS 18, and withObservationTracking on iOS 17.
   - Predict which model changes trigger an update in an observation-tracking model.
   - Wire UIApplicationDelegateAdaptor and a scene delegate class in a SwiftUI App.
-resources: [observation, observation-tracking, swiftui-managing-model-data, swift-mainactor, swiftui-app, swiftui-scenephase, uikit-app-life-cycle, information-property-list]
+resources: [uikit-observation-tracking, uikit-updateproperties, swiftui-uiapplicationdelegateadaptor, observation, observation-tracking, swiftui-managing-model-data, swift-mainactor, swiftui-app, swiftui-scenephase, uikit-app-life-cycle, information-property-list]
 cards:
   - id: m40-l05-c1
     front: A UIKit screen and a hosted SwiftUI view both show a cart count. How do you keep them in sync?

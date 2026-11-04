@@ -33,7 +33,7 @@ mastery:
   - Predict what a hosted view shows after the UIKit side changes its own copy of the data.
   - Wire Save and Cancel closures from a hosted form to the presenting view controller with [weak self].
   - Configure a list cell with UIHostingConfiguration and adjust its margins.
-resources: [uikit-custom-container, uikit-uinavigationcontroller, uikit-sheet-presentation, uikit-intrinsic-content-size, uikit-cell-registration, swift-book-arc]
+resources: [swiftui-uihostingcontroller, swiftui-uihostingconfiguration, swiftui-uikit-integration, uikit-custom-container, uikit-uinavigationcontroller, uikit-sheet-presentation, uikit-intrinsic-content-size, uikit-cell-registration, swift-book-arc]
 cards:
   - id: m40-l01-c1
     front: How do you show a SwiftUI view from a UIKit view controller?

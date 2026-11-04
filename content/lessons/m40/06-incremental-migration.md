@@ -33,7 +33,7 @@ mastery:
   - Write a coordinator that builds either a UIKit controller or a hosting controller for a screen based on a flag.
   - Expose brand colors and a primary button style to both frameworks from one definition.
   - Name the screens in an app that you'd wrap or leave in UIKit, and why.
-resources: [swiftui-migrating-navigation, uikit-uinavigationcontroller, swiftui-navigationstack, uikit-button-configuration, swift-snapshot-testing, xcuiautomation, swift-testing-docs]
+resources: [swiftui-uikit-integration, swiftui-migrating-navigation, uikit-uinavigationcontroller, swiftui-navigationstack, uikit-button-configuration, swift-snapshot-testing, xcuiautomation, swift-testing-docs]
 cards:
   - id: m40-l06-c1
     front: Which screens do you migrate to SwiftUI first?
