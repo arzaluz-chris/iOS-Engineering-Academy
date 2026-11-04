@@ -1,7 +1,7 @@
 ---
 id: m28-l06
 title: Race conditions and deadlocks
-description: "The two ways shared state goes wrong with threads: corrupted by accesses that overlap, or stuck because everyone is waiting. You separate data races from race conditions, watch Swift 6 reject data races at compile time, protect state with a serial queue or a lock and keep the promise @unchecked Sendable makes, trace the sync-on-the-current-queue and lock-ordering deadlocks, meet priority inversion, and learn what Thread Sanitizer checks for."
+description: "The two ways shared state goes wrong with threads: corrupted by accesses that overlap, or stuck because everyone is waiting. You separate data races from race conditions, watch Swift 6 flag data races at compile time (as errors, or as warnings for closures passed straight to Dispatch in Xcode), protect state with a serial queue or a lock and keep the promise @unchecked Sendable makes, trace the sync-on-the-current-queue and lock-ordering deadlocks, meet priority inversion, and learn what Thread Sanitizer checks for."
 module: m28
 order: 6
 level: advanced
@@ -11,7 +11,7 @@ swiftVersion: "6.4"
 prerequisites: [m28-l05]
 objectives:
   - Define a data race and a race condition and tell them apart in code.
-  - Read the Swift 6 errors for captured vars, non-Sendable captures, mutable global state and mutable Sendable classes.
+  - Read the Swift 6 diagnostics for captured vars, non-Sendable captures, mutable global state and mutable Sendable classes, and know why Xcode shows some of them as warnings.
   - Protect mutable state with a serial queue or a lock, and make check-then-act operations atomic.
   - Explain what @unchecked Sendable promises and when the promise holds.
   - Trace a sync-on-the-current-queue deadlock and a lock-ordering deadlock, and fix each.
@@ -42,7 +42,7 @@ resources: [understanding-hangs]
 cards:
   - id: m28-l06-c1
     front: Data race vs race condition?
-    back: "Data race: unsynchronized simultaneous access to the same memory with at least one write; undefined behavior, and what Swift 6 rejects at compile time. Race condition: a logic bug where the outcome depends on timing, possible even when every access is locked (check-then-act)."
+    back: "Data race: unsynchronized simultaneous access to the same memory with at least one write; undefined behavior, and what Swift 6 flags at compile time. Race condition: a logic bug where the outcome depends on timing, possible even when every access is locked (check-then-act)."
   - id: m28-l06-c2
     front: What does @unchecked Sendable promise?
     back: "That you synchronize every access to the type's mutable state yourself (a lock, a serial queue). The compiler stops checking; if you break the promise, you get data races that Swift 6 was supposed to prevent."
@@ -62,7 +62,7 @@ cards:
 Threads share memory, so you have to decide who may touch which data when: get it wrong one way and accesses overlap (races), get it wrong the other way and everyone waits for everyone else (deadlocks).
 
 > [!note] Sources and what was run
-> Thread Sanitizer details come from Apple's articles "Diagnosing memory, thread, and crash issues early" and "Data races"; lock behavior from the `NSLock` and `OSAllocatedUnfairLock` references; deadlock rules from `DispatchQueue` and `sync(execute:)`, all read November 2026. Plain-Swift blocks were compiled and run with Swift 6.3 on Linux, and the compiler errors quoted are the ones it printed. Racy programs aren't run here: a data race is undefined behavior, so a run that "looks fine" proves nothing. The deadlock blocks are marked as not run, because a deadlocked program never finishes.
+> Thread Sanitizer details come from Apple's articles "Diagnosing memory, thread, and crash issues early" and "Data races"; lock behavior from the `NSLock` and `OSAllocatedUnfairLock` references; deadlock rules from `DispatchQueue` and `sync(execute:)`, all read November 2026. Plain-Swift blocks were compiled and run with Swift 6.3 on Linux, and the compiler diagnostics quoted are the ones it printed there. Racy programs aren't run here: a data race is undefined behavior, so a run that "looks fine" proves nothing. The deadlock blocks are marked as not run, because a deadlocked program never finishes.
 
 ## Data races and race conditions
 
@@ -74,19 +74,26 @@ A **race condition** is a logic-level problem: the outcome depends on the order 
 
 Fixing data races is necessary but not sufficient. Swift 6 helps with the first; only design fixes the second.
 
-## Swift 6 rejects data races at compile time
+## Swift 6 flags data races at compile time
 
-In Swift 6 language mode, the compiler checks every closure that can run on another thread (`@Sendable` closures, like the ones `DispatchQueue.async` takes) and every piece of global state. The racy versions of this module's examples don't compile.
+In Swift 6 language mode, the compiler checks every closure that can run on another thread (`@Sendable` closures) and every piece of global state. The racy versions of this module's examples are rejected, with one Xcode caveat:
+
+> [!warning] In Xcode, Dispatch closures give warnings, not errors
+> The examples below pass the closure to a small helper, `runInBackground`, whose parameter **this lesson** declares `@Sendable`. Swift 6 checks a closure parameter you declare yourself strictly, so these are errors everywhere. If you pass the same closure straight to `DispatchQueue.global().async { … }`, the result depends on the platform: Swift 6.3 on Linux reports errors, but on macOS (Xcode 26.6, Swift 6.3.3, Swift 6 language mode) the same three diagnostics appear as **warnings** and the program builds and runs. The likely reason is that Dispatch is imported as `@preconcurrency` on Apple platforms, which downgrades these Sendable diagnostics; this lesson didn't verify the mechanism, only the behavior. The warnings still describe real data races. Treat every one of them as an error: fix it, don't ship it.
 
 Mutating a local variable from concurrent closures:
 
 ```swift no-compile mutation of captured var 'finished' in concurrently-executing code
 import Dispatch
 
+func runInBackground(_ work: @escaping @Sendable () -> Void) {
+    DispatchQueue.global().async(execute: work)
+}
+
 func countDownloads() {
     var finished = 0
     for _ in 1...3 {
-        DispatchQueue.global().async {
+        runInBackground {
             finished += 1
         }
     }
@@ -95,7 +102,7 @@ func countDownloads() {
 countDownloads()
 ```
 
-Swift 6.3: `error: mutation of captured var 'finished' in concurrently-executing code`. Three closures on a concurrent queue could increment it at the same time.
+Swift 6.3: `error: mutation of captured var 'finished' in concurrently-executing code`. Three closures on a concurrent queue could increment it at the same time. (With `DispatchQueue.global().async` directly, Xcode shows the same text as a warning.)
 
 Mutable global or static state that any thread can reach:
 
@@ -126,8 +133,12 @@ final class Cache {
     var items: [String: Int] = [:]
 }
 
+func runInBackground(_ work: @escaping @Sendable () -> Void) {
+    DispatchQueue.global().async(execute: work)
+}
+
 func fill(_ cache: Cache) {
-    DispatchQueue.global().async {
+    runInBackground {
         cache.items["a"] = 1
     }
 }
@@ -135,7 +146,7 @@ func fill(_ cache: Cache) {
 fill(Cache())
 ```
 
-Swift 6.3: `error: capture of 'cache' with non-Sendable type 'Cache' in a '@Sendable' closure`, with the note `class 'Cache' does not conform to the 'Sendable' protocol`.
+Swift 6.3: `error: capture of 'cache' with non-Sendable type 'Cache' in a '@Sendable' closure`, with the note `class 'Cache' does not conform to the 'Sendable' protocol`. Again, Xcode shows it as a warning when the closure goes straight to `DispatchQueue.async`.
 
 And you can't just declare it `Sendable` while it has unprotected mutable state:
 
@@ -150,7 +161,7 @@ final class Account: Sendable {
 
 Swift 6.3: `error: stored property 'balance' of 'Sendable'-conforming class 'Account' is mutable`. The compiler can't see that the lock protects `balance`; it only sees a `var` that several threads could reach.
 
-These errors are the compiler doing what Thread Sanitizer does at runtime, but before you ship. The next sections are how to satisfy it **honestly**.
+These diagnostics are the compiler doing what Thread Sanitizer does at runtime, but before you ship. That's why a Sendable warning in Xcode deserves the same attention as an error. The next sections are how to satisfy it **honestly**.
 
 ## Protecting state: a serial queue or a lock
 
@@ -549,7 +560,7 @@ solution: |
 id: m28-l06-e3
 type: solve
 prompt: |
-  Swift 6 rejects this class when you try to share it between threads, and it's also racy by design:
+  Swift 6 flags this class when you try to share it between threads (an error, or a warning in Xcode if the closure goes straight to `DispatchQueue.async`), and it's also racy by design:
 
   ```swift
   final class SeatMap {
@@ -752,7 +763,7 @@ choices:
   - text: "Enable Thread Sanitizer on a release build and ship it to TestFlight users."
     correct: false
     why: "TSan doesn't run on devices, and it slows the app 2x to 20x."
-  - text: "Rely on Swift 6 mode alone: it rejects every data race at compile time."
+  - text: "Rely on Swift 6 mode alone: it flags every data race at compile time."
     correct: false
     why: "It can't check inside C code or through @unchecked Sendable, which is exactly where this module's risks are."
   - text: "Run the app 1,000 times and check the results are always the same."
@@ -765,7 +776,7 @@ solution: |
 ## Summary
 
 - A **data race** is unsynchronized simultaneous access to the same memory with at least one write: undefined behavior. A **race condition** is a timing-dependent logic bug that can exist even when every access is locked.
-- Swift 6 rejects data races it can see: mutating captured `var`s in concurrent closures, mutable global and static state, non-`Sendable` captures, and mutable stored properties in `Sendable` classes.
+- Swift 6 flags data races it can see: mutating captured `var`s in concurrent closures, mutable global and static state, non-`Sendable` captures, and mutable stored properties in `Sendable` classes. For closures passed straight to `DispatchQueue.async`, Xcode reports the capture problems as warnings (Linux reports errors); treat them as errors.
 - Protect state with a private serial queue or a lock (`NSLock` everywhere; `OSAllocatedUnfairLock` and `Mutex` on newer Apple systems). Guard reads as well as writes, and use `defer` to unlock.
 - `@unchecked Sendable` turns off the compiler's check. It's honest only for a `final` class whose mutable state is `private` and always accessed under its lock or queue. `Mutex` lets you skip the promise entirely.
 - Make check-then-act operations atomic: design methods around the operation callers need.

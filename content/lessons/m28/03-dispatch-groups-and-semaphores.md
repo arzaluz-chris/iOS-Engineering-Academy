@@ -489,7 +489,7 @@ choices:
     correct: true
   - text: "group.wait() blocks the main thread until every feed has loaded."
     correct: true
-  - text: "feeds is appended from background callbacks without synchronization (and Swift 6 rejects mutating a captured var there)."
+  - text: "feeds is appended from background callbacks without synchronization (and Swift 6 flags mutating a captured var there)."
     correct: true
   - text: "A DispatchGroup can only track closures passed to async(group:), not callbacks."
     correct: false
@@ -502,7 +502,7 @@ solution: |
   1. **Late `enter()`.** `loadFeed` returns before its callback runs, so the loop finishes with the group's count at zero and `wait()` can return immediately with no feeds. Call `group.enter()` before `api.loadFeed`.
   2. **`leave()` on success only.** A failed feed never leaves, so the group never finishes. Use `defer { group.leave() }` as the first line of the callback.
   3. **`wait()` on the main thread.** Even when it works, it hangs the UI for as long as the slowest feed. Use `group.notify(queue: .main) { self.show(feeds) }`.
-  4. **Unsynchronized `append`.** The callbacks run on background threads, possibly at the same time, and all append to the same array. That's a data race; Swift 6 rejects it with "mutation of captured var 'feeds' in concurrently-executing code" if the callback is `@Sendable`. Record results through a serial queue (or append on the main queue).
+  4. **Unsynchronized `append`.** The callbacks run on background threads, possibly at the same time, and all append to the same array. That's a data race. Swift 6 flags it with "mutation of captured var 'feeds' in concurrently-executing code": an error when the API declares its callback parameter `@Sendable`, but only a warning in Xcode when the closure is passed straight to `DispatchQueue.async`. Either way, record results through a serial queue (or append on the main queue).
 
   `enter()`/`leave()` exist precisely so groups can track callback-based work.
 ````

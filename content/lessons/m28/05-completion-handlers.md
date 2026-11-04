@@ -23,7 +23,7 @@ terms:
   - term: Releasing Zalgo
     definition: "Slang for an API that sometimes calls its completion handler synchronously (before returning) and sometimes asynchronously, so callers can't predict the order of their own code."
   - term: "@Sendable closure"
-    definition: "A closure type the compiler checks for safe use from other threads: everything it captures must be Sendable. Dispatch's async takes one, so anything it captures, including a completion handler, must be @Sendable too."
+    definition: "A closure type the compiler checks for safe use from other threads: everything it captures must be Sendable. Dispatch's async takes one, so anything it captures, including a completion handler, should be @Sendable too. (Xcode reports violations there as warnings, Linux as errors.)"
 mastery:
   - Read an API's documentation and say which thread its callback runs on; when it doesn't say, assume a background thread.
   - Wrap UI updates from a background callback in DispatchQueue.main.async with [weak self].
@@ -43,7 +43,7 @@ cards:
     back: "Callers can't predict whether their code after the call runs before or after the callback. Always call it asynchronously, on the documented queue, even for errors detected up front."
   - id: m28-l05-c4
     front: "Swift 6: \"capture of 'completion' with non-Sendable type\". Fix?"
-    back: "Mark the parameter @escaping @Sendable. DispatchQueue.async takes a @Sendable closure, so everything it captures, including your completion handler, must be Sendable."
+    back: "Mark the parameter @escaping @Sendable. A @Sendable closure (one you declare, or DispatchQueue.async's) may only capture Sendable values. For closures passed straight to DispatchQueue.async, Xcode shows this as a warning, not an error: fix it anyway."
 ---
 
 ## The idea in one sentence
@@ -259,7 +259,7 @@ id 404 on main: true, failed: notFound(404)
 
 - The doc comment states the contract: once, asynchronously, on `callbackQueue`.
 - `finish(_:)` is the only place that calls `completion`. Each path calls `finish` once and then ends (`return` after the guard, the end of the closure otherwise). Reviewing "exactly once" means checking each path reaches `finish` exactly once, not hunting for `completion(` calls.
-- `finish` is marked `@Sendable` because it's called from inside a `@Sendable` closure. Without it, Swift 6.3 reports `concurrently-executed local function 'finish' must be marked as '@Sendable'`.
+- `finish` is marked `@Sendable` because it's called from inside a closure that runs on another thread. Without it, Swift 6.3 on Linux reports `error: concurrently-executed local function 'finish' must be marked as '@Sendable'`. In Xcode, because the closure here goes straight to `DispatchQueue.async`, the problem shows up as a warning; mark `finish` `@Sendable` either way.
 - The invalid ID is detected immediately, but its failure is still delivered **asynchronously** through `callbackQueue`. The next section explains why that matters.
 - The loop waits for each load before starting the next, only so the three lines always print in the same order.
 
@@ -291,19 +291,26 @@ On the success path: start spinner, `isLoading = true`, later stop spinner. On t
 
 ## Swift 6: completion handlers must be @Sendable
 
-`DispatchQueue.async` takes a `@Sendable` closure, and a `@Sendable` closure can only capture `Sendable` values. A plain function type isn't `Sendable`, because it could capture anything. So a completion handler that you call from inside `async` has to be declared `@Sendable` too:
+A closure that runs on another thread should be `@Sendable`, and a `@Sendable` closure can only capture `Sendable` values. A plain function type isn't `Sendable`, because it could capture anything. So a completion handler that you call from inside background work has to be declared `@Sendable` too. Here the background work goes through a helper whose parameter the example declares `@Sendable` itself:
 
 ```swift no-compile capture of 'completion' with non-Sendable type '(String) -> Void' in a '@Sendable' closure
 import Dispatch
 
+func runInBackground(_ work: @escaping @Sendable () -> Void) {
+    DispatchQueue.global().async(execute: work)
+}
+
 func loadName(id: Int, completion: @escaping (String) -> Void) {
-    DispatchQueue.global().async {
+    runInBackground {
         completion("user \(id)")
     }
 }
 ```
 
 Swift 6.3 reports `error: capture of 'completion' with non-Sendable type '(String) -> Void' in a '@Sendable' closure`, with the note `a function type must be marked '@Sendable' to conform to 'Sendable'`. The fix is in the note: `completion: @escaping @Sendable (String) -> Void`.
+
+> [!warning] With DispatchQueue.async directly, Xcode only warns
+> Write `DispatchQueue.global().async { completion(…) }` instead of going through the helper and the result depends on the platform. Swift 6.3 on Linux reports the error above. On macOS (Xcode 26.6, Swift 6.3.3, Swift 6 language mode) the same text appears as a **warning** and the app builds. The likely reason is that Dispatch is imported as `@preconcurrency` on Apple platforms. The warning still means a non-`Sendable` value crosses threads. Treat it as an error and add `@Sendable`.
 
 That pushes the requirement to the caller: the closure **you** pass must also only capture `Sendable` things. Capturing a `let` string or a `DispatchGroup` is fine; capturing a non-`Sendable` class instance or mutating a captured `var` isn't. In view controllers, `self` is `@MainActor`, which makes it `Sendable`, so `[weak self]` works. Lesson 6 shows how to make your own classes `Sendable` honestly. Module 29 goes further: a callback can be typed `@MainActor`, and then the compiler itself proves it runs on the main thread.
 
@@ -429,7 +436,7 @@ solution: |
   3. **Double call.** The `do`/`catch` already called `completion`; the line after it calls it again. Delete it.
   4. **Undocumented background queue.** The callback runs on a global queue, and view controllers will touch UIKit in it. Say so in the doc comment, or better, take `callbackQueue: DispatchQueue = .main` and deliver everything through it.
 
-  A single `finish(_:)` that does `callbackQueue.async { completion(result) }`, called exactly once on each path, fixes 1, 3 and 4 at once and makes 2 easy to spot. `@Sendable` is correct: the closure is captured by `async`, which requires it.
+  A single `finish(_:)` that does `callbackQueue.async { completion(result) }`, called exactly once on each path, fixes 1, 3 and 4 at once and makes 2 easy to spot. `@Sendable` is correct: the closure is captured by the `async` closure and called from a background thread.
 ````
 
 ````exercise
@@ -582,11 +589,11 @@ solution: |
 ````exercise
 id: m28-l05-e4
 type: comprehension
-prompt: "Swift 6 rejects your function with \"capture of 'completion' with non-Sendable type '(Data) -> Void' in a '@Sendable' closure\". What's the right fix?"
+prompt: "Swift 6 flags your function with \"capture of 'completion' with non-Sendable type '(Data) -> Void' in a '@Sendable' closure\" (an error on Linux, a warning in Xcode when the closure goes straight to DispatchQueue.async). What's the right fix?"
 choices:
   - text: "Declare the parameter as completion: @escaping @Sendable (Data) -> Void."
     correct: true
-    why: "That's what the note suggests: the handler is captured by DispatchQueue.async's @Sendable closure, so it must be Sendable itself."
+    why: "That's what the note suggests: the handler is captured by a @Sendable closure that runs on another thread, so it must be Sendable itself."
   - text: "Remove @escaping so the closure isn't captured."
     correct: false
     why: "The handler is called after the function returns, so it has to escape. The compiler would reject that too."
@@ -638,4 +645,4 @@ solution: |
 - Hop to the main queue with `DispatchQueue.main.async` before touching UIKit, with `[weak self]` if the screen might go away. Swift 6 treats that closure as main-actor code, so the compiler checks the UI half for you.
 - When you write a callback API, document the callback queue or take a `callbackQueue` parameter that defaults to `.main`.
 - Exactly once still applies, and now also **always asynchronously**: route every path through one `finish(_:)` that dispatches to the callback queue, including errors you detect before starting any work.
-- In Swift 6, a completion handler captured by `DispatchQueue.async` must be `@escaping @Sendable`, and so must a local `finish` function called from there.
+- In Swift 6, a completion handler captured by background work must be `@escaping @Sendable`, and so must a local `finish` function called from there. With `DispatchQueue.async` directly, Xcode reports a missing `@Sendable` as a warning rather than an error; treat it as an error.

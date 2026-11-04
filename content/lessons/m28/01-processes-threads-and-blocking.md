@@ -403,7 +403,7 @@ solution: |
   words: 60000
   ```
 
-  The order is guaranteed: `words:` is printed by a closure on the main queue, and the main queue can't run anything until the top-level code (which prints `handler returns`) reaches the run loop. `text` is an immutable `String`, a value type that's safe to read from another thread, so the background closure can capture it. Lesson 6 explains why capturing a `var` instead would be rejected.
+  The order is guaranteed: `words:` is printed by a closure on the main queue, and the main queue can't run anything until the top-level code (which prints `handler returns`) reaches the run loop. `text` is an immutable `String`, a value type that's safe to read from another thread, so the background closure can capture it. Lesson 6 explains why capturing a `var` instead would be flagged as a data race.
 ````
 
 ````exercise

@@ -222,7 +222,7 @@ volume is 7
 As an optimization, Apple notes that `sync` "executes blocks on the current thread whenever possible", except that blocks submitted to the main queue always run on the main thread. So `sync` doesn't necessarily involve another thread at all; it guarantees exclusion and order, not a thread.
 
 > [!note] Why the async closure is @Sendable
-> In Swift 6, `async`'s parameter is declared `@escaping @Sendable`. `@Sendable` means the compiler checks that whatever the closure captures is safe to use from another thread: `let` constants of value types like `Int` and `String` are fine; a `var` or a plain class instance isn't. `sync`'s closure isn't `@Sendable`, because it never outlives the call. Lesson 6 shows the errors you get when a capture isn't safe; Module 29 explains `Sendable` in full.
+> In Swift 6, `async`'s parameter is declared `@escaping @Sendable`. `@Sendable` means the compiler checks that whatever the closure captures is safe to use from another thread: `let` constants of value types like `Int` and `String` are fine; a `var` or a plain class instance isn't. `sync`'s closure isn't `@Sendable`, because it never outlives the call. Lesson 6 shows the diagnostics you get when a capture isn't safe. Swift 6.3 on Linux reports them as errors; Xcode (macOS, Swift 6.3.3) reports them as warnings for closures passed to `DispatchQueue.async` (most likely because Dispatch is imported as `@preconcurrency` on Apple platforms). Treat those warnings as errors. Module 29 explains `Sendable` in full.
 
 ## Custom queues and target queues
 
