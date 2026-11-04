@@ -81,8 +81,10 @@ struct Recipe {
 final class RecipeListViewController: UIViewController {
     var onSelect: ((Recipe) -> Void)?
     var onAdd: (() -> Void)?
+    private let recipes: [Recipe]
 
-    init() {
+    init(recipes: [Recipe]) {
+        self.recipes = recipes
         super.init(nibName: nil, bundle: nil)
         title = "Recipes"
         navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .add, primaryAction: UIAction { [weak self] _ in
@@ -134,7 +136,7 @@ final class RecipesCoordinator {
     }
 
     func start() {
-        let list = RecipeListViewController()
+        let list = RecipeListViewController(recipes: [])
         list.onSelect = { [weak self] recipe in
             self?.showDetail(for: recipe)
         }
