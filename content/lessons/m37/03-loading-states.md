@@ -30,7 +30,7 @@ mastery:
   - Implement refresh() that keeps loaded content and exposes a separate refresh error.
   - Guard a load against late results with a cancellation check after each await.
   - Render the five situations in SwiftUI with ProgressView, ContentUnavailableView, a retry button and .refreshable.
-resources: [swiftui-managing-ui-state, swift-task, swift-cancellationerror, swift-task-cancellation-handler, swift-book-enumerations, testing-async-code]
+resources: [swiftui-task-id, swiftui-refreshable, swiftui-contentunavailableview, swiftui-managing-ui-state, swift-task, swift-cancellationerror, swift-task-cancellation-handler, swift-book-enumerations, testing-async-code]
 cards:
   - id: m37-l03-c1
     front: Why a LoadState enum instead of isLoading, error and items?

@@ -30,7 +30,7 @@ mastery:
   - Declare a service with @Entry and read it in a view, creating the screen's model in .task.
   - Write an unimplemented default and explain what a no-op default hides.
   - Build AppDependencies with live(), preview() and test() and use it from the App, a preview and a test.
-resources: [swiftui-environmentvalues, swiftui-app, swiftui-previews, swift-sendable, swift-actor, swift-book-protocols]
+resources: [swiftui-environment, swiftui-environmentvalues, swiftui-app, swiftui-previews, swift-sendable, swift-actor, swift-book-protocols]
 cards:
   - id: m37-l02-c1
     front: What should a SwiftUI screen's model depend on?

@@ -30,7 +30,7 @@ mastery:
   - Insert a new model and delete rows with onDelete through the environment's context.
   - Write an add/edit sheet whose fields are a draft, so Cancel never leaves changes behind.
   - Create a preview container with sample data and explain why previews should never use the on-disk store.
-resources: [swiftdata, swiftdata-modelcontext, foundation-predicate, swiftui-previews, swiftui-app, swiftui-sheet-item]
+resources: [swiftdata-query, swiftui-scene-modelcontainer, swiftdata-filtering-sorting, swiftdata-adding-editing, swiftdata, swiftdata-modelcontext, foundation-predicate, swiftui-previews, swiftui-app, swiftui-sheet-item]
 cards:
   - id: m37-l05-c1
     front: Where do you set the ModelContainer, and what does it give the views?

@@ -32,7 +32,7 @@ mastery:
   - Implement server-wins, client-wins and keep-both policies and say which data each suits.
   - Explain and test why a retried push with the same operation ID doesn't apply twice.
   - Build a SwiftUI list over SwiftData that shows per-item pending state and an overall sync status, syncing on launch, on return to the foreground, after edits and on pull to refresh.
-resources: [swiftdata, swiftui-scenephase, swift-actor, swift-mainactor, fowler-test-double, swift-testing-docs]
+resources: [network-nwpathmonitor, swiftdata, swiftui-scenephase, swift-actor, swift-mainactor, fowler-test-double, swift-testing-docs]
 cards:
   - id: m37-l06-c1
     front: What does the UI read in an offline-first app?

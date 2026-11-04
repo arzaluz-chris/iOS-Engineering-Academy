@@ -30,7 +30,7 @@ mastery:
   - Name the signs that justify a view model and point at them in a given screen.
   - Build an @Observable view model with an enum status, a derived canSubmit and a guard against double taps, and test it with a fake service.
   - Argue both sides of MV vs MVVM and choose for a specific feature.
-resources: [swiftui-managing-ui-state, observation, swiftui-migrating-to-observable, swift-mainactor, swift-testing-docs]
+resources: [swiftui-managing-model-data, swiftui-managing-ui-state, observation, swiftui-migrating-to-observable, swift-mainactor, swift-testing-docs]
 cards:
   - id: m37-l01-c1
     front: Does a SwiftUI screen need a view model by default?

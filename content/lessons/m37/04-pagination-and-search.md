@@ -30,7 +30,7 @@ mastery:
   - Make refresh cancel an in-flight page and discard its result.
   - "Wire .searchable and .task(id: query) to a model's search(_:) that sleeps first, checks cancellation after each await and skips empty queries."
   - Test both with a gated source and an injected sleep, without real waiting.
-resources: [swift-task, swift-cancellationerror, swiftui-foreach, swiftui-performant-scrollable-stacks, swift-mainactor, testing-async-code]
+resources: [swiftui-task-id, swift-clock, swift-task, swift-cancellationerror, swiftui-foreach, swiftui-performant-scrollable-stacks, swift-mainactor, testing-async-code]
 cards:
   - id: m37-l04-c1
     front: How does a SwiftUI list know when to load the next page?

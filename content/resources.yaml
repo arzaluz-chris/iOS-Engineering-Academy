@@ -2244,3 +2244,84 @@ resources:
     why: "Apple's guide to sharing @Observable model data across views."
     status: unverified
     verifiedAt: null
+  - id: swiftui-task-id
+    title: "task(id:name:priority:file:line:_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/task(id:name:priority:file:line:_:)
+    kind: official
+    topic: "Tasks tied to views"
+    why: "Starting async work with a view and restarting it when an identifier changes."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-refreshable
+    title: "refreshable(action:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/refreshable(action:)
+    kind: official
+    topic: "Pull to refresh"
+    why: "Adding a refresh action that runs as an async task."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-contentunavailableview
+    title: "ContentUnavailableView"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/contentunavailableview
+    kind: official
+    topic: "Empty states"
+    why: "A standard view for empty and no-results states."
+    status: unverified
+    verifiedAt: null
+  - id: swiftdata-query
+    title: "Query"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftdata/query
+    kind: official
+    topic: "@Query"
+    why: "Fetching SwiftData models into a view with filters and sorting."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-scene-modelcontainer
+    title: "modelContainer(_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/scene/modelcontainer(_:)
+    kind: official
+    topic: "SwiftData containers"
+    why: "Attaching a SwiftData container to a scene."
+    status: unverified
+    verifiedAt: null
+  - id: swiftdata-filtering-sorting
+    title: "Filtering and sorting persistent data"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftdata/filtering-and-sorting-persistent-data
+    kind: official
+    topic: "SwiftData queries"
+    why: "Building dynamic predicates and sort descriptors for queries."
+    status: unverified
+    verifiedAt: null
+  - id: swiftdata-adding-editing
+    title: "Adding and editing persistent data in your app"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftdata/adding-and-editing-persistent-data-in-your-app
+    kind: official
+    topic: "Editing SwiftData"
+    why: "Inserting and editing models from SwiftUI views."
+    status: unverified
+    verifiedAt: null
+  - id: swift-clock
+    title: "Clock"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/clock
+    kind: official
+    topic: "Clocks"
+    why: "The protocol for clocks you can inject to control time in tests."
+    status: unverified
+    verifiedAt: null
+  - id: network-nwpathmonitor
+    title: "NWPathMonitor"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/network/nwpathmonitor
+    kind: official
+    topic: "Connectivity"
+    why: "Observing network reachability changes."
+    status: unverified
+    verifiedAt: null
