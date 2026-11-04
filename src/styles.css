@@ -25,7 +25,7 @@
   --orange-2: #f05238;
   --orange-soft: rgba(255, 177, 100, 0.22);
   --pill-gradient: linear-gradient(to bottom right, var(--orange-1), var(--orange-2));
-  --nav-bg: rgba(255, 255, 255, 0.72);
+  --nav-bg: rgba(255, 255, 255, 0.5);
   --nav-text: #3d3d3d;
   --nav-selected: rgba(230, 150, 80, 0.9);
   --hero-bg: linear-gradient(179deg, #fac685 3%, #fbdab0 70%, #ffffff 100%);
@@ -101,7 +101,7 @@
     --link-hover: #7fdcff;
     --heading-accent: #ffb980;
     --orange-soft: rgba(240, 81, 56, 0.18);
-    --nav-bg: rgba(0, 0, 0, 0.45);
+    --nav-bg: rgba(0, 0, 0, 0.3);
     --nav-text: #ffffff;
     --nav-selected: rgb(221, 93, 67);
     --hero-bg: linear-gradient(180deg, #144173 0%, #141228 68%, #000000 100%);
@@ -156,7 +156,7 @@
   --link-hover: #7fdcff;
   --heading-accent: #ffb980;
   --orange-soft: rgba(240, 81, 56, 0.18);
-  --nav-bg: rgba(0, 0, 0, 0.45);
+  --nav-bg: rgba(0, 0, 0, 0.3);
   --nav-text: #ffffff;
   --nav-selected: rgb(221, 93, 67);
   --hero-bg: linear-gradient(180deg, #144173 0%, #141228 68%, #000000 100%);
@@ -372,12 +372,21 @@ main:focus-visible {
   top: 0;
   z-index: 30;
   background: var(--nav-bg);
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  backdrop-filter: blur(20px);
+  /* swift.org's bar: no border, just a faint shadow in light mode. The minifier adds the -webkit-
+     prefix; declaring it by hand made it drop the standard property, so Chrome showed no blur. */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+:root[data-theme='dark'] .site-nav {
+  box-shadow: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .site-nav {
+    box-shadow: none;
+  }
 }
 .is-home .site-nav {
-  border-bottom-color: transparent;
+  box-shadow: none;
 }
 .site-nav-inner {
   max-width: 1240px;
