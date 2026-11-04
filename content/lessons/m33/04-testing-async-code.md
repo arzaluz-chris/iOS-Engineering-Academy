@@ -31,7 +31,7 @@ mastery:
   - Write a gated repository and use it to check a loading or refreshing state.
   - Inject any Clock<Duration> into a view model and test a 300 ms debounce in milliseconds of real time.
   - Test that cancelling a pending search means the searcher is never called.
-resources: [swift-testing-docs, swift-checkedcontinuation, swift-task-cancellation-handler, swift-actor, swift-task, foundation-nslock]
+resources: [testing-async-code, swift-testing-docs, swift-checkedcontinuation, swift-task-cancellation-handler, swift-actor, swift-task, foundation-nslock]
 cards:
   - id: m33-l04-c1
     front: When does confirmation() check its count?

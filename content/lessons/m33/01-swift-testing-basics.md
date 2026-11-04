@@ -36,7 +36,7 @@ mastery:
   - Move shared setup into a suite's init and explain why each test gets its own instance.
   - Replace a for loop inside a test with arguments:, and say how many cases zip and two collections produce.
   - Attach traits to tests and suites, and say how each one shows up when the tests run.
-resources: [swift-testing-docs, swiftpm-docs, swift-book-error-handling, swift-book-initialization]
+resources: [testing-organizing-tests, testing-parameterized, testing-traits, swift-testing-docs, swiftpm-docs, swift-book-error-handling, swift-book-initialization]
 cards:
   - id: m33-l01-c1
     front: "#expect or #require?"

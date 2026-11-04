@@ -34,7 +34,7 @@ mastery:
   - Stop at the line that throws an error with a Swift error breakpoint, and move up the stack with frame select.
   - Pick the right instrument for "the screen stutters", "memory grows" and "an object never goes away".
   - Write a measure test plus a correctness test for an optimization, and say what makes the numbers trustworthy.
-resources: [lldb-tutorial, xcode-breakpoints, xcode-stepping, xcode-memory-use, xcode-reduce-memory, xcode-understanding-hitches, understanding-hangs]
+resources: [lldb-gdb-map, xcode-performance-tests, xcode-improving-performance, lldb-tutorial, xcode-breakpoints, xcode-stepping, xcode-memory-use, xcode-reduce-memory, xcode-understanding-hitches, understanding-hangs]
 cards:
   - id: m33-l06-c1
     front: v, p or po?

@@ -30,7 +30,7 @@ mastery:
   - Test a callback API with an expectation, and say why an async test must use fulfillment(of:timeout:) instead of wait(for:timeout:).
   - Convert an XCTestCase into a Swift Testing suite, mapping setUp to init and each assertion to #expect or #require.
   - List the kinds of tests that stay in XCTest and explain the risk of calling XCTest assertions from Swift Testing tests.
-resources: [swift-testing-docs, swift-checkedcontinuation, swift-book-inheritance, swift-book-closures]
+resources: [xctest, testing-migrating-from-xctest, swift-testing-docs, swift-checkedcontinuation, swift-book-inheritance, swift-book-closures]
 cards:
   - id: m33-l02-c1
     front: How does XCTest find and run test methods?

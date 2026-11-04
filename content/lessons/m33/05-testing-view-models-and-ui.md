@@ -33,7 +33,7 @@ mastery:
   - Write a presenter test that compares the view's call log and a leak check for the weak view reference.
   - Write an XCUITest that launches with an argument, waits for an element by identifier, taps a cell and checks a label.
   - Decide which checks belong in unit tests and which only a UI test can make.
-resources: [swift-testing-docs, uikit-accessibility-traits, accessibility-inspector, uikit-supporting-voiceover, swift-book-closures]
+resources: [xcuiautomation, fowler-test-pyramid, swift-testing-docs, uikit-accessibility-traits, accessibility-inspector, uikit-supporting-voiceover, swift-book-closures]
 cards:
   - id: m33-l05-c1
     front: "Final-state test or transition transcript?"

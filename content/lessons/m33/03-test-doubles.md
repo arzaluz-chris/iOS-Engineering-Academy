@@ -34,7 +34,7 @@ mastery:
   - Write a dummy, a stub, a spy, a mock and a fake for a Sendable repository protocol and a main-actor analytics protocol.
   - Fix "stored property ... of 'Sendable'-conforming class ... is mutable" in a spy by making it an actor.
   - Rewrite a test that verifies call sequences into one that checks state, and explain what it no longer catches.
-resources: [swift-book-protocols, swift-actor, swift-sendable, swift-testing-docs]
+resources: [fowler-test-double, swift-book-protocols, swift-actor, swift-sendable, swift-testing-docs]
 cards:
   - id: m33-l03-c1
     front: Dummy, stub, spy, mock, fake?
