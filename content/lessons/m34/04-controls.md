@@ -33,7 +33,7 @@ mastery:
   - Make an icon-only button that VoiceOver reads by its title.
   - Choose Image(decorative:), Image(_:) or an explicit accessibility label for a given image.
   - Write a validation type whose problems list drives the form's error text and its submit button's disabled state.
-resources: [uikit-supporting-voiceover, uikit-accessibility-traits, accessibility-inspector, uikit-scaling-fonts, hig]
+resources: [swiftui-accessibility-fundamentals, uikit-supporting-voiceover, uikit-accessibility-traits, accessibility-inspector, uikit-scaling-fonts, hig]
 cards:
   - id: m34-l04-c1
     front: What does $isOn give a Toggle?

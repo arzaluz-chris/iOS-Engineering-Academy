@@ -34,7 +34,7 @@ mastery:
   - Write an App with one WindowGroup and explain what happens when a second window opens on iPad.
   - Spot work that doesn't belong in a view's init or body.
   - Predict whether a counter's state survives when a condition switches between two if branches, and when an id changes.
-resources: [swift-book-opaque-types, swift-book-structures-classes, swift-book-properties, swiftui-scenephase, hig]
+resources: [swiftui-declaring-custom-view, swiftui-app, swiftui-managing-ui-state, swift-book-opaque-types, swift-book-structures-classes, swift-book-properties, swiftui-scenephase, hig]
 cards:
   - id: m34-l01-c1
     front: Imperative vs declarative UI in one sentence each?

@@ -34,7 +34,7 @@ mastery:
   - Replace a GeometryReader used only to size a view with containerRelativeFrame or a frame.
   - Add a pinned bottom bar to a ScrollView with safeAreaInset.
   - Write a Layout that gives all subviews the same width.
-resources: [hig, uikit-scaling-fonts, swift-book-protocols]
+resources: [swiftui-laying-out-simple-view, swiftui-layoutpriority, swiftui-composing-custom-layouts, hig, uikit-scaling-fonts, swift-book-protocols]
 cards:
   - id: m34-l06-c1
     front: SwiftUI layout in three steps?

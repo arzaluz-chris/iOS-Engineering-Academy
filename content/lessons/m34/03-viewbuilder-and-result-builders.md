@@ -32,7 +32,7 @@ mastery:
   - Fix a function that returns some View from an if-else without @ViewBuilder.
   - Write a container view that takes a @ViewBuilder content closure.
   - Replace a for loop and an AnyView in a body with ForEach and a builder.
-resources: [swift-book-opaque-types, swift-book-generics, swift-book-closures, swift-book-protocols]
+resources: [swiftui-viewbuilder, swift-book-opaque-types, swift-book-generics, swift-book-closures, swift-book-protocols]
 cards:
   - id: m34-l03-c1
     front: What does a result builder do?

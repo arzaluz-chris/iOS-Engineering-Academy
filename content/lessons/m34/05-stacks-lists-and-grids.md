@@ -32,7 +32,7 @@ mastery:
   - Explain why deleting the first row with index ids makes the wrong row keep its state.
   - Show a 10,000-item feed in a ScrollView with a LazyVStack and pinned section headers.
   - Lay out an adaptive photo grid and a two-column stats table.
-resources: [swift-book-protocols, swift-book-collection-types, uikit-supporting-voiceover, hig]
+resources: [swiftui-foreach, swiftui-performant-scrollable-stacks, swiftui-grid, swift-book-protocols, swift-book-collection-types, uikit-supporting-voiceover, hig]
 cards:
   - id: m34-l05-c1
     front: What does ForEach need from each element?

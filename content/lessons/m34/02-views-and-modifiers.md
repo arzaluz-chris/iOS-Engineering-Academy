@@ -31,7 +31,7 @@ mastery:
   - Turn three repeated modifier lines into a ViewModifier plus an extension method.
   - Split a 60-line body into named subviews that each take only the data they show.
   - Write previews for a view's empty, normal and error states.
-resources: [swift-book-opaque-types, swift-book-protocols, swift-book-extensions, hig]
+resources: [swiftui-configuring-views, swiftui-viewmodifier, swiftui-previews, swift-book-opaque-types, swift-book-protocols, swift-book-extensions, hig]
 cards:
   - id: m34-l02-c1
     front: What does a SwiftUI modifier return?
