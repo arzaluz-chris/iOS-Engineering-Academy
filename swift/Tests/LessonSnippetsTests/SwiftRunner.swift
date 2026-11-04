@@ -39,6 +39,34 @@ enum SwiftRunner {
         return Result(compiled: true, diagnostics: compile.stderr + run.stderr, exitCode: run.status, stdout: run.stdout)
     }
 
+    /// The iOS simulator SDK path, when Xcode is installed (macOS only).
+    static let iosSDKPath: String? = {
+        #if os(macOS)
+        guard let r = try? exec("/usr/bin/xcrun", ["--sdk", "iphonesimulator", "--show-sdk-path"]), r.status == 0 else { return nil }
+        let path = r.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+        return path.isEmpty ? nil : path
+        #else
+        return nil
+        #endif
+    }()
+
+    /// Type-checks a snippet against the iOS simulator SDK in Swift 6 mode. Returns the diagnostics
+    /// when it fails, nil when it type-checks.
+    static func typecheckForIOS(_ code: String, deploymentTarget: String) throws -> String? {
+        guard let sdk = iosSDKPath else { return "No iOS SDK on this machine" }
+        let dir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("lesson-ios-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let source = dir.appendingPathComponent("main.swift")
+        try code.write(to: source, atomically: true, encoding: .utf8)
+        let r = try exec("/usr/bin/xcrun", [
+            "--sdk", "iphonesimulator", "swiftc", "-typecheck", "-swift-version", "6",
+            "-sdk", sdk, "-target", "arm64-apple-ios\(deploymentTarget)-simulator", source.path,
+        ])
+        return r.status == 0 ? nil : r.stderr + r.stdout
+    }
+
     private static func exec(_ path: String, _ args: [String]) throws -> (status: Int32, stdout: String, stderr: String) {
         let p = Process()
         p.executableURL = URL(fileURLWithPath: path)

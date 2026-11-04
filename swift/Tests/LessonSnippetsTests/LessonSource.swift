@@ -14,8 +14,10 @@ import Foundation
 ///                                   (with ```output, the output is compared).
 ///   - ```swift runtime-error <text> → must compile, stop with a runtime error and
 ///                                   write <text> to stderr (with ```output, stdout is compared).
-///   - ```swift illustrative       → not run (code that depends on another block, Apple
-///                                   frameworks that don't build outside Xcode, and so on).
+///   - ```swift illustrative       → not run (code that depends on another block, and so on).
+/// - In any lesson, ```swift ios [deployment target] blocks (UIKit, SwiftUI, OSLog…) are
+///   type-checked against the iOS simulator SDK. That only happens on macOS with Xcode (the CI
+///   runner); on Linux they're skipped. The default deployment target is iOS 17.0.
 struct Snippet: Sendable, CustomStringConvertible {
     enum Expectation: Sendable, Equatable {
         case runs(output: String?, warning: String? = nil)
@@ -30,6 +32,17 @@ struct Snippet: Sendable, CustomStringConvertible {
     let location: String
     let code: String
     let expectation: Expectation
+
+    var description: String { "\(lesson) · \(location)" }
+}
+
+/// A block that must type-check against the iOS SDK (```swift ios).
+struct IOSSnippet: Sendable, CustomStringConvertible {
+    static let defaultTarget = "17.0"
+    let lesson: String
+    let location: String
+    let code: String
+    let deploymentTarget: String
 
     var description: String { "\(lesson) · \(location)" }
 }
@@ -122,6 +135,25 @@ enum LessonSource {
         }
     }
 
+    /// ```swift ios blocks in any lesson (prose and exercise solutions), with their deployment target.
+    static func iosSnippets() throws -> [IOSSnippet] {
+        try lessonFiles().flatMap { lesson -> [IOSSnippet] in
+            let (prose, exs) = splitExercises(lesson.body)
+            var sources = [("prose", prose)]
+            for ex in try exs.map(parseExercise) {
+                if let sol = ex.blocks["solution"] { sources.append(("\(ex.id) solution", sol)) }
+            }
+            return sources.flatMap { prefix, md in
+                fences(in: md).compactMap { f -> IOSSnippet? in
+                    let words = f.info.split(separator: " ").map(String.init)
+                    guard words.count >= 2, words[0] == "swift", words[1] == "ios" else { return nil }
+                    let target = words.count > 2 ? words[2] : IOSSnippet.defaultTarget
+                    return IOSSnippet(lesson: lesson.id, location: "\(prefix), iOS block at line \(f.line)", code: f.content, deploymentTarget: target)
+                }
+            }
+        }
+    }
+
     static func snippets(fromMarkdown md: String, lesson: String, prefix: String) -> [Snippet] {
         let fs = fences(in: md)
         var result: [Snippet] = []
@@ -131,6 +163,8 @@ enum LessonSource {
             let modifier = words.count > 1 ? words[1] : ""
             let location = "\(prefix), Swift block at line \(f.line)"
             if modifier == "illustrative" { continue }
+            // Apple-SDK code: checked by `iosSnippets()`, not run here.
+            if modifier == "ios" || modifier.hasPrefix("ios ") { continue }
             if modifier.hasPrefix("no-compile") {
                 let expected = modifier.dropFirst("no-compile".count).trimmingCharacters(in: .whitespaces)
                 result.append(Snippet(lesson: lesson, location: location, code: f.content, expectation: .failsToCompile(containing: expected)))
