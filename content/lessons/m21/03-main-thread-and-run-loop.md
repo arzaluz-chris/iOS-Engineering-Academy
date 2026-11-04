@@ -206,7 +206,7 @@ for hz in [60.0, 120.0] {
     let interval = frameInterval(hz: hz)
     print("\(Int(hz)) Hz: a frame every \((interval * 10).rounded() / 10) ms")
 }
-for work in [4.0, 12.0, 30.0, 200.0] {
+for work in [4.0, 12.0, 30.0, 210.0] {
     let at60 = missedFrames(mainThreadWorkMs: work, hz: 60)
     let at120 = missedFrames(mainThreadWorkMs: work, hz: 120)
     print("\(work) ms of work: misses \(at60) at 60 Hz, \(at120) at 120 Hz")
@@ -219,7 +219,7 @@ for work in [4.0, 12.0, 30.0, 200.0] {
 4.0 ms of work: misses 0 at 60 Hz, 0 at 120 Hz
 12.0 ms of work: misses 0 at 60 Hz, 1 at 120 Hz
 30.0 ms of work: misses 1 at 60 Hz, 3 at 120 Hz
-200.0 ms of work: misses 12 at 60 Hz, 24 at 120 Hz
+210.0 ms of work: misses 12 at 60 Hz, 25 at 120 Hz
 ```
 
 This is a simplification (the render server needs part of each interval too, so the real budget is smaller), but the shape is right: work that's fine at 60 Hz can stutter at 120 Hz. Apple's rough targets:
