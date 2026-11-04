@@ -1137,3 +1137,57 @@ resources:
     why: How scenes save and restore their interface state.
     status: unverified
     verifiedAt: null
+  - id: foundation-notificationcenter
+    title: NotificationCenter
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/notificationcenter
+    kind: official
+    topic: NotificationCenter
+    why: Posting and observing notifications, and how observers are removed.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-notification-messages
+    title: Notification center messages
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/notification-center-messages
+    kind: official
+    topic: Typed notifications
+    why: "The iOS 26 typed message API: MainActorMessage, AsyncMessage and observation tokens."
+    status: unverified
+    verifiedAt: null
+  - id: swift-checkedcontinuation
+    title: CheckedContinuation
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/checkedcontinuation
+    kind: official
+    topic: Continuations
+    why: How to bridge a callback API to async/await, and the rule that a continuation resumes exactly once.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-timer-scheduled-target
+    title: scheduledTimer(timeInterval:target:selector:userInfo:repeats:)
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/timer/scheduledtimer(timeinterval:target:selector:userinfo:repeats:)
+    kind: official
+    topic: Timers
+    why: The selector-based timer, which keeps a strong reference to its target until invalidated.
+    status: unverified
+    verifiedAt: null
+  - id: swift-kvo
+    title: Using Key-Value Observing in Swift
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/using-key-value-observing-in-swift
+    kind: official
+    topic: Key-value observing
+    why: How to observe a property of an NSObject subclass with observe(_:options:changeHandler:).
+    status: unverified
+    verifiedAt: null
+  - id: foundation-urlsession-init-delegate
+    title: init(configuration:delegate:delegateQueue:)
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/urlsession/init(configuration:delegate:delegatequeue:)
+    kind: official
+    topic: Strong delegates
+    why: URLSession's initializer, whose documentation says the session keeps a strong reference to its delegate.
+    status: unverified
+    verifiedAt: null
