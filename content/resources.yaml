@@ -2451,3 +2451,102 @@ resources:
     why: "Which elements flip in right-to-left languages and which don't."
     status: unverified
     verifiedAt: null
+  - id: xcode-swiftui-performance
+    title: "Understanding and improving SwiftUI performance"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/understanding-and-improving-swiftui-performance
+    kind: official
+    topic: "SwiftUI performance"
+    why: "Apple's guide to view updates, dependencies and finding slow bodies."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-layout
+    title: "Layout"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/layout
+    kind: official
+    topic: "Custom layouts"
+    why: "The Layout protocol: sizeThatFits, placeSubviews and caches."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-layoutvaluekey
+    title: "LayoutValueKey"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/layoutvaluekey
+    kind: official
+    topic: "Layout values"
+    why: "Passing per-subview values to a custom layout."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-preferencekey
+    title: "PreferenceKey"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/preferencekey
+    kind: official
+    topic: "Preferences"
+    why: "Passing values from child views up to their ancestors."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-anchorpreference
+    title: "anchorPreference(key:value:transform:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/anchorpreference(key:value:transform:)
+    kind: official
+    topic: "Anchor preferences"
+    why: "Reporting a child's geometry so an ancestor can draw relative to it."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-scrollposition
+    title: "ScrollPosition"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/scrollposition
+    kind: official
+    topic: "Scroll position"
+    why: "The iOS 18 type for reading and setting a scroll view's position."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-scrolltargetbehavior
+    title: "scrollTargetBehavior(_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/scrolltargetbehavior(_:)
+    kind: official
+    topic: "Scroll snapping"
+    why: "Paging and view-aligned snapping in scroll views."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-containerrelativeframe
+    title: "containerRelativeFrame(_:count:span:spacing:alignment:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/containerrelativeframe(_:count:span:spacing:alignment:)
+    kind: official
+    topic: "Container-relative sizing"
+    why: "Sizing views as a fraction of their container, as in carousels."
+    status: unverified
+    verifiedAt: null
+  - id: os-ossignposter
+    title: "OSSignposter"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/os/ossignposter
+    kind: official
+    topic: "Signposts"
+    why: "Marking intervals in your code so they show up in Instruments."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-imagerenderer
+    title: "ImageRenderer"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/imagerenderer
+    kind: official
+    topic: "Rendering views"
+    why: "Rendering a SwiftUI view to an image, for example in tests."
+    status: unverified
+    verifiedAt: null
+  - id: swift-snapshot-testing
+    title: "swift-snapshot-testing"
+    source: Point-Free (GitHub)
+    url: https://github.com/pointfreeco/swift-snapshot-testing
+    kind: reference
+    topic: Snapshot testing
+    why: "A widely used open-source snapshot testing library; its README explains setup, recording and strategies."
+    status: unverified
+    verifiedAt: null

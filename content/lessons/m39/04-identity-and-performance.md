@@ -33,7 +33,7 @@ mastery:
   - Replace a stored @ViewBuilder closure with its stored result.
   - Move filtering out of a ForEach in a List into the data it iterates.
   - Sort a list of performance claims into documented, WWDC and folklore.
-resources: [swiftui-performant-scrollable-stacks, swiftui-migrating-to-observable, swiftui-managing-model-data, swiftui-foreach, xcode-improving-performance]
+resources: [xcode-swiftui-performance, swiftui-performant-scrollable-stacks, swiftui-migrating-to-observable, swiftui-managing-model-data, swiftui-foreach, xcode-improving-performance]
 cards:
   - id: m39-l04-c1
     front: How do you make typing in a TextField stop re-running a whole screen?

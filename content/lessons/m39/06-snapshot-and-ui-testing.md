@@ -33,7 +33,7 @@ mastery:
   - Explain why a reference image recorded on one simulator fails on another, and what a tolerance can and can't fix.
   - Render a view in light and dark mode at a large Dynamic Type size to PNG data.
   - Set up a snapshot test with swift-snapshot-testing in a test target, record it, and re-record deliberately.
-resources: [swiftui-previews, swift-testing-docs, xctest, fowler-test-pyramid, uikit-uigraphicsimagerenderer]
+resources: [swiftui-imagerenderer, swift-snapshot-testing, swiftui-previews, swift-testing-docs, xctest, fowler-test-pyramid, uikit-uigraphicsimagerenderer]
 cards:
   - id: m39-l06-c1
     front: What should you unit test in a SwiftUI screen?

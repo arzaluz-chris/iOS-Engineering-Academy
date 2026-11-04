@@ -34,7 +34,7 @@ mastery:
   - Add a cache to a layout and say what goes in it and what doesn't.
   - Add a flowLineBreak() modifier backed by a LayoutValueKey.
   - Swap a FlowLayout for a VStackLayout at accessibility text sizes with AnyLayout.
-resources: [swiftui-composing-custom-layouts, swiftui-laying-out-simple-view, swiftui-layoutpriority, swift-book-protocols]
+resources: [swiftui-layout, swiftui-layoutvaluekey, swiftui-composing-custom-layouts, swiftui-laying-out-simple-view, swiftui-layoutpriority, swift-book-protocols]
 cards:
   - id: m39-l01-c1
     front: What does placeSubviews(in:proposal:subviews:cache:) receive?

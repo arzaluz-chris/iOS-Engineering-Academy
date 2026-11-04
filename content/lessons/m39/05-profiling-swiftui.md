@@ -33,7 +33,7 @@ mastery:
   - Compute the frame budget at 120 Hz and say whether a 14 ms body update can hitch.
   - Add a signposted interval around a model's filtering function.
   - Use _printChanges to see why a body ran, and remove it afterwards.
-resources: [xcode-improving-performance, xcode-understanding-hitches, understanding-hangs, swiftui-performant-scrollable-stacks, xcode-performance-tests]
+resources: [xcode-swiftui-performance, os-ossignposter, xcode-improving-performance, xcode-understanding-hitches, understanding-hangs, swiftui-performant-scrollable-stacks, xcode-performance-tests]
 cards:
   - id: m39-l05-c1
     front: How do you start profiling SwiftUI work?

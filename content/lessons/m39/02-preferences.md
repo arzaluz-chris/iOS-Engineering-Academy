@@ -32,7 +32,7 @@ mastery:
   - Fix a PreferenceKey that fails to compile in Swift 6 because of a static var.
   - Align the labels of a form with a preference, and say when a Grid is simpler.
   - Draw an underline under the selected segment with an anchor preference.
-resources: [swiftui-grid, swiftui-environment, swiftui-matchedgeometryeffect, swift-book-protocols]
+resources: [swiftui-preferencekey, swiftui-anchorpreference, swiftui-grid, swiftui-environment, swiftui-matchedgeometryeffect, swift-book-protocols]
 cards:
   - id: m39-l02-c1
     front: How does PreferenceKey.reduce(value:nextValue:) work?

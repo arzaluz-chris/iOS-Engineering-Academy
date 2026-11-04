@@ -33,7 +33,7 @@ mastery:
   - Give the width of a card for count 4, span 3 and spacing 8 in a 360-point container.
   - Show a compact title when the user scrolls past a header, with an action that runs twice per scroll, not on every point.
   - Mark which scroll APIs need iOS 18 and gate them with if #available.
-resources: [swiftui-performant-scrollable-stacks, swiftui-foreach, swiftui-state, swiftui-onchange]
+resources: [swiftui-scrollposition, swiftui-scrolltargetbehavior, swiftui-containerrelativeframe, swiftui-performant-scrollable-stacks, swiftui-foreach, swiftui-state, swiftui-onchange]
 cards:
   - id: m39-l03-c1
     front: ScrollViewReader, scrollPosition(id:) or ScrollPosition?
