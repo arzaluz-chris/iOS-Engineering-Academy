@@ -1632,3 +1632,102 @@ resources:
     why: How bearer tokens are sent in the Authorization header and how servers report invalid tokens.
     status: unverified
     verifiedAt: null
+  - id: swiftdata
+    title: "SwiftData"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftdata
+    kind: official
+    topic: "SwiftData"
+    why: "The SwiftData framework: models, containers, contexts and queries."
+    status: unverified
+    verifiedAt: null
+  - id: swiftdata-modelcontext
+    title: "ModelContext"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftdata/modelcontext
+    kind: official
+    topic: "SwiftData contexts"
+    why: "Inserting, fetching, saving and deleting models."
+    status: unverified
+    verifiedAt: null
+  - id: swiftdata-modelactor
+    title: "ModelActor"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftdata/modelactor
+    kind: official
+    topic: "Background SwiftData work"
+    why: "Doing SwiftData work off the main actor with its own context."
+    status: unverified
+    verifiedAt: null
+  - id: swiftdata-schemamigrationplan
+    title: "SchemaMigrationPlan"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftdata/schemamigrationplan
+    kind: official
+    topic: "SwiftData migrations"
+    why: "Versioned schemas and the stages that migrate between them."
+    status: unverified
+    verifiedAt: null
+  - id: foundation-predicate
+    title: "Predicate"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/predicate
+    kind: official
+    topic: "Predicates"
+    why: "The #Predicate macro and what expressions it supports."
+    status: unverified
+    verifiedAt: null
+  - id: foundation-userdefaults
+    title: "UserDefaults"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/userdefaults
+    kind: official
+    topic: "UserDefaults"
+    why: "What belongs in user defaults, registering defaults, and suites."
+    status: unverified
+    verifiedAt: null
+  - id: uikit-encrypting-files
+    title: "Encrypting your app's files"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/encrypting-your-app-s-files
+    kind: official
+    topic: "File protection"
+    why: "How data protection classes keep files encrypted while the device is locked."
+    status: unverified
+    verifiedAt: null
+  - id: coredata-stack
+    title: "Setting up a Core Data stack"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/coredata/setting-up-a-core-data-stack
+    kind: official
+    topic: "Core Data"
+    why: "Creating a persistent container and its view context."
+    status: unverified
+    verifiedAt: null
+  - id: coredata-background
+    title: "Using Core Data in the background"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/coredata/using-core-data-in-the-background
+    kind: official
+    topic: "Core Data threading"
+    why: "Background contexts, perform, and passing object IDs between contexts."
+    status: unverified
+    verifiedAt: null
+  - id: coredata-staged-migrations
+    title: "Staged migrations"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/coredata/staged-migrations
+    kind: official
+    topic: "Core Data migrations"
+    why: "Migrating a store through a sequence of model versions."
+    status: unverified
+    verifiedAt: null
+  - id: security-keychain-accessibility
+    title: "Restricting keychain item accessibility"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/security/restricting-keychain-item-accessibility
+    kind: official
+    topic: "Keychain accessibility"
+    why: "When a keychain item can be read, such as only after first unlock."
+    status: unverified
+    verifiedAt: null
