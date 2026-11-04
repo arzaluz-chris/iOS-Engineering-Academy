@@ -254,7 +254,9 @@ struct ReceiptScanner: View {
     @State private var isCameraPresented = false
     @State private var capturedImage: UIImage?
 
-    private let isCameraAvailable = UIImagePickerController.isSourceTypeAvailable(.camera)
+    private var isCameraAvailable: Bool {
+        UIImagePickerController.isSourceTypeAvailable(.camera)
+    }
 
     var body: some View {
         Button("Photograph Receipt") {
@@ -280,7 +282,7 @@ struct ReceiptScanner: View {
 - **Two outcomes, two methods.** `imagePickerController(_:didFinishPickingMediaWithInfo:)` delivers a dictionary; `.originalImage` holds the photo. `imagePickerControllerDidCancel(_:)` covers Cancel. Both pages say the delegate is responsible for dismissing: "should then dismiss the picker view." Here, again, that means setting SwiftUI's state.
 - **Availability first.** Apple's first step: "Verify that the device is capable of picking content from the desired source" with `isSourceTypeAvailable(_:)`. The simulator has no camera, so the button is disabled there.
 - **Full screen.** Apple: "Apple recommends that you present the camera interface only full screen." `.fullScreenCover` is SwiftUI's full-screen presentation.
-- **Permission.** Using the camera requires an `NSCameraUsageDescription` entry in Info.plist (Module 21, lesson 4); without it the system terminates the app when it tries to access the camera.
+- **Permission.** Using the camera requires an `NSCameraUsageDescription` entry in Info.plist. Module 21, lesson 4 quoted what happens without it: access fails, and AVFoundation's docs say "the system terminates your app."
 
 ## Results, exactly once
 

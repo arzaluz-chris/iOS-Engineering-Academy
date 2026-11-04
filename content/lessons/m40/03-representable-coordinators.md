@@ -306,7 +306,7 @@ struct StarRatingPicker: UIViewRepresentable {
 ```
 
 - The control sends `.valueChanged` **only from `userSelected`**, the user's tap. Setting `rating` from code (which `updateUIView` does) doesn't send actions. That's the same split `UITextView` documents, and it's what keeps this wrapper from looping. When you write a control, keep that convention.
-- `addTarget(_:action:for:)` takes the coordinator as target. Like a delegate, the target isn't retained by the control; SwiftUI keeps the coordinator alive.
+- `addTarget(_:action:for:)` takes the coordinator as target. Apple: "The control does not retain the object in the `target` parameter." SwiftUI is what keeps the coordinator alive.
 - This coordinator stores only the binding, and refreshes it in `updateUIView` for the same reason as `parent`.
 - `#selector` needs an `@objc` method on an `NSObject` subclass. The coordinator conforms to no protocol, so nothing would infer `@MainActor` for it. It's written explicitly.
 

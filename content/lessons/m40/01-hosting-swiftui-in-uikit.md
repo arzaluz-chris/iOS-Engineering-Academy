@@ -184,10 +184,10 @@ final class CartViewController: UIViewController {
 
 Line by line:
 
-- `addChild(summaryHost)` registers the parent-child relationship. UIKit calls `willMove(toParent:)` on the child for you.
+- `addChild(summaryHost)` "creates a parent-child relationship", which Apple calls "necessary when embedding the child view controller's view into the current view controller's content."
 - `translatesAutoresizingMaskIntoConstraints = false`, then `addSubview`, then constraints: the Auto Layout routine from Module 23. There's **no height constraint**. The hosted view's height comes from its content.
-- `didMove(toParent: self)` finishes the transition. Forgetting it is the most common containment bug: appearance callbacks and some trait forwarding depend on the relationship being complete.
-- `view.backgroundColor = .clear` lets the card's material show what's behind it. A hosting controller's view has a background of its own; whether you need to clear it depends on the design.
+- `didMove(toParent: self)` finishes the transition. Apple: a container "must call the `didMove(toParent:)` method of the child view controller after the transition to the new controller is complete or, if there is no transition, immediately after calling the `addChild(_:)` method." It's the step people forget, because the view shows up fine without it.
+- `view.backgroundColor = .clear` makes sure the hosting view draws no background of its own behind the card, so the material shows what's behind it. Whether you need it depends on the design.
 - `cartDidChange` replaces the root view with a new value. More on that below.
 
 ### sizingOptions: letting Auto Layout follow the content
@@ -451,7 +451,7 @@ func makeContactRegistration() -> UICollectionView.CellRegistration<UICollection
 > The hosting controller is pinned without a height and its content gets taller (more lines, larger text), but the card keeps its first height. `sizingOptions` defaults to the empty set. Set `[.intrinsicContentSize]` for Auto Layout, or `[.preferredContentSize]` for a container that reads `preferredContentSize`.
 
 > [!error] addChild without didMove(toParent:)
-> The view shows up, so it looks fine. But the containment transition is incomplete, and callbacks that depend on it misbehave later. The order is `addChild`, add the view and its constraints, `didMove(toParent: self)`. Removing reverses it: `willMove(toParent: nil)`, `removeFromSuperview()`, `removeFromParent()`.
+> The view shows up, so it looks fine, but Apple requires the call and the child never learns the transition finished. The order is `addChild`, add the view and its constraints, `didMove(toParent: self)`. Removing reverses it: `willMove(toParent: nil)`, `removeFromSuperview()`, `removeFromParent()`.
 
 > [!error] Expecting the hosted view to follow a value you passed once
 > `UIHostingController(rootView: Summary(count: count))` copies `count`. Assign a new `rootView` when it changes, or pass an `@Observable` model (lesson 5).

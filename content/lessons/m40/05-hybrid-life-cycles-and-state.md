@@ -384,7 +384,7 @@ final class CartBadgeViewController: UIViewController {
 }
 ```
 
-Without the key on iOS 18, this compiles and shows the right count the first time layout runs, then goes stale. Nothing warns you. If your app supports iOS 18, add the key.
+Without the key on iOS 18, this compiles and shows the right count whenever layout happens to run, but a model change alone doesn't trigger it, so the label lags behind the model. If your app supports iOS 18, add the key.
 
 > [!version] What's documented, exactly
 > - **iOS 26 and later**: automatic tracking is on; `updateProperties()` exists and is the recommended place for content and styling.
@@ -593,7 +593,7 @@ iOS 26 adds `UIHostingSceneDelegate`, which Apple describes as extending `UIScen
 > It's iOS 26 only. On iOS 18 use `viewWillLayoutSubviews()` or `layoutSubviews()` with `UIObservationTrackingEnabled` set to `YES`, and guard any `updateProperties()` override with availability.
 
 > [!error] Expecting automatic tracking on iOS 18 without the Info.plist key
-> The screen is right the first time and stale afterwards, with no warning. Add `UIObservationTrackingEnabled`.
+> The code compiles and the label is right whenever layout runs for some other reason, which makes the bug intermittent. Add `UIObservationTrackingEnabled`.
 
 > [!error] Registering withObservationTracking once
 > `onChange` fires once. Without registering again on every update, UIKit sees the first change and none after it.

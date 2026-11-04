@@ -339,7 +339,7 @@ struct WrappingLabel: UIViewRepresentable {
 - For a real width, `UILabel.sizeThatFits(_:)` (UIKit's own method on `UIView`) measures the text wrapped at that width. The wrapper takes the full width, like a paragraph, and the measured height.
 - Why wrap a label at all? SwiftUI's `Text` handles `AttributedString`. The realistic reason is existing code: an `NSAttributedString` produced by an HTML or Markdown pipeline you already ship, with attributes `Text` doesn't render.
 
-Without `sizeThatFits`, the default sizing isn't described on Apple's pages for the protocol; for a label, what you typically see is a single long line, truncated or overflowing. When a wrapped view sizes itself wrong, this method is where you fix it.
+Without `sizeThatFits`, nothing hands the label a width to wrap at, and Apple's pages for the protocol don't describe what the default sizing does instead. (A single unwrapped line is the symptom people usually report; it wasn't checked in the simulator for this lesson.) When a wrapped view sizes itself wrong, this method is where you fix it.
 
 ## Clean-up: dismantleUIView
 
@@ -443,8 +443,8 @@ Swift 6.3 says: `error: instance member 'clipName' cannot be used on type 'Loopi
 > [!error] Unguarded writes in updateUIView
 > The method runs for any relevant change, often with the same values. Unconditional writes reset cursors, scroll positions and animations. Guard with `if uiView.x != x`.
 
-> [!error] error: instance member 'url' cannot be used on type 'ClipPlayer'
-> `dismantleUIView` is static. Put what clean-up needs on the view or the coordinator.
+> [!error] Reading the representable's properties in dismantleUIView
+> It's static, so Swift reports `instance member '…' cannot be used on type '…'`, as in the `LoopingClip` example. Put what clean-up needs on the view or the coordinator.
 
 ## Exercises
 
