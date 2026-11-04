@@ -2028,3 +2028,120 @@ resources:
     why: "Building a custom container with the Layout protocol."
     status: unverified
     verifiedAt: null
+  - id: swiftui-symbolrenderingmode
+    title: "symbolRenderingMode(_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/symbolrenderingmode(_:)
+    kind: official
+    topic: "SF Symbols"
+    why: "Monochrome, hierarchical, palette and multicolor rendering of symbols."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-foregroundstyle
+    title: "foregroundStyle(_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/foregroundstyle(_:)
+    kind: official
+    topic: "Styling"
+    why: "Setting colors, gradients and hierarchical styles on content."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-navigationstack
+    title: "NavigationStack"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/navigationstack
+    kind: official
+    topic: "NavigationStack"
+    why: "Value-based navigation with a stack of views."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-navigationpath
+    title: "NavigationPath"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/navigationpath
+    kind: official
+    topic: "Navigation paths"
+    why: "A type-erased path you can push, pop and save."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-migrating-navigation
+    title: "Migrating to new navigation types"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/migrating-to-new-navigation-types
+    kind: official
+    topic: "Navigation migration"
+    why: "Moving from NavigationView and isActive links to NavigationStack."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-sheet-item
+    title: "sheet(item:onDismiss:content:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/sheet(item:ondismiss:content:)
+    kind: official
+    topic: "Sheets"
+    why: "Presenting a sheet driven by an optional identifiable item."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-confirmationdialog
+    title: "confirmationDialog(_:isPresented:titleVisibility:actions:message:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/confirmationdialog(_:ispresented:titlevisibility:actions:message:)
+    kind: official
+    topic: "Dialogs"
+    why: "Confirmation dialogs with actions and roles."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-tabview
+    title: "TabView"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/tabview
+    kind: official
+    topic: "Tabs"
+    why: "Tab-based navigation, including the Tab type and selection."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-navigationsplitview
+    title: "NavigationSplitView"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/navigationsplitview
+    kind: official
+    topic: "Split views"
+    why: "Two- and three-column navigation that adapts to iPhone and iPad."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-onopenurl
+    title: "onOpenURL(perform:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/onopenurl(perform:)
+    kind: official
+    topic: "Deep links"
+    why: "Handling URLs opened into a SwiftUI scene."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-scenestorage
+    title: "SceneStorage"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/scenestorage
+    kind: official
+    topic: "State restoration"
+    why: "Saving small pieces of per-scene state, such as an encoded navigation path."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-withanimation
+    title: "withAnimation(_:_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/withanimation(_:_:)
+    kind: official
+    topic: "Animation"
+    why: "Animating the view changes caused by a state change."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-matchedgeometryeffect
+    title: "matchedGeometryEffect(id:in:properties:anchor:isSource:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/matchedgeometryeffect(id:in:properties:anchor:issource:)
+    kind: official
+    topic: "Matched geometry"
+    why: "Animating a view between two places in the hierarchy."
+    status: unverified
+    verifiedAt: null
