@@ -714,3 +714,102 @@ resources:
     why: How dSYMs turn addresses in a crash report into function names and lines.
     status: unverified
     verifiedAt: null
+  - id: uikit-uiwindowscene
+    title: UIWindowScene
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiwindowscene
+    kind: official
+    topic: Window scenes
+    why: The scene object that manages your app's windows and how the scene delegate receives it.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-specifying-scenes
+    title: Specifying the scenes your app supports
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/specifying-the-scenes-your-app-supports
+    kind: official
+    topic: Scene configuration
+    why: How the scene manifest in Info.plist declares your scene delegate and configurations.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uiviewcontroller
+    title: UIViewController
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiviewcontroller
+    kind: official
+    topic: View controllers
+    why: The view controller reference, including its view-loading and appearance callbacks.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-viewisappearing
+    title: viewIsAppearing(_:)
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiviewcontroller/viewisappearing(_:)
+    kind: official
+    topic: Appearance callbacks
+    why: Where viewIsAppearing falls in the appearance order and what's already set when it runs.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uiview
+    title: UIView
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiview
+    kind: official
+    topic: Views
+    why: "The base view class: geometry, the view hierarchy, drawing and layout."
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uistackview
+    title: UIStackView
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uistackview
+    kind: official
+    topic: Stack views
+    why: How a stack view arranges its subviews along an axis, with distribution, alignment and spacing.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-nslayoutanchor
+    title: NSLayoutAnchor
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/nslayoutanchor
+    kind: official
+    topic: Layout anchors
+    why: The anchor API for building Auto Layout constraints in code.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-target-action
+    title: Responding to control-based events using target-action
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/responding-to-control-based-events-using-target-action
+    kind: official
+    topic: Target-action
+    why: How controls send actions to targets, in code and from Interface Builder.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-responder-chain
+    title: Using responders and the responder chain to handle events
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/using-responders-and-the-responder-chain-to-handle-events
+    kind: official
+    topic: Responder chain
+    why: How UIKit routes events through responders and how to change the chain.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uitextfielddelegate
+    title: UITextFieldDelegate
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uitextfielddelegate
+    kind: official
+    topic: Delegation
+    why: The text field delegate methods for editing and validating input.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-instantiate-with-creator
+    title: instantiateViewController(identifier:creator:)
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uistoryboard/instantiateviewcontroller(identifier:creator:)
+    kind: official
+    topic: Storyboards and dependency injection
+    why: How to create a storyboard view controller with your own initializer so you can inject dependencies.
+    status: unverified
+    verifiedAt: null
