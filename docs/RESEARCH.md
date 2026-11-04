@@ -21,7 +21,8 @@ Research date: November 2026. Anything marked "unverified" must be confirmed bef
 - **Concurrency:** Swift 6 language mode with strict isolation; since Swift 6.2, *approachable concurrency* and default `@MainActor` isolation (SE-0466). The thread model and GCD (still found in existing code) are taught first, then Swift Concurrency.
 - **SwiftUI:** `NavigationView` has been deprecated since iOS 16; `ObservableObject` isn't deprecated and is still taught as an important legacy API.
 - **Swift Testing:** included in the toolchain; since Swift 6.4 it interoperates with XCTest.
-- Not verified in official notes: automatic observation tracking in UIKit (WWDC26), a JSON project format in Xcode 27.2, a *source break* related to SE-0508.
+- UIKit automatic observation tracking is now documented by Apple (checked 4 Nov 2026): on iOS 18 it's opt-in with the Info.plist key `UIObservationTrackingEnabled` and runs in methods such as `viewWillLayoutSubviews()`; from iOS 26 it's on by default (the key's page says it isn't required) and `updateProperties()` exists. Module 40 teaches it that way.
+- Not verified in official notes: a JSON project format in Xcode 27.2, a *source break* related to SE-0508.
 
 ## APIs: current, legacy and deprecated
 
