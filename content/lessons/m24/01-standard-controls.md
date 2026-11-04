@@ -8,7 +8,7 @@ level: intermediate
 minutes: 60
 codeStatus: tested
 swiftVersion: "6.4"
-prerequisites: [m22-l05, m23-l03]
+prerequisites: [m22-l05, m23-l06]
 objectives:
   - Configure labels, text fields and text views for Dynamic Type and for the kind of text they hold.
   - Build buttons with UIButton.Configuration, including subtitles, images, a loading state and a configurationUpdateHandler.

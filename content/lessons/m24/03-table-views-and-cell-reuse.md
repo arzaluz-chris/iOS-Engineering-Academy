@@ -311,7 +311,7 @@ Two more facts from the same page: the table "doesn't call this method if the ce
 
 ### The async image case
 
-The one place `prepareForReuse()` is essential is work that finishes **after** the cell has moved on. A cell starts downloading an avatar for row 3, scrolls off, is reused for row 40, and then the row 3 download completes and sets its image on the cell now showing row 40. Two defenses work together: cancel the old work in `prepareForReuse()`, and when a result arrives, check that the cell still shows the item it was started for:
+The one place `prepareForReuse()` really matters is work that finishes **after** the cell has moved on. A cell starts downloading an avatar for row 3, scrolls off, is reused for row 40, and then the row 3 download completes and sets its image on the cell now showing row 40. Two defenses work together: cancel the old work in `prepareForReuse()`, and when a result arrives, check that the cell still shows the item it was started for:
 
 ```swift ios
 import UIKit

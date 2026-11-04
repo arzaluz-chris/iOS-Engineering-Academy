@@ -762,7 +762,7 @@ solution: |
 
 ````exercise
 id: m24-l04-e6
-type: explain
+type: design
 prompt: "A teammate asks: \"Table views work fine. Why would we build our new settings screen with a collection view list instead?\" Give an honest answer, including when a table view is still reasonable."
 rubric:
   - Mentions that list layouts give the same features (separators, swipe actions, accessories, headers) with configurations.
