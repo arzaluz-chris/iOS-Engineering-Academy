@@ -309,7 +309,7 @@ Line by line:
 On the server, verification is the last two lines of the CryptoKit tour: import the registered public key and check the signature against the payload. If it fails, the transfer doesn't happen, whatever the app claims.
 
 > [!tip] What this buys over Lesson 2
-> A Keychain-bound secret protects the secret on the device. A Secure Enclave signature gives the **server** something to verify: this payload was approved by the key registered for this customer on this device, after a biometric match of the enrollment that existed when they turned the feature on. That's the strongest evidence a phone can produce, and it's also what helps with repudiation (Lesson 1's T8).
+> A Keychain-bound secret protects the secret on the device. A Secure Enclave signature gives the **server** something to verify: this payload was approved by the key registered for this customer on this device, after a biometric match of the enrollment that existed when they turned the feature on. That's evidence the server can check, and it also helps with repudiation (Lesson 1's T8).
 
 ## Key management
 
