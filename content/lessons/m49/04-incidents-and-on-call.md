@@ -160,9 +160,8 @@ SEV1  Logs include account numbers
       page now, IC assigned, updates every 30 min, postmortem
 SEV4  TestFlight build won't open
       backlog
+Highest severity open: SEV1
 ```
-
-Wait for the last line: the program printed six reports, then `Highest severity open: SEV1`? Look at the output block: it ends at `backlog`. That means `print("Highest severity open…")` never ran, or the block above isn't the program's output. The tests compare this block with what the program prints, so the block is what ran. Read the code and the output side by side before moving on; it's the same habit as in lesson 3.
 
 - **The order of the checks is the policy.** Internal-only comes first, so a broken TestFlight build is SEV4 even though it "blocks the core flow." Data, security and payments come next and override everything else, whatever the user count: 10 basis points (0.1%) of users with account numbers in logs is SEV1.
 - **The same crash is SEV2 at a 1% phased rollout and SEV1 at 7%.** Phased release (Module 41) limits impact by design, and severity is about impact. If the rollout keeps going, the severity goes up; pausing it is a mitigation that keeps it down.
@@ -485,7 +484,7 @@ solution: |
   func overdueReport(_ items: [(title: String, owner: String, dueDay: Int, done: Bool)], today: Int) -> [String] {
       let overdue = items.enumerated()
           .filter { !$0.element.done && $0.element.dueDay < today }
-          .sorted { (-$0.element.dueDay, $0.offset) < (-$1.element.dueDay, $1.offset) }
+          .sorted { ($0.element.dueDay, $0.offset) < ($1.element.dueDay, $1.offset) }
       if overdue.isEmpty { return ["Nothing overdue"] }
       return overdue.map { entry in
           let days = today - entry.element.dueDay
@@ -510,7 +509,7 @@ solution: |
   ["Nothing overdue"]
   ```
 
-  - Sorting by `-dueDay` puts the earliest due date, the most overdue, first. The offset breaks ties in input order.
+  - Sorting by ascending `dueDay` puts the earliest due date, which is the most overdue, first. The offset breaks ties in input order.
   - Sam's item is overdue by date but done, so it's skipped.
   - In an app, plural rules belong in a String Catalog or automatic grammar agreement, because other languages don't follow English's one-or-many rule. For an internal report, the ternary is fine.
 ````
