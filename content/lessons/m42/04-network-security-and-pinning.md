@@ -33,7 +33,7 @@ mastery:
   - Implement a URLSessionDelegate that evaluates trust first and then checks pinned keys, without ever accepting an unevaluated trust.
   - Given app versions and a planned certificate change, compute which versions break and decide whether to ship new pins first.
   - Explain to a teammate why moving an API key into an obfuscated string doesn't fix a leaked secret.
-resources: [foundation-urlsession, information-property-list, owasp-mastg, owasp-masvs, apple-platform-security]
+resources: [ats-nsapptransportsecurity, ats-nspinneddomains, foundation-manual-server-trust, foundation-urlsession, information-property-list, owasp-mastg, owasp-masvs, apple-platform-security]
 cards:
   - id: m42-l04-c1
     front: What does ATS require by default?

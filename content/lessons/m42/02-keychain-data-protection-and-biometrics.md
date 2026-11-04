@@ -34,7 +34,7 @@ mastery:
   - Spot event-bound biometric checks in a code review and rewrite them as Keychain-bound.
   - Explain to a product owner what a Face ID match does and doesn't prove about who is using the app.
   - Write files with the Complete protection class and say when that breaks background work.
-resources: [keychain-services, security-keychain-accessibility, uikit-encrypting-files, apple-platform-security, owasp-mastg]
+resources: [security-secaccesscontrolcreateflags, localauthentication, apple-security-data-protection-classes, keychain-services, security-keychain-accessibility, uikit-encrypting-files, apple-platform-security, owasp-mastg]
 cards:
   - id: m42-l02-c1
     front: What does kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly do that the others don't?

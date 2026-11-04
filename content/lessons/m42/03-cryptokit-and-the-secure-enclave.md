@@ -34,7 +34,7 @@ mastery:
   - Write a constant-time comparison and explain why CryptoKit's HMAC verification is the better choice when you have a key.
   - Generate a Secure Enclave signing key bound to biometrics, sign a payload, and verify it with the public key.
   - Explain what happens to Secure Enclave keys on a new phone or after a restore.
-resources: [apple-platform-security, security-storing-keys-keychain, keychain-services, owasp-masvs]
+resources: [cryptokit, security-secure-enclave, apple-platform-security, security-storing-keys-keychain, keychain-services, owasp-masvs]
 cards:
   - id: m42-l03-c1
     front: Hash, HMAC, encryption or signature? Proving to the server that a request came from the key on this phone.

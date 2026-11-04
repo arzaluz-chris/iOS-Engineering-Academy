@@ -32,7 +32,7 @@ mastery:
   - Implement a safe next-path check for redirects after sign-in.
   - Configure a WKWebView navigation delegate and message handler that accept only your own pages and a fixed set of actions.
   - Review WebView code for file access, JavaScript injection and inspectability problems.
-resources: [xcode-universal-links, xcode-custom-url-scheme, foundation-urlcomponents, uikit-open-url-contexts, owasp-mastg]
+resources: [webkit-wknavigationdelegate, xcode-universal-links, xcode-custom-url-scheme, foundation-urlcomponents, uikit-open-url-contexts, owasp-mastg]
 cards:
   - id: m42-l06-c1
     front: Why isn't a universal link trusted input?

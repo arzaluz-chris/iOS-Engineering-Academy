@@ -34,7 +34,7 @@ mastery:
   - Read a Package.resolved diff and flag changed sources, moved tags, branch pins and new dependencies.
   - Choose CI settings that make dependency resolution reproducible.
   - Map a banking app's controls to MASVS groups and name what's still client-side only.
-resources: [owasp-masvs, owasp-mastg, privacy-manifest-files, swiftpm-docs, app-review-guidelines]
+resources: [devicecheck-appattest, devicecheck-establishing-integrity, owasp-masvs, owasp-mastg, privacy-manifest-files, swiftpm-docs, app-review-guidelines]
 cards:
   - id: m42-l07-c1
     front: Why can't an app reliably detect that it's running on a jailbroken device?

@@ -35,7 +35,7 @@ mastery:
   - Turn a vague worry ("someone could steal the token") into a STRIDE threat with a likelihood, an impact and a MASVS group.
   - Trace a finding from a MASVS control to a MASWE weakness and an iOS MASTG test, and say which profile it belongs to.
   - Explain to a product manager why the app's own checks can't be the last line of defense.
-resources: [owasp-masvs, owasp-mastg, apple-platform-security]
+resources: [owasp-masvs-profiles, owasp-threat-modeling, owasp-masvs, owasp-mastg, apple-platform-security]
 cards:
   - id: m42-l01-c1
     front: What are the four questions of a threat model?

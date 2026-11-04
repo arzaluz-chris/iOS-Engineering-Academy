@@ -32,7 +32,7 @@ mastery:
   - Add a privacy cover that appears before the snapshot and disappears when the scene is active again.
   - Write a pasteboard copy that's local-only, expires, and is cleared on background only if it's still the app's content.
   - Choose text field traits for a PIN, a one-time code and an account number, and justify each.
-resources: [os-logger, uikit-app-life-cycle, swiftui-scenephase, uikit-encrypting-files, owasp-mastg]
+resources: [os-oslogprivacy, uikit-uipasteboard, swiftui-privacysensitive, os-logger, uikit-app-life-cycle, swiftui-scenephase, uikit-encrypting-files, owasp-mastg]
 cards:
   - id: m42-l05-c1
     front: "Logger: which interpolated values are redacted by default?"
