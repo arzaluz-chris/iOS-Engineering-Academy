@@ -166,7 +166,7 @@ struct ConversationView: View {
 - **`ScrollPosition(idType: Message.ID.self)`** creates an "automatic" position whose ids are `Int`. Apple: SwiftUI uses that type "along with the views in the scroll view's scroll target layout to programmatically scroll to those views and to update the `viewID` property as the user scrolls."
 - **`defaultScrollAnchor(.bottom)`** (iOS 17) makes the scroll view start at the bottom, the usual chat behavior. Apple says the anchor also controls "how the scroll view handles content size changes."
 - **`viewID(type:)`** reads the id of the top-most visible message, the same thing `scrollPosition(id:)` would write into its binding.
-- **`scrollTo(edge: .bottom)`** jumps to the end without knowing the last id. For an edge, Apple says SwiftUI keeps "a top aligned scroll view scrolled to the top if the content size changes", and the same idea holds for the bottom: a position at an edge stays at that edge.
+- **`scrollTo(edge: .bottom)`** jumps to the end without knowing the last id. Apple: "SwiftUI will attempt to keep that position stable. For an edge, that means keeping a top aligned scroll view scrolled to the top if the content size changes." Whether a bottom edge keeps up with new messages the same way wasn't checked for this lesson; try it with your content.
 - **`isPositionedByUser`**, not used above, tells you whether the user has scrolled; Apple notes that setting it to `true` clears an edge or point position. It's how you'd decide whether a new message should pull the view down or leave the user where they are reading.
 
 ## Carousels: containerRelativeFrame and scroll targets
@@ -184,6 +184,10 @@ struct Offer: Identifiable {
 struct OfferCarousel: View {
     let offers: [Offer]
     @State private var visibleID: Offer.ID?
+
+    private var visiblePosition: Int {
+        (offers.firstIndex { $0.id == visibleID } ?? 0) + 1
+    }
 
     var body: some View {
         VStack(spacing: 12) {
@@ -212,7 +216,7 @@ struct OfferCarousel: View {
                 }
             }
             .accessibilityElement()
-            .accessibilityLabel("Offer \((offers.firstIndex { $0.id == visibleID } ?? 0) + 1) of \(offers.count)")
+            .accessibilityLabel("Offer \(visiblePosition) of \(offers.count)")
         }
     }
 }

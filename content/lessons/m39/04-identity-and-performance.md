@@ -261,7 +261,7 @@ var body: some View {
 }
 ```
 
-This reads better, but it doesn't change dependencies: `header` and `productList` are evaluated as part of `body`, during the same evaluation, so whatever they read, `body` read. A change to `model.title` re-runs the whole thing, list included. Moving `productList` into `struct ProductList: View` gives it its own body and its own dependencies. Apple's WWDC21 session "Demystify SwiftUI" describes views as having their own dependency graph per view, and WWDC23's "Demystify SwiftUI performance" recommends extracting views for this reason; the reference documentation says only that dependencies are what a view's `body` reads, which leads to the same conclusion.
+This reads better, but it doesn't change dependencies: `header` and `productList` are evaluated as part of `body`, during the same evaluation, so whatever they read, `body` read. A change to `model.title` re-runs the whole thing, list included. Moving `productList` into `struct ProductList: View` gives it its own body and its own dependencies. Apple's WWDC21 session "Demystify SwiftUI" describes how SwiftUI tracks each view's dependencies in a dependency graph, and WWDC23's "Demystify SwiftUI performance" recommends extracting views to narrow them; the reference documentation says only that dependencies are what a view's `body` reads, which leads to the same conclusion.
 
 ### Pass what the child needs
 
@@ -772,6 +772,25 @@ solution: |
 id: m39-l04-e7
 type: explain
 prompt: "A teammate split a 200-line body into five computed properties (var header: some View, var filters: some View, and so on) and says the screen now updates less. Explain whether that's true, what would actually reduce updates, and how you'd check."
+code: |
+  struct OrdersScreen: View {
+      let model: OrdersModel
+      @State private var filterText = ""
+
+      var body: some View {
+          VStack {
+              header
+              filters
+              orderList
+          }
+      }
+
+      private var header: some View { Text(model.storeName).font(.title) }
+      private var filters: some View { TextField("Filter", text: $filterText) }
+      private var orderList: some View {
+          List(model.orders) { OrderRow(order: $0) }
+      }
+  }
 rubric:
   - Computed properties are evaluated as part of body and share its dependencies; nothing changes for SwiftUI.
   - Separate View types (structs) get their own dependency scope; state moved into them invalidates only them.

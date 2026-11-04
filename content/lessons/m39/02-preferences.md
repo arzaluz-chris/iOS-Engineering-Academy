@@ -325,7 +325,7 @@ For this exact layout, a `Grid` with `GridRow`s (iOS 16) aligns the label column
 
 ## Caveats of onPreferenceChange
 
-**Cycles.** If the state you set changes the size of the view that reports the preference, you've built a loop: measure, set state, re-layout, measure a different value, set state again. Put the measuring `background` before any modifier that uses the stored value, as above, so the measurement doesn't depend on its own result. SwiftUI's behavior when a cycle doesn't settle isn't documented; in practice you see flicker, a CPU spike in Instruments (lesson 5) or a runtime warning in the console.
+**Cycles.** If the state you set changes the size of the view that reports the preference, you've built a loop: measure, set state, re-layout, measure a different value, set state again. Put the measuring `background` before any modifier that uses the stored value, as above, so the measurement doesn't depend on its own result. SwiftUI's behavior when a cycle doesn't settle isn't documented; developers report flicker, steady CPU use that shows up in Instruments (lesson 5), and runtime warnings in the console.
 
 **It's one update late.** The action runs after SwiftUI has combined the preference, and the state it sets takes effect in a following update. Apple doesn't document the timing; the practical consequence is that the first frame can render with the old value. When you only need to *draw* something from the value, don't go through state at all (next section).
 
@@ -840,6 +840,16 @@ solution: |
 id: m39-l02-e7
 type: explain
 prompt: "A teammate asks why SwiftUI needs preferences at all when bindings already let a child change a parent's state. Explain the difference in four or five sentences, with one example where a binding is the right tool and one where a preference is."
+code: |
+  // A binding: the parent hands one child access to its state.
+  Toggle("Notifications", isOn: $notificationsOn)
+
+  // A preference: any number of children report, the ancestor reads the combined value.
+  ForEach(cards) { card in
+      CardView(card: card)
+          .background { GeometryReader { Color.clear.preference(key: CardHeightKey.self, value: $0.size.height) } }
+  }
+  .onPreferenceChange(CardHeightKey.self) { tallest = $0 }
 rubric:
   - A binding is passed explicitly to one known child and is for user-driven changes to state the parent owns.
   - A preference is set by any number of descendants, unknown to the parent, and is combined with reduce.

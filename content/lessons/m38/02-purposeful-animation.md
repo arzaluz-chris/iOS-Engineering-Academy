@@ -419,22 +419,30 @@ struct SaveButton: View {
     private var shakeTrigger: Int { reduceMotion ? 0 : failures }
 
     var body: some View {
-        button
-            .keyframeAnimator(initialValue: ShakeValues(), trigger: shakeTrigger) { content, value in
-                content.offset(x: value.offset)
-            } keyframes: { _ in
-                KeyframeTrack(\.offset) {
-                    LinearKeyframe(-10.0, duration: 0.06)
-                    LinearKeyframe(10.0, duration: 0.08)
-                    LinearKeyframe(-6.0, duration: 0.08)
-                    SpringKeyframe(0.0, duration: 0.2)
-                }
+        shaking
+            .sensoryFeedback(.success, trigger: status, condition: didSave)
+            .sensoryFeedback(.error, trigger: status, condition: didFail)
+            .onChange(of: status, statusChanged)
+    }
+
+    private var shaking: some View {
+        button.keyframeAnimator(initialValue: ShakeValues(), trigger: shakeTrigger) { content, value in
+            content.offset(x: value.offset)
+        } keyframes: { _ in
+            KeyframeTrack(\.offset) {
+                LinearKeyframe(-10.0, duration: 0.06)
+                LinearKeyframe(10.0, duration: 0.08)
+                LinearKeyframe(-6.0, duration: 0.08)
+                SpringKeyframe(0.0, duration: 0.2)
             }
-            .sensoryFeedback(.success, trigger: status) { _, new in new == .saved }
-            .sensoryFeedback(.error, trigger: status) { old, new in old == .saving && new == .failed }
-            .onChange(of: status) { _, new in
-                if new == .failed { failures += 1 }
-            }
+        }
+    }
+
+    // Named functions with explicit types instead of inline closures.
+    private func didSave(_ old: SaveStatus, _ new: SaveStatus) -> Bool { new == .saved }
+    private func didFail(_ old: SaveStatus, _ new: SaveStatus) -> Bool { old == .saving && new == .failed }
+    private func statusChanged(_ old: SaveStatus, _ new: SaveStatus) {
+        if new == .failed { failures += 1 }
     }
 
     private var button: some View {
@@ -455,7 +463,8 @@ struct SaveButton: View {
 ```
 
 - **Two haptics, two conditions.** Success plays only on arriving at `.saved`; error only on `saving → failed`. Going back to `.idle` plays nothing.
-- **The shake** animates a small `ShakeValues` struct through one key-path track, the same shape as the bell example. A first version animated a bare number with a track that had no key path, all in one long modifier chain; checked against the iOS SDK, Swift 6.3 gave up with "unable to type-check this expression in reasonable time", and splitting the chain alone didn't fix it. A struct with key-path tracks gives the compiler concrete types to work with, and it's also easier to extend when the effect grows a second property.
+- **The shake** animates a small `ShakeValues` struct through one key-path track, the same shape as the bell example, triggered by a failure counter so two failures in a row shake twice (a `status` trigger wouldn't, if the status were already `.failed`).
+- **Why the code is split up.** The first version put the button, the keyframes, both `sensoryFeedback` conditions and the `onChange` in one chain of inline closures. Checked against the iOS SDK, Swift 6.3 gave up with "the compiler is unable to type-check this expression in reasonable time", and splitting the chain alone didn't help. Moving the conditions into named functions with explicit parameter types, and the shake into its own property, did. When a SwiftUI `body` hits that error, closures whose types must all be inferred together are the first thing to pull out.
 - **Reduce Motion** stops the shake but not the haptic. The failure is also visible in whatever error text the screen shows; a shake alone isn't enough for someone who isn't looking at the button.
 
 Use haptics the way you'd use sound: for outcomes and for physical-feeling interactions (snapping to a detent, reaching a limit). A haptic on every scroll or every keystroke becomes noise, and people stop noticing the ones that matter. The Human Interface Guidelines have a Playing haptics page with Apple's guidance.
