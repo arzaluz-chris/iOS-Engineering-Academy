@@ -301,7 +301,7 @@ func configure(totalLabel: UILabel, dateLabel: UILabel, distanceLabel: UILabel, 
 ```
 
 - `formatted(date:time:)` picks a predefined style; `.abbreviated` dates and `.shortened` times are good defaults for lists.
-- **`Measurement`** converts units for the locale. Apple's article: "a distance in feet for the en_US locale appears as meters using the French locale fr_FR." With `usage: .road`, a US user sees miles for a distance stored in kilometers.
+- **`Measurement`** converts units for the locale. Apple's article: "a distance in feet for the en_US locale appears as meters using the French locale fr_FR", and its examples show distances stored in kilometers formatted as miles for `en_US`. The `usage` parameter tells the formatter what the measurement is for (`.road` for travel distances).
 - **Lists** have a style too: `["small", "medium", "large"].formatted(.list(type: .and))` gives "small, medium, and large" in US English, and Apple's example shows French "50, 75 et 100".
 
 ## Right-to-left layout
@@ -550,7 +550,7 @@ starter: |
   }
 hints:
   - "forms[category] ?? forms[.other] ?? \"\" gives the fallback."
-  - "replacingOccurrences(of:with:) needs Foundation; String.replacing(_:with:) is in the standard library."
+  - "replacingOccurrences(of:with:) (import Foundation) substitutes the number."
 rubric:
   - Uses the plural category for the language.
   - Falls back to the other form when a category is missing.
@@ -558,6 +558,8 @@ rubric:
   - Output matches exactly.
 solution: |
   ```swift
+  import Foundation
+
   enum PluralCategory { case zero, one, two, few, many, other }
 
   func pluralCategory(for n: Int, language: String) -> PluralCategory {
@@ -587,7 +589,7 @@ solution: |
   func localizedCount(_ n: Int, language: String, forms: [PluralCategory: String]) -> String {
       let category = pluralCategory(for: n, language: language)
       let template = forms[category] ?? forms[.other] ?? ""
-      return template.replacing("%d", with: String(n))
+      return template.replacingOccurrences(of: "%d", with: String(n))
   }
 
   let english: [PluralCategory: String] = [.one: "%d photo", .other: "%d photos"]
@@ -656,7 +658,7 @@ solution: |
   1. **Count**: not localizable, and `== 1` is English plural logic. Use `String(localized: "\(count) items", comment: ...)` with plural variants in the catalog.
   2. **Total**: `$` and `%.2f` ignore the receipt's currency and the user's separators, and `Double` can't represent many decimal amounts exactly. Store a `Decimal` and use `.formatted(.currency(code: receipt.currencyCode))`.
   3. **Date**: month/day/year is a US convention. Use `receipt.date.formatted(date: .abbreviated, time: .omitted)`.
-  4. **Alignment and anchors**: `.right` and `rightAnchor` stay on the right in Arabic. Use `.natural` (or `.right` only if the design really means "trailing", in which case compute it from the layout direction) and `trailingAnchor`. Mixing `rightAnchor` with `leadingAnchor` constraints in the same layout is also what Apple warns can crash.
+  4. **Alignment and anchors**: `.right` and `rightAnchor` stay on the right in Arabic. Use `.natural` (or `.right` only if the design really means "trailing", in which case compute it from the layout direction) and `trailingAnchor`. And never fix it by constraining a leading anchor to a right anchor in one constraint: Apple warns that mixing them in a constraint crashes at runtime.
 
   ```swift ios
   import UIKit
