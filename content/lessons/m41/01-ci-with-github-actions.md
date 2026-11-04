@@ -68,7 +68,7 @@ Module 14 introduced CI as a gate on pull requests and showed this academy's own
 
 ## Anatomy of a workflow
 
-Here's this repository's `.github/workflows/swift.yml` in full. It has run on every push and pull request that touched the Swift code or the lessons since the course started, so it's a known-good starting point:
+Here's this repository's `.github/workflows/swift.yml` in full. It runs on every push and pull request that touches the Swift code or the lessons, including the one that added this lesson, so it's a working starting point:
 
 ```yaml
 # Builds and tests the challenge solutions and runs the lesson snippets (Swift Testing) on macOS.
@@ -360,7 +360,7 @@ Apple's description: "Xcode Cloud is a CI/CD system that uses Git for source con
 | Customization | Any shell step, thousands of community actions | Three hook scripts |
 | Choice of Xcode | Whatever the runner image ships | Chosen per workflow from Apple's list |
 
-Many teams use both: GitHub Actions for fast pull request checks (including Linux jobs and lint), Xcode Cloud for the archive and TestFlight step so nobody has to manage signing secrets. Either way, CI decides what merges; the tool is a detail.
+Some teams use both: GitHub Actions for fast pull request checks (including Linux jobs and lint), Xcode Cloud for the archive and TestFlight step so nobody has to manage signing secrets. Either way, CI decides what merges; the tool is a detail.
 
 ## Common mistakes
 
