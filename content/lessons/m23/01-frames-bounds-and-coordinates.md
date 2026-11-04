@@ -31,7 +31,7 @@ mastery:
   - Move and resize a rotated view without touching its frame.
   - Say in which callback the frames of an Auto Layout screen are final, and why viewDidLoad() is too early.
   - Decide which rows of a scrolled list are visible from their frames and the scroll position.
-resources: [apple-documentation]
+resources: [uikit-uiview-frame, uikit-uiview, auto-layout-guide]
 cards:
   - id: m23-l01-c1
     front: How do you convert a point p from a view to its superview, without a transform?
@@ -77,10 +77,13 @@ Going one level **down**, from a superview into a subview, is the same formula s
 pointInView = pointInSuperview − frame.origin + bounds.origin
 ```
 
-To go between any two views, go up from the first to the window, then down to the second. This model stores what UIKit stores (frame, bounds origin, superview) and does exactly that:
+To go between any two views, go up from the first to the window, then down to the second. This model stores what UIKit stores (frame, bounds origin, superview) and does exactly that. (The `#if canImport(CoreGraphics)` lines are there because on Apple platforms `CGRect`'s initializers and `CGPoint.zero` come from CoreGraphics, which `import UIKit` brings in for you in an app; on Linux, Foundation provides them. With both imports, the same file builds everywhere.)
 
 ```swift
 import Foundation
+#if canImport(CoreGraphics)
+import CoreGraphics
+#endif
 
 final class Box {
     let name: String
@@ -222,6 +225,9 @@ Why undefined? `frame` is one axis-aligned rectangle with an origin and a size. 
 
 ```swift
 import Foundation
+#if canImport(CoreGraphics)
+import CoreGraphics
+#endif
 
 func enclosingSize(width: Double, height: Double, degrees: Double) -> (Double, Double) {
     let angle = degrees * Double.pi / 180
@@ -328,6 +334,9 @@ type: prediction
 prompt: "This uses the one-level formula from the lesson. A card sits in a scroll view that's scrolled 200 points. What does it print?"
 code: |
   import Foundation
+  #if canImport(CoreGraphics)
+  import CoreGraphics
+  #endif
 
   func toSuperview(_ p: CGPoint, frame: CGRect, boundsOrigin: CGPoint) -> CGPoint {
       CGPoint(x: frame.origin.x + p.x - boundsOrigin.x,
@@ -472,6 +481,9 @@ prompt: |
   should print `[0, 1, 2, 3]`, `[3, 4, 5, 6]` and `[9]`.
 starter: |
   import Foundation
+  #if canImport(CoreGraphics)
+  import CoreGraphics
+  #endif
 
   func visibleRows(_ rows: [CGRect], offsetY: CGFloat, height: CGFloat) -> [Int] {
       // your code
@@ -489,6 +501,9 @@ rubric:
 solution: |
   ```swift
   import Foundation
+  #if canImport(CoreGraphics)
+  import CoreGraphics
+  #endif
 
   func visibleRows(_ rows: [CGRect], offsetY: CGFloat, height: CGFloat) -> [Int] {
       guard let first = rows.first else { return [] }
