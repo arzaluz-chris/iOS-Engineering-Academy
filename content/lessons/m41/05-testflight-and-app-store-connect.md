@@ -34,7 +34,7 @@ mastery:
   - Check metadata against App Store Connect's limits, including the 100-byte keyword field.
   - List what App Review needs to test an app with sign-in, and write useful review notes.
   - Pick manual, automatic or scheduled release and combine it with phased release.
-resources: [app-review-guidelines, information-property-list, privacy-manifest-files]
+resources: [asc-testflight-overview, app-privacy-details, app-review-guidelines, information-property-list, privacy-manifest-files]
 cards:
   - id: m41-l05-c1
     front: Internal vs external TestFlight testers?

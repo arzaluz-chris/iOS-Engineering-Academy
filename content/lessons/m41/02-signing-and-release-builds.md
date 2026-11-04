@@ -34,7 +34,7 @@ mastery:
   - Write an archive and export step with xcodebuild, and an ExportOptions.plist for an App Store Connect upload.
   - Explain when to use automatic signing with an API key and when to sign manually.
   - Keep release credentials out of pull request builds, logs and caches, and know what to revoke when one leaks.
-resources: [tn3125-provisioning-profiles, xcode-build-settings-reference, xcode-build-configuration-file, keychain-services]
+resources: [xcode-distributing-beta-release, xcode-sharing-signing-certificates, asc-api-keys, gha-sign-xcode, tn3125-provisioning-profiles, xcode-build-settings-reference, xcode-build-configuration-file, keychain-services]
 cards:
   - id: m41-l02-c1
     front: Why doesn't an App Store distribution profile list any devices?

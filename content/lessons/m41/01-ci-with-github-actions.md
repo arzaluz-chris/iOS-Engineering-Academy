@@ -38,7 +38,7 @@ mastery:
   - Explain why a path-filtered workflow can block a merge when its check is required, and fix it.
   - Keep secrets out of pull request builds from forks and out of caches.
   - Say what Xcode Cloud gives you that GitHub Actions doesn't, and what it costs in flexibility.
-resources: [swiftpm-docs]
+resources: [gha-workflow-syntax, gha-dependency-caching, xcode-cloud, swiftpm-docs]
 cards:
   - id: m41-l01-c1
     front: Why does an iOS CI job need a macOS runner?

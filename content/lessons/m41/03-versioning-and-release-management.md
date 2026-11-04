@@ -38,7 +38,7 @@ mastery:
   - Cut a release branch, tag the release commit and merge fixes back to main.
   - Implement percentage rollout with FNV-1a buckets and show that raising the percentage keeps earlier users enabled.
   - Explain how feature flags interact with App Review's rules on hidden features.
-resources: [information-property-list, app-review-guidelines, git-merge-reference]
+resources: [cfbundleshortversionstring, cfbundleversion, semver, conventional-commits, information-property-list, app-review-guidelines, git-merge-reference]
 cards:
   - id: m41-l03-c1
     front: CFBundleShortVersionString vs CFBundleVersion?

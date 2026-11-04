@@ -36,7 +36,7 @@ mastery:
   - Group a list of crash reports by their first app frame and report a crash-free rate without floating-point formatting surprises.
   - Write a telemetry allowlist that drops unknown events and fields and coarsens precise values.
   - Fill in App Store privacy details and a privacy manifest for crash data, performance data and product analytics.
-resources: [xcode-symbolicate-crash-report, os-logger, privacy-manifest-files, app-review-guidelines, xcode-improving-performance]
+resources: [xcode-crash-reports, metrickit, xcode-symbolicate-crash-report, os-logger, privacy-manifest-files, app-review-guidelines, xcode-improving-performance]
 cards:
   - id: m41-l04-c1
     front: Whose crashes appear in Xcode's Crashes organizer?

@@ -37,7 +37,7 @@ mastery:
   - Produce a hotfix plan when a newer version is already in review and the broken one is in phased release.
   - Explain to a product manager why "roll back to yesterday's version" isn't possible, and what you'll do instead.
   - Compute time to detect, mitigate and resolve from an incident timeline and turn findings into action items.
-resources: [app-review-guidelines, privacy-manifest-files, information-property-list]
+resources: [apple-app-review, asc-phased-release, app-review-guidelines, privacy-manifest-files, information-property-list]
 cards:
   - id: m41-l06-c1
     front: Which guideline causes the most unresolved App Review issues?
