@@ -252,8 +252,8 @@ class ModelViewController {
 }
 
 func show(_ controller: ModelViewController) {
+    _ = controller.view            // UIKit loads the view first, if needed
     controller.viewWillAppear()
-    _ = controller.view            // added to the hierarchy: the view must exist
     controller.viewIsAppearing()
     controller.viewDidAppear()
 }
@@ -272,9 +272,9 @@ show(settings)
 
 ```output
 created, loaded: false
-Settings: viewWillAppear
 Settings: loadView
 Settings: viewDidLoad
+Settings: viewWillAppear
 Settings: viewIsAppearing
 Settings: viewDidAppear
 Settings: viewWillDisappear
@@ -284,7 +284,7 @@ Settings: viewIsAppearing
 Settings: viewDidAppear
 ```
 
-Two things to notice. Loading happens once; appearance callbacks happen every time. And in this model the view loads after `viewWillAppear()`, because that's the first time the model reads `view`. In a real app something usually reads `view` earlier (UIKit needs it to set up the transition), so on a first appearance you'll normally see `viewDidLoad()` before `viewWillAppear(_:)`. Don't write code that depends on either: only "loaded before it's added to the hierarchy" is guaranteed by the steps above.
+Loading happens once; appearance callbacks happen every time. Apple's article describes loading as the first thing UIKit does when you present a controller ("UIKit needs to first load and configure the corresponding views"), which is why the model reads `view` before `viewWillAppear()`. The view can also load earlier than that, whenever any code reads `view`, so don't make `viewDidLoad()` depend on being called right before the screen appears.
 
 ## View controller callbacks are not the scene life cycle
 
