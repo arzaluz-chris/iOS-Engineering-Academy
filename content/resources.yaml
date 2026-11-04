@@ -3396,3 +3396,84 @@ resources:
     why: "The language and execution rules behind GraphQL APIs, for comparing them with REST."
     status: unverified
     verifiedAt: null
+  - id: nygard-adr
+    title: "Documenting Architecture Decisions"
+    source: "Michael Nygard"
+    url: https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions
+    kind: article
+    topic: "Decision records"
+    why: "The original short format for architecture decision records."
+    status: unverified
+    verifiedAt: null
+  - id: sre-managing-incidents
+    title: "Managing Incidents"
+    source: "Google SRE book"
+    url: https://sre.google/sre-book/managing-incidents/
+    kind: article
+    topic: "Incidents"
+    why: "Incident roles, communication and handoffs during an outage."
+    status: unverified
+    verifiedAt: null
+  - id: sre-postmortem-culture
+    title: "Postmortem Culture: Learning from Failure"
+    source: "Google SRE book"
+    url: https://sre.google/sre-book/postmortem-culture/
+    kind: article
+    topic: "Postmortems"
+    why: "Blameless postmortems and following up on action items."
+    status: unverified
+    verifiedAt: null
+  - id: google-review-standard
+    title: "The Standard of Code Review"
+    source: "Google eng-practices"
+    url: https://google.github.io/eng-practices/review/reviewer/standard.html
+    kind: article
+    topic: "Code review"
+    why: "When to approve a change and how to weigh improvement against perfection."
+    status: unverified
+    verifiedAt: null
+  - id: google-review-comments
+    title: "How to write code review comments"
+    source: "Google eng-practices"
+    url: https://google.github.io/eng-practices/review/reviewer/comments.html
+    kind: article
+    topic: "Review comments"
+    why: "Writing comments that are kind, explain why and label their severity."
+    status: unverified
+    verifiedAt: null
+  - id: google-cl-descriptions
+    title: "Writing good CL descriptions"
+    source: "Google eng-practices"
+    url: https://google.github.io/eng-practices/review/developer/cl-descriptions.html
+    kind: article
+    topic: "PR descriptions"
+    why: "What a change description should say so reviewers and future readers understand it."
+    status: unverified
+    verifiedAt: null
+  - id: git-blame-reference
+    title: "git-blame"
+    source: "Git documentation"
+    url: https://git-scm.com/docs/git-blame
+    kind: reference
+    topic: "Code archaeology"
+    why: "Finding which commit last changed each line, including ignoring formatting commits."
+    status: unverified
+    verifiedAt: null
+  - id: git-log-reference
+    title: "git-log"
+    source: "Git documentation"
+    url: https://git-scm.com/docs/git-log
+    kind: reference
+    topic: "Code archaeology"
+    why: "Searching history with --follow, -S and other filters."
+    status: unverified
+    verifiedAt: null
+  - id: git-bisect-reference
+    title: "git-bisect"
+    source: "Git documentation"
+    url: https://git-scm.com/docs/git-bisect
+    kind: reference
+    topic: "Finding regressions"
+    why: "Binary search through history to find the commit that introduced a bug."
+    status: unverified
+    verifiedAt: null
