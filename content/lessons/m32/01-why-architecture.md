@@ -91,7 +91,7 @@ Almost every iOS architecture, whatever its name, separates the same three kinds
 - **Presentation** knows the domain. It doesn't know which database or server is behind `BookRepository`.
 - **Infrastructure** knows the domain too, but only to implement its protocols and return its types. Nothing in the domain or presentation names a concrete infrastructure type, except the one place that wires the app together (lesson 5).
 
-Both arrows point **toward the domain**. That's the whole trick, and every architecture in this module is a variation on how the presentation layer is split up.
+Both arrows point **toward the domain**. That's the core of it. MVC, MVVM and MVP differ mainly in how they split the presentation layer; Clean Architecture also splits the domain.
 
 ## The feature we'll keep rebuilding
 

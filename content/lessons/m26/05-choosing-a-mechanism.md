@@ -76,7 +76,7 @@ In Swift 6 there's a fifth: **on which actor does it run?** A mechanism that del
 | `NotificationCenter` | Anyone → any number of unknown observers | No | Until the observer is removed (or its token discarded, iOS 26 messages) | App-wide or system events: logged out, became active, keyboard, settings changed |
 | KVO | Observed object → any number of observers | No | Until the `NSKeyValueObservation` is released or invalidated | Watching a property of an Apple object that documents KVO support |
 | Async sequence | Producer → a consuming task | No | Until the task ends or is cancelled | A stream of values consumed in order (Module 29) |
-| Observation (`@Observable`) | Model → whatever reads its properties | No | Tracking is per read | Model-to-UI updates, especially in SwiftUI (Module 31) |
+| Observation (`@Observable`) | Model → whatever reads its properties | No | Tracking is per read | Model-to-UI updates, especially in SwiftUI (Module 36) |
 
 Read the table left to right as "how wide does this event really need to go?" Most events in a screen are one-to-one and known: target-action, delegates and closures cover them, and the compiler checks every connection. Broadcasting is for the few events that really are everyone's business.
 
@@ -148,7 +148,7 @@ final class CartModel {
 }
 ```
 
-UIKit gained support for it too, and it's the standard model-to-view mechanism in SwiftUI (Module 31).
+UIKit gained support for it too, and it's the standard model-to-view mechanism in SwiftUI (Module 36).
 
 ## Refactoring an over-notified screen
 
@@ -598,5 +598,5 @@ solution: |
 - Controls use target-action or `UIAction`. Components that ask questions or report several related events use delegates; components that need content use data sources. One or two events from a child use closures.
 - `NotificationCenter` is for app-wide and system events with open-ended listeners. It costs type safety (before iOS 26 messages), ordering and lifetime management.
 - KVO watches `@objc dynamic` properties of `NSObject` subclasses; keep the `NSKeyValueObservation`. Use it for Apple objects that support it, not for your own types.
-- Async sequences (Module 29) and Observation (Module 31) are the newer tools for streams of values and model-to-view updates.
+- Async sequences (Module 29) and Observation (Module 36) are the newer tools for streams of values and model-to-view updates.
 - An over-notified screen shows itself through screen-specific notification names, observers that check who posted, and events that leak into other screens. Replace those notifications with the narrowest direct mechanism, and keep broadcasts for events that really are everyone's.
