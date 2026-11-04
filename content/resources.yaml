@@ -3027,3 +3027,129 @@ resources:
     why: "Localizing strings and resources in Swift packages."
     status: unverified
     verifiedAt: null
+  - id: widgetkit-keeping-up-to-date
+    title: "Keeping a widget up to date"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/widgetkit/keeping-a-widget-up-to-date
+    kind: official
+    topic: "Widget timelines"
+    why: "Timelines, reload policies and the refresh budget widgets work within."
+    status: unverified
+    verifiedAt: null
+  - id: widgetkit-timelineprovider
+    title: "TimelineProvider"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/widgetkit/timelineprovider
+    kind: official
+    topic: "Widget timelines"
+    why: "Providing placeholder, snapshot and timeline entries for a widget."
+    status: unverified
+    verifiedAt: null
+  - id: widgetkit-interactivity
+    title: "Adding interactivity to widgets and Live Activities"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/widgetkit/adding-interactivity-to-widgets-and-live-activities
+    kind: official
+    topic: "Interactive widgets"
+    why: "Buttons and toggles in widgets backed by App Intents."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-app-groups
+    title: "Configuring app groups"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/configuring-app-groups
+    kind: official
+    topic: "App Groups"
+    why: "Sharing data between an app and its extensions."
+    status: unverified
+    verifiedAt: null
+  - id: activitykit-live-activities
+    title: "Displaying live data with Live Activities"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/activitykit/displaying-live-data-with-live-activities
+    kind: official
+    topic: "Live Activities"
+    why: "Starting, updating and ending Live Activities, and their limits."
+    status: unverified
+    verifiedAt: null
+  - id: activitykit-push-updates
+    title: "Starting and updating Live Activities with ActivityKit push notifications"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/activitykit/starting-and-updating-live-activities-with-activitykit-push-notifications
+    kind: official
+    topic: "Live Activity pushes"
+    why: "Updating Live Activities from your server with push notifications."
+    status: unverified
+    verifiedAt: null
+  - id: usernotifications-asking-permission
+    title: "Asking permission to use notifications"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/usernotifications/asking-permission-to-use-notifications
+    kind: official
+    topic: "Notification permission"
+    why: "When and how to request authorization, including provisional authorization."
+    status: unverified
+    verifiedAt: null
+  - id: usernotifications-scheduling-local
+    title: "Scheduling a notification locally from your app"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/usernotifications/scheduling-a-notification-locally-from-your-app
+    kind: official
+    topic: "Local notifications"
+    why: "Content, triggers and requests for local notifications."
+    status: unverified
+    verifiedAt: null
+  - id: usernotifications-actionable
+    title: "Declaring your actionable notification types"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/usernotifications/declaring-your-actionable-notification-types
+    kind: official
+    topic: "Notification actions"
+    why: "Categories and actions users can take from a notification."
+    status: unverified
+    verifiedAt: null
+  - id: appintents-first-intent
+    title: "Creating your first app intent"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/appintents/creating-your-first-app-intent
+    kind: official
+    topic: "App Intents"
+    why: "Defining an intent the system can run from Siri, Shortcuts and Spotlight."
+    status: unverified
+    verifiedAt: null
+  - id: appintents-app-shortcuts
+    title: "App Shortcuts"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/appintents/app-shortcuts
+    kind: official
+    topic: "App Shortcuts"
+    why: "Exposing intents as shortcuts that work without setup."
+    status: unverified
+    verifiedAt: null
+  - id: backgroundtasks-strategies
+    title: "Choosing Background Strategies for Your App"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/backgroundtasks/choosing-background-strategies-for-your-app
+    kind: official
+    topic: "Background work"
+    why: "Which background mechanism fits which kind of work."
+    status: unverified
+    verifiedAt: null
+  - id: backgroundtasks-bgtaskscheduler
+    title: "BGTaskScheduler"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler
+    kind: official
+    topic: "Background tasks"
+    why: "Registering and scheduling refresh and processing tasks."
+    status: unverified
+    verifiedAt: null
+  - id: foundation-background-downloads
+    title: "Downloading files in the background"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/downloading-files-in-the-background
+    kind: official
+    topic: "Background downloads"
+    why: "Background URLSession downloads that continue while the app isn't running."
+    status: unverified
+    verifiedAt: null
