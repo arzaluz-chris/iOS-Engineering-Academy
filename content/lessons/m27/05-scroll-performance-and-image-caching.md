@@ -782,7 +782,14 @@ solution: |
 ````exercise
 id: m27-l05-e5
 type: explain
-prompt: "Your teammate wants to remove prepareForReuse() cancellation because \"the identity check already prevents wrong images.\" Explain what the identity check covers, what cancellation adds, and why the lesson's cell has both."
+prompt: "Your teammate wants to delete the marked lines because \"the identity check already prevents wrong images.\" Explain what the identity check covers, what cancellation adds, and why the lesson's cell has both."
+code: |
+  override func prepareForReuse() {
+      super.prepareForReuse()
+      loadTask?.cancel()      // delete?
+      loadTask = nil          // delete?
+      representedURL = nil
+  }
 rubric:
   - The identity check prevents a stale result from being displayed.
   - Cancellation stops work nobody needs - network, decoding, CPU and memory - during fast scrolls.

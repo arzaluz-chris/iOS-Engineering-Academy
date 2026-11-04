@@ -43,7 +43,7 @@ cards:
     front: How does text get into a String Catalog?
     back: "Wrap user-facing text in a localizable API such as String(localized:) and build. Xcode finds the strings and adds them to the catalog each time you build. Pass comment: to give translators context."
   - id: m27-l07-c2
-    front: Why isn't `count == 1 ? "item" : "items"` enough?
+    front: "Why isn't count == 1 ? \"item\" : \"items\" enough?"
     back: "Plural rules differ by language. French uses the singular for 0 and 1; Russian has one, few and many forms (1 файл, 2 файла, 5 файлов); Arabic has six categories; Japanese has one. Use plural variations in the String Catalog."
   - id: m27-l07-c3
     front: How do you format a price for the user's region?
@@ -737,13 +737,18 @@ solution: |
 id: m27-l07-e5
 type: explain
 prompt: "A teammate's unit test asserts that a formatted delivery date equals \"Mar 5, 2026\". It passes on their Mac and fails on CI. Explain the likely causes and how to fix the test."
+code: |
+  @Test func deliveryDateIsFormatted() {
+      let delivery = Date(timeIntervalSince1970: 1_772_712_000)
+      #expect(delivery.formatted(date: .abbreviated, time: .omitted) == "Mar 5, 2026")
+  }
 rubric:
   - The formatter uses the current locale, which differs between machines.
   - The current time zone can move the instant to another calendar day.
   - Fix - pin Locale, TimeZone and Calendar in the format style and when building the date.
   - Suggests testing the logic (which date, which fields) rather than locale data where possible.
 solution: |
-  `date.formatted(...)` with no locale uses the **current** locale, and the current **time zone**. The developer's Mac is set to US English in a US time zone; the CI runner may be configured with a different locale (giving "5 Mar 2026" or "5. März 2026") or UTC, and an instant near midnight can fall on March 4 or 6 in another time zone.
+  `date.formatted(...)` with no locale uses the **current** locale, and the current **time zone**. The developer's Mac is set to US English in a US time zone; the CI runner may be configured with a different locale (giving "5 Mar 2026" or "5. März 2026") or UTC, and an instant near midnight can fall on March 4 or 6 in another time zone. (This test's timestamp is noon UTC, so here the locale is the more likely culprit, but the next timestamp someone adds may not be.)
 
   The fix is to pin everything that matters: build the date with a `Calendar` whose `timeZone` is fixed, and format with `.locale(Locale(identifier: "en_US"))` and the same `timeZone` set on the format style, as the lesson's formatting example does. Even then, the expected string comes from locale data that the OS can update, so where you can, assert on the logic instead (the computed delivery date's components, or that the style includes year, month and day) and keep only a few pinned-format assertions.
 ````

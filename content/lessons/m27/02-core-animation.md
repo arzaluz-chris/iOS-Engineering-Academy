@@ -220,7 +220,7 @@ func fadeOut(_ layer: CALayer) {
 
 ## Model and presentation
 
-The guide describes two parallel trees of layers. The objects you work with are the **model**: they "contain the target values for an animation". The **presentation** tree holds "the current values as they appear onscreen". And the crucial sentence: "Unlike an implicit animation, which updates the layer object's data value, an explicit animation does not modify the data in the layer tree. Explicit animations only produce the animations."
+The guide describes two parallel trees of layers. The objects you work with are the **model**: they "contain the target values for an animation". The **presentation** tree holds "the current values as they appear onscreen". And the sentence that explains most Core Animation bugs: "Unlike an implicit animation, which updates the layer object's data value, an explicit animation does not modify the data in the layer tree. Explicit animations only produce the animations."
 
 That explains the most famous Core Animation bug. Here is a plain-Swift model of a layer with a model value and explicit animations that only affect what's drawn:
 
@@ -719,7 +719,17 @@ solution: |
 ````exercise
 id: m27-l02-e5
 type: explain
-prompt: "A teammate says: \"Core Animation is just a lower-level UIView.animate. Use whichever you like.\" Explain where they're right and where they're wrong."
+prompt: "A teammate says: \"Core Animation is just a lower-level UIView.animate. Use whichever you like.\" They point at these two ways of fading a view. Explain where they're right and where they're wrong."
+code: |
+  UIView.animate(withDuration: 0.3) {
+      badge.alpha = 0
+  }
+
+  let fade = CABasicAnimation(keyPath: "opacity")
+  fade.fromValue = 1
+  fade.toValue = 0
+  fade.duration = 0.3
+  badge.layer.add(fade, forKey: "fade")
 rubric:
   - Notes that UIView.animate is built on Core Animation and that view properties should be animated through the view.
   - Names things only layers do - keyframes, additive animations, shape stroke, layer-only properties like cornerRadius or shadowPath.

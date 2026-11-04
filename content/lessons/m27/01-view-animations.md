@@ -43,7 +43,7 @@ cards:
     back: "Change the constraint (constant, isActive) first, then call layoutIfNeeded() on the superview that owns the constraints inside the animation block. The block animates the layout pass, not the constraint assignment."
   - id: m27-l01-c2
     front: What does the Bool in UIView.animate's completion mean?
-    back: "Whether the animations actually finished before the handler was called. It's false when the animation was interrupted, for example by another animation of the same property or by removing the view."
+    back: "Whether the animations actually finished before the handler was called. It's false when the animation was cut short, so code that removes views or changes state there should check it."
   - id: m27-l01-c3
     front: When do you need UIViewPropertyAnimator instead of UIView.animate?
     back: "When the animation must be paused, scrubbed with fractionComplete, reversed with isReversed, or continued with new timing while it runs, usually because a gesture drives it."
@@ -111,7 +111,7 @@ Line by line:
 2. **Inside `animations`**, you assign final values. Apple: "This is where you programmatically change any animatable properties of the views in your view hierarchy." UIKit records the changes and animates from the old values to the new ones.
 3. **`duration`** is in seconds. A duration of 0 or less makes the changes immediately, without animating.
 4. **`options`** is a set. `.curveEaseOut` starts fast and slows down, which suits things arriving on screen. `.allowUserInteraction` keeps the card tappable: by default, "user interactions are temporarily disabled for the views being animated."
-5. **`completion`** receives a `Bool` that "indicates whether or not the animations actually finished before the completion handler was called." When another animation takes over the same property, it's `false`.
+5. **`completion`** receives a `Bool` that "indicates whether or not the animations actually finished before the completion handler was called." It's `false` when the animation was cut short before it finished.
 
 The simpler `UIView.animate(withDuration:animations:)` uses `.curveEaseInOut`.
 
@@ -122,8 +122,8 @@ The options you'll use most:
 | `.curveEaseInOut` (default), `.curveEaseIn`, `.curveEaseOut`, `.curveLinear` | The timing curve |
 | `.allowUserInteraction` | Animated views keep receiving touches |
 | `.beginFromCurrentState` | Start from the current on-screen value of an animation already in flight |
-| `.repeat`, `.autoreverse` | Loop, and play backward on every other pass |
-| `.layoutSubviews` | Lay out subviews as part of the animation |
+| `.repeat`, `.autoreverse` | Repeat indefinitely; run backward and forward (only together with `.repeat`) |
+| `.layoutSubviews` | "Lay out subviews at commit time so that they are animated along with their parent" |
 
 ### Animating constraints
 
@@ -166,7 +166,7 @@ final class BannerViewController: UIViewController {
 
 ### Springs
 
-A spring timing curve overshoots and settles like a physical spring. iOS 17 added a version with two parameters people can reason about:
+A spring timing curve moves like a physical spring: depending on its damping, it can overshoot the final value and settle back. iOS 17 added a version with two easy-to-read parameters:
 
 ```swift ios
 import UIKit
@@ -198,19 +198,17 @@ func popInBeforeIOS17(_ badge: UIView) {
 - `initialSpringVelocity` is relative to the distance: "A value of 1 corresponds to the total animation distance traversed in one second." Apple's example: a 200-point move that should start at 100 points per second uses 0.5. You'll use it when a gesture hands off to an animation.
 
 > [!version] iOS 18: SwiftUI animations in UIKit
-> iOS 18 added `UIView.animate(_:changes:completion:)`, which takes a SwiftUI `Animation`. It lets a UIKit view animate with exactly the same curve as SwiftUI code next to it:
->
-> ```swift ios 18.0
-> import SwiftUI
-> import UIKit
->
-> let dot = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
-> UIView.animate(.spring(duration: 0.4)) {
->     dot.center.x = 200
-> }
-> ```
->
-> With the course's iOS 17 target, wrap it in `if #available(iOS 18, *)`.
+> iOS 18 added `UIView.animate(_:changes:completion:)`, which takes a SwiftUI `Animation`, so a UIKit view can animate with exactly the same curve as SwiftUI code next to it. With the course's iOS 17 target, wrap it in `if #available(iOS 18, *)`.
+
+```swift ios 18.0
+import SwiftUI
+import UIKit
+
+let dot = UIView(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
+UIView.animate(.spring(duration: 0.4)) {
+    dot.center.x = 200
+}
+```
 
 ## Timing curves are just math
 
@@ -573,7 +571,7 @@ func presentToast(_ toast: UIView, in container: UIView) {
 > `isHidden` has no in-between value, so it changes at once. Animate `alpha` to 0 and set `isHidden = true` in the completion, only if `finished` is true.
 
 > [!error] Treating the completion's Bool as "it ended"
-> `finished` is `false` when another animation interrupted this one. Code that removes a view or changes state there should check it, or a quick double tap leaves the view removed mid-animation.
+> `finished` is `false` when the animation didn't run to its end, for example because something interrupted it. Code that removes a view or changes state there should check it, or a quick double tap can leave the view removed mid-animation.
 
 > [!error] A gesture that starts a new animator every time
 > Creating a fresh `UIViewPropertyAnimator` in `.began` while the old one is still running makes the view jump. Keep the animator in a property and reuse it if it exists; that's what makes the animation interruptible.
@@ -871,7 +869,7 @@ rubric:
 solution: |
   Four real problems:
 
-  1. **`finished` ignored.** If a second gesture starts another animation of `transform`, this one ends with `finished == false` and still removes the card.
+  1. **`finished` ignored.** If a second gesture starts another animation of `transform`, this one can end with `finished == false` and still removes the card.
   2. **No `.allowUserInteraction`.** UIKit disables interaction with views while they animate unless you pass it.
   3. **`isHidden` in the block** takes effect at once, so the card blinks out instead of sliding. Fade `alpha` if you want it to fade, and hide or remove it in the completion.
   4. **No Reduce Motion path.**
