@@ -165,7 +165,7 @@ Some words are signals that a condition is missing:
 - **"Thread-safe".** Safe from data races? From race conditions? Under which isolation? Module 28 separated the two, and they're different answers.
 
 > [!error] Using the precise term for the wrong thing
-> "A data race" and "a race condition" aren't synonyms, nor are "concurrent" and "parallel", or "deallocated" and "deinitialized" in every context. Using the precise word wrongly is worse than using a plain word, because it invites the follow-up you can't answer. If you're not sure of the term, describe the behavior in plain words.
+> "A data race" and "a race condition" aren't synonyms, nor are "concurrent" and "parallel", or `weak` and `unowned`. Using the precise word wrongly is worse than using a plain word, because it invites the follow-up you can't answer. If you're not sure of the term, describe the behavior in plain words.
 
 ## When you don't know
 

@@ -239,14 +239,14 @@ set a 40: ["a"] total 40
 set b 30: ["b", "a"] total 70
 set c 20: ["c", "b", "a"] total 90
 get a: ["a", "c", "b"] total 90
-set d 25: ["d", "a", "c"] total 75  evicted ["b"]
+set d 25: ["d", "a", "c"] total 85  evicted ["b"]
 set e 70: ["e", "d"] total 95  evicted ["c", "a"]
 set f 150: ["e", "d"] total 95
 set e 10: ["e", "d"] total 35
 ```
 
 - **Reading `a` saved it.** When `d` pushed the total to 115, the least recently used entry was `b`, not `a`, even though `a` was inserted first.
-- **One insert can evict several entries**: `e` (70) needed 95 − 70 … the loop just keeps removing the oldest until the total fits, which took `c` and `a`.
+- **One insert can evict several entries.** Adding `e` (70) brought the total to 155; the loop removed the oldest entries, `c` and then `a`, until it fit at 95.
 - **`f` is larger than the whole budget** and is refused rather than emptying the cache for nothing. A pipeline would still show it, just not cache it.
 - **Replacing `e` with a smaller cost** updates the total and moves it to the newest end.
 - On disk, the index lives in a small database or file next to the cached files, the cache writes "last used" lazily (not on every read, which would be a disk write per scroll), and eviction runs off the main actor, at launch or after writes.
@@ -292,8 +292,8 @@ prefetcher.scroll(to: 37...39, down: true)
 visible 0...2 down: start [0, 1, 2, 3, 4, 5, 6, 7, 8], cancel []
 visible 3...5 down: start [9, 10, 11], cancel [0]
 visible 30...32 down: start [28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38], cancel [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-visible 28...30 down: start [22, 23, 24, 25, 26, 27], cancel [33, 34, 35, 36, 37, 38]
-visible 37...39 down: start [33, 34, 35, 36, 37, 38, 39], cancel [22, 23, 24, 25, 26, 27, 28, 29, 30]
+visible 28...30 up: start [22, 23, 24, 25, 26, 27], cancel [33, 34, 35, 36, 37, 38]
+visible 37...39 down: start [35, 36, 37, 38, 39], cancel [22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
 ```
 
 - **The window is asymmetric**: six ahead, two behind, and it flips when the scroll direction flips (the fourth call).

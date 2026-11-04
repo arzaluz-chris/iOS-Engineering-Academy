@@ -453,7 +453,7 @@ func loadQuantity() throws(ParseError) -> Int {
 }
 ```
 
-You either catch and convert, define an error enum with a case for each source, or declare plain `throws`. That's why the Swift Evolution proposal (SE-0413) recommends plain `throws` for most code, and typed throws where the error set is closed and the caller really handles each case: a parser, a validator, a module's internal code, or generic code that passes errors through.
+You either catch and convert, define an error enum with a case for each source, or declare plain `throws`. That's why the Swift Evolution proposal (SE-0413) calls untyped `throws` "the better default error-handling mechanism for most Swift code" and suggests typed throws in three places: code that stays inside a module or package where the error is always handled, generic code that only passes through errors from the closures it's given, and dependency-free code for constrained environments such as Embedded Swift. It also warns against using typed throws just because an implementation happens to throw one kind of error today, since the type becomes part of the function's contract.
 
 > [!tip] One more detail people get wrong
 > `try?` on a function that returns an optional doesn't produce a double optional. Since Swift 5 (SE-0230), `try? lookup()` where `lookup()` returns `Int?` has type `Int?`: a thrown error and a returned `nil` look the same. If you need to tell them apart, use `do`/`catch`.
