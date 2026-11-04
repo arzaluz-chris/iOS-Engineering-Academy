@@ -32,7 +32,7 @@ mastery:
   - Write $draft.title to bind a text field to one property of a struct in @State.
   - Write a Binding<Bool> that reports and changes whether a set contains an element.
   - Use .constant(true) to preview a view that takes a binding.
-resources: [swiftui-managing-ui-state, swiftui-declaring-custom-view, swiftui-previews, swift-book-properties, swift-book-structures-classes]
+resources: [swiftui-state, swiftui-binding, swiftui-managing-ui-state, swiftui-declaring-custom-view, swiftui-previews, swift-book-properties, swift-book-structures-classes]
 cards:
   - id: m36-l01-c1
     front: What does @State do, and who should own it?

@@ -30,7 +30,7 @@ mastery:
   - Write a root view that owns a model in @State and children that receive it as let properties.
   - Defer creating an expensive model with an optional @State and .task.
   - Bind a TextField to a model's property with @Bindable, including inside a ForEach.
-resources: [observation, observation-tracking, swiftui-migrating-to-observable, swiftui-managing-ui-state, swift-mainactor]
+resources: [swiftui-bindable, swiftui-managing-model-data, observation, observation-tracking, swiftui-migrating-to-observable, swiftui-managing-ui-state, swift-mainactor]
 cards:
   - id: m36-l02-c1
     front: When does SwiftUI update a view that uses an @Observable model?

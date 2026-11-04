@@ -32,7 +32,7 @@ mastery:
   - Build an edit sheet with a draft, a derived hasChanges and canSave, and Save and Cancel.
   - Store a units preference with @AppStorage and an enum backed by a String.
   - For a new screen, place each piece of state in @State, @Binding, an @Observable model, the environment, a parameter, @AppStorage or @SceneStorage, and justify it.
-resources: [swiftui-managing-ui-state, swiftui-migrating-to-observable, foundation-userdefaults, swift-book-properties]
+resources: [swiftui-managing-model-data, swiftui-appstorage, swiftui-managing-ui-state, swiftui-migrating-to-observable, foundation-userdefaults, swift-book-properties]
 cards:
   - id: m36-l06-c1
     front: Stored or derived?

@@ -32,7 +32,7 @@ mastery:
   - Write an @Entry value with a Sendable type and a View extension that sets it.
   - Inject a session model at the root and read it, with and without a binding, several levels down.
   - Give a reason for passing a value as a parameter instead of through the environment.
-resources: [swiftui-environmentvalues, swiftui-migrating-to-observable, swiftui-scenephase, swift-sendable]
+resources: [swiftui-environment, swiftui-entry, swiftui-environmentvalues, swiftui-migrating-to-observable, swiftui-scenephase, swift-sendable]
 cards:
   - id: m36-l03-c1
     front: How do environment values propagate?

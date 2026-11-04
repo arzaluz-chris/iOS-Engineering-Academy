@@ -32,7 +32,7 @@ mastery:
   - Predict which views update after a @Published change, compared with an @Observable model.
   - Convert @StateObject, @ObservedObject, @EnvironmentObject and @Published to their Observation equivalents.
   - Say why a team on iOS 16 or with Combine pipelines on $property keeps ObservableObject.
-resources: [swiftui-migrating-to-observable, observation, swiftui-managing-ui-state, swift-mainactor]
+resources: [swiftui-stateobject, swiftui-observedobject, combine-observableobject, swiftui-migrating-to-observable, observation, swiftui-managing-ui-state, swift-mainactor]
 cards:
   - id: m36-l04-c1
     front: "@StateObject vs @ObservedObject?"

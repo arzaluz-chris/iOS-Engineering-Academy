@@ -32,7 +32,7 @@ mastery:
   - Replace onAppear plus a manual Task with task(id:) so work restarts when the selection changes.
   - Explain why an assignment of an equal value doesn't invalidate an @Observable reader but an in-place mutation does.
   - Use Self._printChanges() to find why a body ran.
-resources: [swiftui-managing-ui-state, swiftui-foreach, observation, swift-task-cancellation-handler]
+resources: [swiftui-state, swiftui-onchange, swiftui-managing-ui-state, swiftui-foreach, observation, swift-task-cancellation-handler]
 cards:
   - id: m36-l05-c1
     front: What resets a view's @State?
