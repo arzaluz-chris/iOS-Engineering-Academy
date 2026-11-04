@@ -32,7 +32,7 @@ mastery:
   - Write destination(for:) that maps every route to a tab and a stack of screens, and test it in a terminal.
   - Rebuild a tab's stack for a route after dismissing anything presented.
   - Encode the current route in an NSUserActivity and restore it at the next connection.
-resources: [uikit-uiwindowscene, uikit-specifying-scenes, swift-book-enumerations, apple-documentation]
+resources: [uikit-open-url-contexts, xcode-custom-url-scheme, xcode-universal-links, uikit-restoring-state, uikit-uiwindowscene, uikit-specifying-scenes, swift-book-enumerations]
 cards:
   - id: m25-l06-c1
     front: Where does a scene-based app receive a custom-scheme URL?

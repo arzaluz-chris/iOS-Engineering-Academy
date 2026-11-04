@@ -1038,3 +1038,102 @@ resources:
     why: Apple's sample project combining compositional layout, cell registration and diffable data sources.
     status: unverified
     verifiedAt: null
+  - id: uikit-uinavigationcontroller
+    title: UINavigationController
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uinavigationcontroller
+    kind: official
+    topic: Navigation stacks
+    why: "The navigation stack: pushing, popping and the navigation bar."
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uinavigationitem
+    title: UINavigationItem
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uinavigationitem
+    kind: official
+    topic: Navigation bar items
+    why: Titles, bar button items and back button settings for each screen.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-navigation-delegate
+    title: UINavigationControllerDelegate
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uinavigationcontrollerdelegate
+    kind: official
+    topic: Navigation events
+    why: How to learn when a screen was shown or popped, including the interactive back swipe.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uitabbarcontroller
+    title: UITabBarController
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uitabbarcontroller
+    kind: official
+    topic: Tab bars
+    why: Tab bar controllers, their tabs and selection.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uitab
+    title: UITab
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uitab
+    kind: official
+    topic: Tabs (iOS 18)
+    why: The newer tab API introduced in iOS 18.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-sheet-presentation
+    title: UISheetPresentationController
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uisheetpresentationcontroller
+    kind: official
+    topic: Sheets
+    why: Sheet detents, grabbers and resizing.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-adaptive-presentation-delegate
+    title: UIAdaptivePresentationControllerDelegate
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiadaptivepresentationcontrollerdelegate
+    kind: official
+    topic: Dismissal
+    why: How to learn about and control interactive dismissal of a sheet.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-open-url-contexts
+    title: "scene(_:openURLContexts:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiscenedelegate/scene(_:openurlcontexts:)
+    kind: official
+    topic: Deep links
+    why: Where a running scene receives URLs opened by the system.
+    status: unverified
+    verifiedAt: null
+  - id: xcode-custom-url-scheme
+    title: Defining a custom URL scheme for your app
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/defining-a-custom-url-scheme-for-your-app
+    kind: official
+    topic: URL schemes
+    why: How to register a URL scheme and handle the URLs it opens.
+    status: unverified
+    verifiedAt: null
+  - id: xcode-universal-links
+    title: Supporting universal links in your app
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/supporting-universal-links-in-your-app
+    kind: official
+    topic: Universal links
+    why: How universal links tie your website and app together.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-restoring-state
+    title: Restoring your app's state
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/restoring-your-app-s-state
+    kind: official
+    topic: State restoration
+    why: How scenes save and restore their interface state.
+    status: unverified
+    verifiedAt: null

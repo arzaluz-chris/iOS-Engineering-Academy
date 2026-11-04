@@ -32,7 +32,7 @@ mastery:
   - Write the same editor with a @MainActor delegate protocol and a weak delegate property.
   - Show with a plain-Swift model that a strong capture keeps a screen alive and a weak one doesn't.
   - Explain two ways a notification-based result can fail silently.
-resources: [swift-book-closures, swift-book-arc, swift-book-protocols, uikit-uiviewcontroller]
+resources: [uikit-navigation-delegate, swift-book-closures, swift-book-arc, swift-book-protocols, uikit-uiviewcontroller]
 cards:
   - id: m25-l04-c1
     front: Why pass a detail screen's model in init instead of setting a var after creating it?

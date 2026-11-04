@@ -32,7 +32,7 @@ mastery:
   - Return to the root after finishing a multi-step flow, and replace a stack in one call.
   - Add bar button items with UIAction handlers that capture self weakly.
   - Set the back button title on the right controller, and choose between backButtonTitle and backButtonDisplayMode.
-resources: [uikit-uiviewcontroller, uikit-uiwindowscene, hig, apple-documentation]
+resources: [uikit-uinavigationcontroller, uikit-uinavigationitem, uikit-uiviewcontroller, uikit-uiwindowscene, hig]
 cards:
   - id: m25-l01-c1
     front: Which navigation controller method replaces the whole stack, and when do you use it?

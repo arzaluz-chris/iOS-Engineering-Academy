@@ -32,7 +32,7 @@ mastery:
   - Switch to another tab from code with selectedIndex or selectedTab.
   - Implement tabBarController(_:shouldSelect:) to present a sign-in screen instead of opening a tab.
   - Branch on #available(iOS 18.0, *) to build tabs with UITab while supporting iOS 17.
-resources: [uikit-uiviewcontroller, hig, apple-documentation]
+resources: [uikit-uitabbarcontroller, uikit-uitab, uikit-uiviewcontroller, hig]
 cards:
   - id: m25-l02-c1
     front: Tab bar controller inside a navigation controller, or navigation controllers inside a tab bar controller?

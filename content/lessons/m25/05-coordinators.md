@@ -32,7 +32,7 @@ mastery:
   - Start a child coordinator, remove it when it finishes, and remove it when the user backs out of its first screen.
   - Write a fake navigator and use it to check, without UIKit, that tapping Edit presents the editor and Save dismisses it.
   - Say when a coordinator is overkill.
-resources: [swift-book-protocols, swift-book-arc, uikit-uiviewcontroller, uikit-uiwindowscene]
+resources: [uikit-navigation-delegate, uikit-uinavigationcontroller, swift-book-protocols, swift-book-arc, uikit-uiviewcontroller, uikit-uiwindowscene]
 cards:
   - id: m25-l05-c1
     front: What does a coordinator do, and what doesn't it do?

@@ -32,7 +32,7 @@ mastery:
   - Show a "Discard changes?" confirmation when the user swipes down an editor with unsaved changes.
   - Explain why presentationControllerDidDismiss(_:) isn't called after dismiss(animated:) in code.
   - Predict which controllers disappear when a controller in the middle of a presentation chain calls dismiss.
-resources: [uikit-uiviewcontroller, hig, apple-documentation]
+resources: [uikit-sheet-presentation, uikit-adaptive-presentation-delegate, uikit-uiviewcontroller, hig]
 cards:
   - id: m25-l03-c1
     front: What does .automatic map to for most view controllers?
