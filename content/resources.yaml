@@ -1425,3 +1425,93 @@ resources:
     why: What a data race is and how Thread Sanitizer reports one.
     status: unverified
     verifiedAt: null
+  - id: swift-task
+    title: Task
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/task
+    kind: official
+    topic: Tasks
+    why: Creating, awaiting and cancelling tasks, and how they inherit priority and isolation.
+    status: unverified
+    verifiedAt: null
+  - id: swift-taskgroup
+    title: TaskGroup
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/taskgroup
+    kind: official
+    topic: Task groups
+    why: Running a dynamic number of child tasks and collecting their results.
+    status: unverified
+    verifiedAt: null
+  - id: swift-task-cancellation-handler
+    title: withTaskCancellationHandler(operation:onCancel:isolation:)
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/withtaskcancellationhandler(operation:oncancel:isolation:)
+    kind: official
+    topic: Cancellation
+    why: Running cleanup immediately when a task is cancelled.
+    status: unverified
+    verifiedAt: null
+  - id: swift-cancellationerror
+    title: CancellationError
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/cancellationerror
+    kind: official
+    topic: Cancellation
+    why: The error thrown when a task notices it was cancelled.
+    status: unverified
+    verifiedAt: null
+  - id: swift-actor
+    title: Actor
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/actor
+    kind: official
+    topic: Actors
+    why: The protocol all actors conform to, and how actor isolation works.
+    status: unverified
+    verifiedAt: null
+  - id: swift-globalactor
+    title: GlobalActor
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/globalactor
+    kind: official
+    topic: Global actors
+    why: Actors like MainActor that isolate code across types and functions.
+    status: unverified
+    verifiedAt: null
+  - id: swift-adopting-swift6
+    title: Adopting strict concurrency in Swift 6 apps
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/adoptingswift6
+    kind: official
+    topic: Migrating to Swift 6
+    why: Apple's guide to turning on strict checking and fixing the diagnostics.
+    status: unverified
+    verifiedAt: null
+  - id: xcode-build-settings-reference
+    title: Build settings reference
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/build-settings-reference
+    kind: official
+    topic: Build settings
+    why: Where Default Actor Isolation and Approachable Concurrency are documented.
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-concurrency
+    title: Concurrency (The Swift Programming Language)
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/
+    kind: official
+    topic: Swift Concurrency
+    why: The language guide's chapter on async/await, tasks, actors and Sendable.
+    status: unverified
+    verifiedAt: null
+  - id: swift-migration-guide
+    title: Swift 6 Migration Guide
+    source: Swift.org
+    url: https://www.swift.org/migration/documentation/migrationguide/
+    kind: official
+    topic: Migrating to Swift 6
+    why: The Swift project's guide to data-race safety and incremental migration.
+    status: unverified
+    verifiedAt: null
