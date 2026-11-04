@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: November 4, 2026 (after Module 26; Module 27 is being written).
+Last updated: November 4, 2026 (after Module 27; Module 28 is next).
 
 ## Done
 
@@ -17,16 +17,16 @@ Last updated: November 4, 2026 (after Module 26; Module 27 is being written).
 | Type | Written | Planning target |
 | --- | --- | --- |
 | Stages | 15 (full map) | 12–16 |
-| Modules | 49 on the map; 26 with lessons (M1 to M26) | — |
-| Lessons | 151 (M1: 3, M2: 5, M3: 5, M4–M18 and M20–M25: 6 each, M19: 7, M26: 5); 149 `tested`, 2 `no-code` | more than 100 |
-| Lesson exercises | 890 (prediction 167, comprehension 160, solve 152, find-errors 126, fill-in 117, explain 77, design 52, refactor 39) | at least 100 |
-| Review cards | 706 | — |
+| Modules | 49 on the map; 27 with lessons (M1 to M27) | — |
+| Lessons | 158 (M1: 3, M2: 5, M3: 5, M4–M18 and M20–M25: 6 each, M19 and M27: 7, M26: 5); 156 `tested`, 2 `no-code` | more than 100 |
+| Lesson exercises | 926 (prediction 176, comprehension 166, solve 159, find-errors 133, fill-in 118, explain 80, design 55, refactor 39) | at least 100 |
+| Review cards | 741 | — |
 | Coding challenges | 5, with Swift solutions and tests | at least 100 |
 | Interview questions | 210 across 14 categories (swift 35, uikit 22, concurrency 20, swiftui 19, architecture 17, system-design 15, security 13, testing 12, networking 11, platform 10, memory 9, performance 9, persistence 9, tooling 9) | a broad bank |
 | Projects | 8 specified with milestones | 8 |
-| Resources | 132; 21 verified, 111 with `status: unverified` (each returned 200 when added) | — |
+| Resources | 146; 21 verified, 125 with `status: unverified` (each returned 200 when added) | — |
 
-Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP and protocols, generics and functional programming, error handling, memory management), M14 (Professional Tools: packages, Git, pull requests, naming and SOLID; its Git output comes from real runs of Git 2.43 against throwaway repositories, and its Xcode steps are from Apple's docs, not checked in Xcode), and the algorithms stage has M15 (Algorithmic Complexity), M16 (Arrays, Hashing and Windows) and M17 (Stacks, Queues and Linked Lists; what it says about deep linked-list teardown was measured on Linux only and is labeled that way) and M18 (Recursion, Backtracking and Sorting; claims about Swift's sort quote only Apple's documentation, which guarantees stability and O(n log n) but doesn't name the algorithm) and M19 (Trees, Heaps and Graphs: traversals, BSTs, tries, heaps, BFS and DFS, topological sort, union-find) and M20 (Greedy Algorithms and Dynamic Programming), which completes the algorithms stage. Stage 6 has M21 (How an iOS App Works), and Stage 7 has M22 (UIKit Fundamentals), M23 (Layout in UIKit), M24 (Components and Lists), M25 (Navigation in UIKit) and M26 (Events and Communication Between Components). The snippet tests run 167 predictions and 1314 Swift blocks, and type-check 152 iOS blocks against the iOS SDK on the macOS runner; all pass on Swift 6.3.3 (Linux container) and in CI on macOS.
+Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP and protocols, generics and functional programming, error handling, memory management), M14 (Professional Tools: packages, Git, pull requests, naming and SOLID; its Git output comes from real runs of Git 2.43 against throwaway repositories, and its Xcode steps are from Apple's docs, not checked in Xcode), and the algorithms stage has M15 (Algorithmic Complexity), M16 (Arrays, Hashing and Windows) and M17 (Stacks, Queues and Linked Lists; what it says about deep linked-list teardown was measured on Linux only and is labeled that way) and M18 (Recursion, Backtracking and Sorting; claims about Swift's sort quote only Apple's documentation, which guarantees stability and O(n log n) but doesn't name the algorithm) and M19 (Trees, Heaps and Graphs: traversals, BSTs, tries, heaps, BFS and DFS, topological sort, union-find) and M20 (Greedy Algorithms and Dynamic Programming), which completes the algorithms stage. Stage 6 has M21 (How an iOS App Works), and Stage 7 has M22 (UIKit Fundamentals), M23 (Layout in UIKit), M24 (Components and Lists), M25 (Navigation in UIKit), M26 (Events and Communication Between Components) and M27 (Advanced UIKit), which completes the UIKit stage. The snippet tests run 176 predictions and 1340 Swift blocks, and type-check 198 iOS blocks against the iOS SDK on the macOS runner; all pass on Swift 6.3.3 (Linux container) and in CI on macOS.
 
 **Interview bank (3 Nov 2026):** questions were chosen from what real iOS interviews ask (interview write-ups, prep guides, articles) and cover every topic in the table of contents of a popular interview-prep book the owner provided. Nothing was copied from any source: every answer was written for this course and checked against primary sources (Swift Evolution, The Swift Programming Language, Apple documentation); Swift code in answers was compiled and run in the container. A private fact-check of that book (errors, outdated claims, broken code) was given to the owner and is not in the repository.
 
@@ -44,21 +44,21 @@ Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP
 
 - Prediction exercises with `lang: pseudo` (schema, component and validator, with tests in `tests/content.test.ts` and `tests/ui.test.tsx`): they're shown as pseudocode, and the validator requires a Swift translation in the solution.
 - The `LessonSnippetsTests` Swift target and the code block markers `no-compile`, `warning`, `runtime-error` and `illustrative`, documented in `docs/CONTENT.md`.
-- The `swift ios` marker (4 Nov 2026): Apple-framework blocks are type-checked against the iOS simulator SDK when Xcode is present (the macOS runner; skipped on Linux). A self-test proves it rejects broken UIKit code. Modules 21–26's 152 iOS blocks passed it with Xcode 26.6. The macOS run also caught a portability bug the Linux container can't: plain-Swift code that builds `CGRect` with only `import Foundation` compiles on Linux but not on macOS, where those initializers come from CoreGraphics. Such blocks import CoreGraphics when it's available.
+- The `swift ios` marker (4 Nov 2026): Apple-framework blocks are type-checked against the iOS simulator SDK when Xcode is present (the macOS runner; skipped on Linux). A self-test proves it rejects broken UIKit code. Modules 21–27's 198 iOS blocks passed it with Xcode 26.6. The macOS run also caught a portability bug the Linux container can't: plain-Swift code that builds `CGRect` with only `import Foundation` compiles on Linux but not on macOS, where those initializers come from CoreGraphics. Such blocks import CoreGraphics when it's available.
 
 ## Acceptance criteria not yet met
 
-- 100 challenges: only 5 exist. (More than 100 lessons and 100 exercises: met, with 151 lessons and 890 exercises; modules 27 to 49 are still missing.)
+- 100 challenges: only 5 exist. (More than 100 lessons and 100 exercises: met, with 158 lessons and 926 exercises; modules 28 to 49 are still missing.)
 - Swift taught in depth, UIKit and SwiftUI with full stages: today only their plan exists.
 - Automated accessibility tests: not implemented.
 - The Xcode UI instructions in Module 3 (menus, shortcuts, *Settings › Components*, the debugger) haven't been checked in a real Xcode.
 
 ## Next step
 
-1. Module 27 (Advanced UIKit) is being written; then the rest of the UIKit stage in curriculum order. Apple-framework code is written as ```` ```swift ios ```` blocks, type-checked (not run) against the iOS simulator SDK on the macOS CI runner; a module with such blocks is checked on a branch with a manual workflow run before it goes to `main` in curriculum order.
+1. Module 28 (Threads, Queues and GCD) is verified and goes next; then the rest of the UIKit stage in curriculum order. Apple-framework code is written as ```` ```swift ios ```` blocks, type-checked (not run) against the iOS simulator SDK on the macOS CI runner; a module with such blocks is checked on a branch with a manual workflow run before it goes to `main` in curriculum order.
 2. Coding challenges for the array and hashing patterns, now that M7 is in place.
 3. Check Module 3's Xcode UI instructions in Xcode 27 and, if they match, note it here.
-4. When the links workflow confirms the 111 unverified resources, change their `status` to `verified` with a date.
+4. When the links workflow confirms the 125 unverified resources, change their `status` to `verified` with a date.
 5. `docs/RESEARCH.md` lists UIKit's automatic observation tracking as unverified; Apple's docs now document it (opt-in on iOS 18 via `UIObservationTrackingEnabled`, on by default from iOS 26, `updateProperties()` from iOS 26). Update that note.
 
 How a module is produced: one agent per module with a fixed list of lesson ids and titles, following `docs/CONTENT.md`; every code block and prediction must pass `LessonSnippetsTests` before the module is accepted. Each module is then verified on a clean checkout of `main` containing only that module (`npm run validate`, `tsc`, `vitest`, `vite build`, `swift test`) and committed on its own.
