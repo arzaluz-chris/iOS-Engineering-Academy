@@ -35,7 +35,7 @@ mastery:
   - Turn a vertical section into a paging carousel that shows part of the next card.
   - Add a pinned section header with a custom UICollectionReusableView.
   - Build a three-section screen whose grid column count depends on the available width.
-resources: [uikit-uiview, apple-documentation, hig]
+resources: [uikit-compositional-layout, uikit-modern-collection-views, uikit-uiview, hig]
 cards:
   - id: m24-l06-c1
     front: The four levels of a compositional layout, from small to large?

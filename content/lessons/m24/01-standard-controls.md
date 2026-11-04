@@ -32,7 +32,7 @@ mastery:
   - Wire a switch, a slider and a segmented control with UIAction and read their values.
   - Give an icon-only button, a symbol image and a slider with units the label and value VoiceOver needs.
   - Pick between UIActivityIndicatorView and a button's showsActivityIndicator for a loading state.
-resources: [uikit-target-action, uikit-uistackview, hig, apple-documentation]
+resources: [uikit-button-configuration, uikit-accessibility-traits, uikit-target-action, uikit-uistackview, hig]
 cards:
   - id: m24-l01-c1
     front: How do you style a UIButton in current UIKit?

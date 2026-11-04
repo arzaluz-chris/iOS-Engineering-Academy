@@ -32,7 +32,7 @@ mastery:
   - Update a changed item with reconfigureItems and explain why a whole-model snapshot can't.
   - Delete an item from a swipe action by updating the store and the snapshot by identifier.
   - Model with CollectionDifference what a diff of identifiers and a diff of whole models report for the same change.
-resources: [swift-set, swift-book-protocols, apple-documentation]
+resources: [uikit-diffable-data-sources, uikit-diffable-snapshot, swift-set, swift-book-protocols]
 cards:
   - id: m24-l05-c1
     front: What are the generic constraints on UICollectionViewDiffableDataSource's section and item identifier types?

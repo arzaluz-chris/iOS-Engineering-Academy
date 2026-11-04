@@ -35,7 +35,7 @@ mastery:
   - Write a prepareForReuse() override that resets only non-content state and calls super.
   - Update a table after deleting from the model in the right order, so the row counts match.
   - Choose reconfigureRows over reloadRows when only a row's content changed.
-resources: [uikit-uiview, swift-book-protocols, apple-documentation]
+resources: [uikit-uitableview, uikit-prepareforreuse, uikit-list-content-configuration, uikit-uiview, swift-book-protocols]
 cards:
   - id: m24-l03-c1
     front: Why do table and collection views reuse cells?

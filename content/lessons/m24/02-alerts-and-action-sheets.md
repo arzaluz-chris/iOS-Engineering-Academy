@@ -31,7 +31,7 @@ mastery:
   - Write a rename alert with a text field, a disabled Save action that enables when the text is valid, and a handler that reads the text through a weak reference.
   - Present an action sheet from a button and from a bar button item, with the popover anchor set.
   - Explain why presenting an alert in viewDidLoad() doesn't work and where to present it instead.
-resources: [uikit-uiviewcontroller, hig, apple-documentation]
+resources: [uikit-uialertcontroller, uikit-popover-sourceitem, uikit-uiviewcontroller, hig]
 cards:
   - id: m24-l02-c1
     front: The three UIAlertAction styles and when to use each?

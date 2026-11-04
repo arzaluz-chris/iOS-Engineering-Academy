@@ -32,7 +32,7 @@ mastery:
   - Set a list cell's content configuration and accessories from the item, for every item.
   - Add a trailing swipe action through trailingSwipeActionsConfigurationProvider.
   - Write a custom cell class and a registration whose item type differs from the data source's identifier type.
-resources: [uikit-uiview, swift-book-generics, apple-documentation]
+resources: [uikit-cell-registration, uikit-list-configuration, uikit-uiview, swift-book-generics]
 cards:
   - id: m24-l04-c1
     front: What are the three collaborators of a UICollectionView?
