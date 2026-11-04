@@ -34,7 +34,7 @@ mastery:
   - Define a transport protocol and a URLSession-backed implementation, and run an API client against a fake transport.
   - Assert in a test that the client built the request you expected (method, path, query, headers).
   - Pick request and resource timeouts for a screen and explain the difference.
-resources: [foundation-urlsession-init-delegate, swift-book-protocols, swift-book-generics, swift-sendable]
+resources: [foundation-urlsession, foundation-urlrequest, foundation-httpurlresponse, foundation-urlcomponents, foundation-urlsessionconfiguration, foundation-urlsession-init-delegate, swift-book-protocols, swift-book-generics, swift-sendable]
 cards:
   - id: m30-l03-c1
     front: Does URLSession's data(for:) throw on a 404 or 500?

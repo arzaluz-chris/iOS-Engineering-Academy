@@ -34,7 +34,7 @@ mastery:
   - Replace Date() with an injected clock to test time-based behavior without sleeping.
   - Register a URLProtocol stub on an ephemeral URLSession and run the real transport against it.
   - Write a contract test that would catch a renamed JSON key, including one behind an optional property.
-resources: [swift-testing-docs, swift-book-protocols, swift-book-generics, foundation-urlsession-init-delegate]
+resources: [foundation-urlprotocol, swift-testing-docs, swift-book-protocols, swift-book-generics, foundation-urlsession-init-delegate]
 cards:
   - id: m30-l06-c1
     front: What does a repository give its callers?

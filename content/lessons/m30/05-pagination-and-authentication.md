@@ -35,7 +35,7 @@ mastery:
   - Write a token provider that coalesces refreshes and detects that another request already refreshed.
   - Make a client retry a 401 exactly once with a fresh token, and sign out on a second 401.
   - Write a log line for a request with its Authorization header and token parameters redacted.
-resources: [keychain-services, owasp-masvs, owasp-mastg, swift-book-error-handling]
+resources: [rfc-6750, security-storing-keys-keychain, keychain-services, owasp-masvs, owasp-mastg, swift-book-error-handling]
 cards:
   - id: m30-l05-c1
     front: Offset or cursor pagination for a feed where new posts arrive at the top?

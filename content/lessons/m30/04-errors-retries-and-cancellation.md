@@ -32,7 +32,7 @@ mastery:
   - Compute the delays of a backoff schedule with a given base, cap and jitter value.
   - Parse a Retry-After header given as seconds or as an HTTP date.
   - Test a retry loop with an injected sleep function and a fake transport, and show that it stops when cancelled.
-resources: [swift-book-error-handling, swift-result, foundation-localizederror, swift-book-enumerations]
+resources: [foundation-urlerror, rfc-9110, swift-book-error-handling, swift-result, foundation-localizederror, swift-book-enumerations]
 cards:
   - id: m30-l04-c1
     front: Which failures are worth retrying?

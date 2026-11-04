@@ -35,7 +35,7 @@ mastery:
   - Build a GET with query parameters and a POST with a JSON body using URLComponents and URLRequest.
   - Sketch the endpoints of a small REST API for a feature, with methods, paths and expected status codes.
   - Explain why a header lookup must ignore case and why query strings never carry tokens.
-resources: [swift-book-enumerations, apple-documentation]
+resources: [rfc-9110, swift-book-enumerations]
 cards:
   - id: m30-l01-c1
     front: Which HTTP methods are idempotent?

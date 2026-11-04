@@ -35,7 +35,7 @@ mastery:
   - Spot the convertFromSnakeCase acronym trap in a model with properties like imageURL.
   - Turn a DecodingError into a one-line message with the case and the path.
   - Decode a list response where some items are invalid, keeping the valid ones and counting the rest.
-resources: [swift-book-protocols, swift-book-error-handling, swift-book-enumerations]
+resources: [foundation-jsondecoder, foundation-encoding-custom-types, swift-decodingerror, swift-book-protocols, swift-book-error-handling, swift-book-enumerations]
 cards:
   - id: m30-l02-c1
     front: Missing key, null, or wrong type for a property declared String?
