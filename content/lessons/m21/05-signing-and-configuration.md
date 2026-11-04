@@ -38,7 +38,7 @@ mastery:
   - Explain why #if os(iOS) and #available answer different questions.
   - Create Debug, Staging and Release settings for an API host with xcconfig files and read the value through the Info.plist.
   - Explain to a teammate why an API key in an xcconfig ends up readable by anyone with the app.
-resources: [xcode-requirements, apple-platform-security, owasp-mastg, keychain-services]
+resources: [tn3125-provisioning-profiles, xcode-running-code-specific-version, xcode-build-configuration-file, apple-platform-security, owasp-mastg, keychain-services]
 cards:
   - id: m21-l05-c1
     front: What five things does a provisioning profile tie together?

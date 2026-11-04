@@ -36,7 +36,7 @@ mastery:
   - Compute the frame interval at 60 and 120 Hz and say how many frames a given amount of main-thread work misses.
   - Describe hit-testing and what happens to a touch nobody handles.
   - Fix "call to main actor-isolated … in a synchronous nonisolated context" by isolating the caller, and say when that's the right fix.
-resources: [apple-documentation, swift-book]
+resources: [swift-mainactor, understanding-hangs, swift-book]
 cards:
   - id: m21-l03-c1
     front: Why does only one thread update the UI?

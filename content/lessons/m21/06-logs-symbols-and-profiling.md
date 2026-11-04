@@ -36,7 +36,7 @@ mastery:
   - Say where dSYMs come from, which build setting controls them and what goes wrong without the matching one.
   - Compute an offset from a backtrace address and a load address, and find the containing function in a sorted symbol table.
   - Profile a Release build on a device and use self weight, total weight and the heaviest stack trace to pick what to optimize.
-resources: [xcode-memory-use, lldb-tutorial, apple-documentation, owasp-masvs]
+resources: [os-logger, xcode-symbolicate-crash-report, xcode-memory-use, lldb-tutorial, owasp-masvs]
 cards:
   - id: m21-l06-c1
     front: Which Logger levels are persisted to disk by default?

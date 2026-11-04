@@ -36,7 +36,7 @@ mastery:
   - Write the camera permission flow that checks status first and asks only when the feature is used.
   - Explain what the app should do for denied and restricted statuses.
   - Read a privacy manifest and say what each top-level key declares, including a UserDefaults reason.
-resources: [apple-platform-security, app-review-guidelines, keychain-services, owasp-masvs]
+resources: [requesting-protected-resources, privacy-manifest-files, apple-platform-security, keychain-services, owasp-masvs]
 cards:
   - id: m21-l04-c1
     front: Where do these go? User-created files; the app's database; re-downloadable thumbnails; a file only needed for this launch.

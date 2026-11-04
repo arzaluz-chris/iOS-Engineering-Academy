@@ -37,7 +37,7 @@ mastery:
   - Predict the scene callbacks for opening the app, getting a system alert, going home, coming back and closing it in the app switcher.
   - Decide where to set up a database, refresh visible data, pause playback, hide sensitive data and save drafts.
   - Explain why apps built with the iOS 27 SDK must use the scene life cycle.
-resources: [tn3187-scenes, swift-book, apple-documentation]
+resources: [uikit-app-launch-sequence, uikit-app-life-cycle, swiftui-scenephase, tn3187-scenes]
 cards:
   - id: m21-l02-c1
     front: What does UIApplicationMain do, and when does it return?

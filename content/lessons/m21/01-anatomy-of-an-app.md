@@ -36,7 +36,7 @@ mastery:
   - Tell CFBundleShortVersionString from CFBundleVersion and give a valid example of each.
   - Say whether a given type (String, URL, UIView, Logger) comes from the standard library, Foundation or an Apple-only framework.
   - Compare dotted version strings numerically instead of as text.
-resources: [xcode-create-project, xcode-requirements, apple-documentation, swiftpm-docs]
+resources: [information-property-list, uikit-app-launch-sequence, xcode-create-project, xcode-requirements, swiftpm-docs]
 cards:
   - id: m21-l01-c1
     front: What's the relationship between an Xcode project and its targets?
