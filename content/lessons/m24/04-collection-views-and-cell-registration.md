@@ -147,6 +147,8 @@ The same applies to `cellForItemAt`. Creating it in `viewDidLoad()` and storing 
 Why it breaks reuse: each registration value carries its own identity, and the collection view keeps its reuse queue per registration. A new registration per call is a new, empty queue every time. This model shows the effect:
 
 ```swift
+import Foundation
+
 final class Cell {
     let number: Int
     var text = ""
@@ -154,25 +156,17 @@ final class Cell {
 }
 
 struct Registration {
-    private static var nextID = 0
-    let id: Int
+    let id = UUID()
     let configure: (Cell, String) -> Void
-
-    init(configure: @escaping (Cell, String) -> Void) {
-        Registration.nextID += 1
-        id = Registration.nextID
-        self.configure = configure
-    }
 }
 
 final class FakeCollectionView {
-    private var queues: [Int: [Cell]] = [:]
+    private var queues: [UUID: [Cell]] = [:]
     private(set) var cellsCreated = 0
 
     func dequeue(using registration: Registration, item: String) -> Cell {
         let cell: Cell
-        if var queue = queues[registration.id], let reused = queue.popLast() {
-            queues[registration.id] = queue
+        if let reused = queues[registration.id]?.popLast() {
             cell = reused
         } else {
             cellsCreated += 1
@@ -213,7 +207,7 @@ a registration per call: 6 cell(s)
 
 The model scrolls one item at a time, so a single cell could serve all six. With one shared registration, it does. With a new registration for each item, every queue is new and empty, and every item gets a brand-new cell. UIKit goes further than the model and raises an exception, so you find out immediately.
 
-`static var nextID` is a mutable global, which Swift 6 normally rejects; this model is single-threaded code in a script, where top-level code runs on the main actor. Real code wouldn't need it.
+The model gives each registration a `UUID` when it's created and keys the reuse queues by it. How UIKit identifies a `CellRegistration` internally isn't documented; the effect Apple describes is the same.
 
 ## List cells
 
