@@ -2145,3 +2145,102 @@ resources:
     why: "Animating a view between two places in the hierarchy."
     status: unverified
     verifiedAt: null
+  - id: swiftui-state
+    title: "State"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/state
+    kind: official
+    topic: "@State"
+    why: "Local value state a view owns, and when its default value is created."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-binding
+    title: "Binding"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/binding
+    kind: official
+    topic: "@Binding"
+    why: "Two-way references to state owned elsewhere, including Binding(get:set:)."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-bindable
+    title: "Bindable"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/bindable
+    kind: official
+    topic: "@Bindable"
+    why: "Creating bindings to properties of an @Observable model."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-environment
+    title: "Environment"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/environment
+    kind: official
+    topic: "@Environment"
+    why: "Reading environment values and @Observable models from the environment."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-entry
+    title: "Entry()"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/entry()
+    kind: official
+    topic: "Custom environment values"
+    why: "The @Entry macro for declaring custom environment values."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-stateobject
+    title: "StateObject"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/stateobject
+    kind: official
+    topic: "@StateObject"
+    why: "Owning an ObservableObject so it survives view updates."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-observedobject
+    title: "ObservedObject"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/observedobject
+    kind: official
+    topic: "@ObservedObject"
+    why: "Observing an ObservableObject owned somewhere else."
+    status: unverified
+    verifiedAt: null
+  - id: combine-observableobject
+    title: "ObservableObject"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/combine/observableobject
+    kind: official
+    topic: "ObservableObject"
+    why: "The Combine protocol behind the older SwiftUI data flow APIs."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-appstorage
+    title: "AppStorage"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/appstorage
+    kind: official
+    topic: "@AppStorage"
+    why: "Reading and writing a UserDefaults value from a view."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-onchange
+    title: "onChange(of:initial:_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/onchange(of:initial:_:)
+    kind: official
+    topic: "Reacting to changes"
+    why: "Running an action when a value changes."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-managing-model-data
+    title: "Managing model data in your app"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app
+    kind: official
+    topic: "Model data"
+    why: "Apple's guide to sharing @Observable model data across views."
+    status: unverified
+    verifiedAt: null
