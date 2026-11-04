@@ -32,7 +32,7 @@ mastery:
   - Predict whether an optional width constraint beats a view's hugging or compression resistance.
   - Write intrinsicContentSize for a custom view and call invalidateIntrinsicContentSize() when it changes.
   - Explain why setting CHCR priorities on a stack view has no effect.
-resources: [apple-documentation]
+resources: [uikit-intrinsic-content-size, uikit-nslayoutconstraint, auto-layout-guide]
 cards:
   - id: m23-l03-c1
     front: What constraints does Auto Layout create from a view's intrinsic content size?

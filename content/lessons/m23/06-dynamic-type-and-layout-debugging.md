@@ -32,7 +32,7 @@ mastery:
   - Switch a stack view's axis when the content size category is an accessibility size.
   - Identify, in a constraint log, your constraints, the system's and the autoresizing-mask ones, and the constraint that was broken.
   - Name constraints with identifier so logs are readable.
-resources: [apple-documentation, hig]
+resources: [uikit-scaling-fonts, uikit-adapting-trait-changes, xcode-diagnosing-appearance, auto-layout-guide, hig]
 cards:
   - id: m23-l06-c1
     front: What two lines make a label follow Dynamic Type while the app is running?

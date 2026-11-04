@@ -34,7 +34,7 @@ mastery:
   - Compute the minimum and maximum contentOffset for a given content height, scroll view height and insets.
   - Compute the offset that brings a given rectangle into view.
   - Pin a scroll view's bottom to the keyboard layout guide and choose a keyboard dismiss mode.
-resources: [apple-documentation]
+resources: [uikit-uiscrollview, uikit-keyboard-layout-guide, auto-layout-guide]
 cards:
   - id: m23-l05-c1
     front: What do contentLayoutGuide and frameLayoutGuide represent?

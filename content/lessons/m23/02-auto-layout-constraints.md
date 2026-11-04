@@ -35,7 +35,7 @@ mastery:
   - Count whether a set of constraints fully determines a view's position and size on each axis.
   - Keep a reference to a constraint and change its constant or activation in response to state.
   - Pick a 999 priority to make a constraint the layout's failure point.
-resources: [apple-documentation]
+resources: [uikit-nslayoutconstraint, uikit-nslayoutanchor, uikit-translates-autoresizing, auto-layout-guide]
 cards:
   - id: m23-l02-c1
     front: What equation does every NSLayoutConstraint represent?

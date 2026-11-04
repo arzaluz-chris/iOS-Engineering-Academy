@@ -34,7 +34,7 @@ mastery:
   - Compute a stack view's fitting size from its arranged views, spacing and margins.
   - Pick the distribution and alignment for a toolbar, a form column and a row of equal buttons.
   - Hide and show a row in a stack view without touching any constraint.
-resources: [apple-documentation, hig]
+resources: [uikit-safe-area, uikit-layout-margins, uikit-uistackview, hig]
 cards:
   - id: m23-l04-c1
     front: Safe area vs layout margins?
