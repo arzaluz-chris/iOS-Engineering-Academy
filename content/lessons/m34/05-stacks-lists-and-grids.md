@@ -467,7 +467,7 @@ solution: |
   [] []
   ```
 
-  With real ids, the change is one insertion (`z9`) and one deletion (`b2`), which is what happened. With indices, both lists are positions 0 through 3, so nothing looks inserted or removed: every row would simply show different content in place, with no insert or delete animation, and any per-row state would stay with its position while the items under it changed.
+  With real ids, the change is one insertion (`z9`) and one deletion (`b2`), which is what happened. With indices, both lists are positions 0 through 3, so nothing looks inserted or removed: every row would show different content in place, with no insert or delete animation, and any per-row state would stay with its position while the items under it changed.
 ````
 
 ````exercise
@@ -648,7 +648,7 @@ solution: |
   }
   ```
 
-  One `.adaptive(minimum: 120)` item fits as many columns of at least 120 points as the width allows. `LazyVGrid` creates cells as they're needed, and the `ScrollView` makes it scroll; without it, the grid would simply be cut off.
+  One `.adaptive(minimum: 120)` item fits as many columns of at least 120 points as the width allows. `LazyVGrid` creates cells as they're needed, and the `ScrollView` makes it scroll; without one, a grid taller than the screen just runs off the bottom.
 ````
 
 ````exercise
