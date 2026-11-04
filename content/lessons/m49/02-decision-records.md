@@ -32,7 +32,7 @@ mastery:
   - Supersede an accepted ADR, updating the status of the old one and the context of the new one.
   - Explain why an ADR's decision text isn't edited after acceptance.
   - Implement a status model where invalid transitions fail.
-resources: [swift-evolution, security-storing-keys-keychain, observation, swiftdata, swift-book-enumerations]
+resources: [nygard-adr, swift-evolution, security-storing-keys-keychain, observation, swiftdata, swift-book-enumerations]
 cards:
   - id: m49-l02-c1
     front: What are the five sections of a Nygard-style ADR?

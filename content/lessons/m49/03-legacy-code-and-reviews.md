@@ -36,7 +36,7 @@ mastery:
   - Review a pull request starting with design and tests, and write comments labeled blocking, nit, optional or FYI.
   - Answer a review comment you disagree with by citing data or the style guide instead of preference.
   - Derive the checklist items that apply to a change from the areas it touches.
-resources: [github-pull-request-reviews, git-commit-reference, swift-api-design-guidelines, conventional-commits]
+resources: [git-blame-reference, git-log-reference, git-bisect-reference, google-review-standard, google-review-comments, github-pull-request-reviews, git-commit-reference, swift-api-design-guidelines, conventional-commits]
 cards:
   - id: m49-l03-c1
     front: "A line looks wrong. Which git command tells you when and why it was added?"

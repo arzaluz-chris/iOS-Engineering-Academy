@@ -3198,3 +3198,282 @@ resources:
     why: "XOR and other bitwise operators, and the &+ family of overflow operators."
     status: unverified
     verifiedAt: null
+  - id: storekit-product
+    title: "Product"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/storekit/product
+    kind: official
+    topic: "StoreKit 2"
+    why: "Loading products and starting purchases with StoreKit 2."
+    status: unverified
+    verifiedAt: null
+  - id: storekit-transaction-updates
+    title: "Transaction.updates"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/storekit/transaction/updates
+    kind: official
+    topic: "Transactions"
+    why: "Listening for transactions that happen outside the purchase flow."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-storekit-testing
+    title: "Setting up StoreKit Testing in Xcode"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/setting-up-storekit-testing-in-xcode
+    kind: official
+    topic: "StoreKit testing"
+    why: "Testing purchases locally with a StoreKit configuration file."
+    status: unverified
+    verifiedAt: null
+  - id: corelocation-requesting-authorization
+    title: "Requesting authorization to use location services"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/corelocation/requesting-authorization-to-use-location-services
+    kind: official
+    topic: "Location permission"
+    why: "When-in-use and always authorization and the Info.plist keys they need."
+    status: unverified
+    verifiedAt: null
+  - id: corelocation-liveupdates
+    title: "liveUpdates(_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/corelocation/cllocationupdate/liveupdates(_:)
+    kind: official
+    topic: "Location updates"
+    why: "The async sequence of location updates."
+    status: unverified
+    verifiedAt: null
+  - id: avfoundation-capture-session
+    title: "Setting up a capture session"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/avfoundation/setting-up-a-capture-session
+    kind: official
+    topic: "Camera capture"
+    why: "Configuring inputs and outputs for camera capture."
+    status: unverified
+    verifiedAt: null
+  - id: avfoundation-media-playback
+    title: "Configuring your app for media playback"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/avfoundation/configuring-your-app-for-media-playback
+    kind: official
+    topic: "Media playback"
+    why: "Audio session setup and background playback."
+    status: unverified
+    verifiedAt: null
+  - id: signinwithapple-implementing
+    title: "Implementing User Authentication with Sign in with Apple"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/authenticationservices/implementing-user-authentication-with-sign-in-with-apple
+    kind: official
+    topic: "Sign in with Apple"
+    why: "The full Sign in with Apple flow, including credential state."
+    status: unverified
+    verifiedAt: null
+  - id: cloudkit-enabling
+    title: "Enabling CloudKit in your app"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/cloudkit/enabling-cloudkit-in-your-app
+    kind: official
+    topic: "CloudKit"
+    why: "Containers, databases and the capabilities CloudKit needs."
+    status: unverified
+    verifiedAt: null
+  - id: cloudkit-cksyncengine
+    title: "CKSyncEngine"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/cloudkit/cksyncengine-5sie5
+    kind: official
+    topic: "CloudKit sync"
+    why: "The engine that schedules and runs CloudKit sync for you."
+    status: unverified
+    verifiedAt: null
+  - id: combine
+    title: "Combine"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/combine
+    kind: official
+    topic: "Combine"
+    why: "Publishers, subscribers and operators in Apple's reactive framework."
+    status: unverified
+    verifiedAt: null
+  - id: combine-anycancellable
+    title: "AnyCancellable"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/combine/anycancellable
+    kind: official
+    topic: "Combine subscriptions"
+    why: "How subscriptions are cancelled and why their lifetime matters."
+    status: unverified
+    verifiedAt: null
+  - id: swift-isknownuniquelyreferenced
+    title: "isKnownUniquelyReferenced(_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/isknownuniquelyreferenced(_:)-98zpp
+    kind: reference
+    topic: "Copy-on-write"
+    why: "Checking whether a class instance has a single strong reference, the basis of custom copy-on-write."
+    status: unverified
+    verifiedAt: null
+  - id: uikit-layoutsubviews
+    title: "layoutSubviews()"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiview/layoutsubviews()
+    kind: reference
+    topic: "Layout pass"
+    why: "When UIKit lays out subviews and what belongs in this method."
+    status: unverified
+    verifiedAt: null
+  - id: swift-character-isnumber
+    title: "isNumber"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/character/isnumber
+    kind: reference
+    topic: "Unicode digits"
+    why: "Why Character.isNumber accepts more than ASCII digits."
+    status: unverified
+    verifiedAt: null
+  - id: se-0176-exclusivity
+    title: "SE-0176: Enforce Exclusive Access to Memory"
+    source: Swift Evolution
+    url: https://github.com/swiftlang/swift-evolution/blob/main/proposals/0176-enforce-exclusive-access-to-memory.md
+    kind: reference
+    topic: "Exclusivity"
+    why: "The rule behind overlapping-access errors and the runtime exclusivity check."
+    status: unverified
+    verifiedAt: null
+  - id: se-0413-typed-throws
+    title: "SE-0413: Typed throws"
+    source: Swift Evolution
+    url: https://github.com/swiftlang/swift-evolution/blob/main/proposals/0413-typed-throws.md
+    kind: reference
+    topic: "Typed throws"
+    why: "What typed throws adds and when untyped throws remains the better default."
+    status: unverified
+    verifiedAt: null
+  - id: se-0352-implicit-open-existentials
+    title: "SE-0352: Implicitly Opened Existentials"
+    source: Swift Evolution
+    url: https://github.com/swiftlang/swift-evolution/blob/main/proposals/0352-implicit-open-existentials.md
+    kind: reference
+    topic: "Existentials"
+    why: "How Swift opens an existential to pass it to a generic function."
+    status: unverified
+    verifiedAt: null
+  - id: usernotifications-background-updates
+    title: "Pushing background updates to your App"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app
+    kind: reference
+    topic: "Background push"
+    why: "Silent pushes, their priority and why delivery isn't guaranteed."
+    status: unverified
+    verifiedAt: null
+  - id: foundation-urlsessionwebsockettask
+    title: "URLSessionWebSocketTask"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/urlsessionwebsockettask
+    kind: reference
+    topic: "Real-time channels"
+    why: "WebSocket connections with URLSession."
+    status: unverified
+    verifiedAt: null
+  - id: foundation-nscache-totalcostlimit
+    title: "totalCostLimit"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/nscache/totalcostlimit
+    kind: reference
+    topic: "Cache limits"
+    why: "Why NSCache's cost limit isn't strict."
+    status: unverified
+    verifiedAt: null
+  - id: graphql-spec
+    title: "GraphQL Specification"
+    source: GraphQL Foundation
+    url: https://spec.graphql.org/
+    kind: reference
+    topic: GraphQL
+    why: "The language and execution rules behind GraphQL APIs, for comparing them with REST."
+    status: unverified
+    verifiedAt: null
+  - id: nygard-adr
+    title: "Documenting Architecture Decisions"
+    source: "Michael Nygard"
+    url: https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions
+    kind: article
+    topic: "Decision records"
+    why: "The original short format for architecture decision records."
+    status: unverified
+    verifiedAt: null
+  - id: sre-managing-incidents
+    title: "Managing Incidents"
+    source: "Google SRE book"
+    url: https://sre.google/sre-book/managing-incidents/
+    kind: article
+    topic: "Incidents"
+    why: "Incident roles, communication and handoffs during an outage."
+    status: unverified
+    verifiedAt: null
+  - id: sre-postmortem-culture
+    title: "Postmortem Culture: Learning from Failure"
+    source: "Google SRE book"
+    url: https://sre.google/sre-book/postmortem-culture/
+    kind: article
+    topic: "Postmortems"
+    why: "Blameless postmortems and following up on action items."
+    status: unverified
+    verifiedAt: null
+  - id: google-review-standard
+    title: "The Standard of Code Review"
+    source: "Google eng-practices"
+    url: https://google.github.io/eng-practices/review/reviewer/standard.html
+    kind: article
+    topic: "Code review"
+    why: "When to approve a change and how to weigh improvement against perfection."
+    status: unverified
+    verifiedAt: null
+  - id: google-review-comments
+    title: "How to write code review comments"
+    source: "Google eng-practices"
+    url: https://google.github.io/eng-practices/review/reviewer/comments.html
+    kind: article
+    topic: "Review comments"
+    why: "Writing comments that are kind, explain why and label their severity."
+    status: unverified
+    verifiedAt: null
+  - id: google-cl-descriptions
+    title: "Writing good CL descriptions"
+    source: "Google eng-practices"
+    url: https://google.github.io/eng-practices/review/developer/cl-descriptions.html
+    kind: article
+    topic: "PR descriptions"
+    why: "What a change description should say so reviewers and future readers understand it."
+    status: unverified
+    verifiedAt: null
+  - id: git-blame-reference
+    title: "git-blame"
+    source: "Git documentation"
+    url: https://git-scm.com/docs/git-blame
+    kind: reference
+    topic: "Code archaeology"
+    why: "Finding which commit last changed each line, including ignoring formatting commits."
+    status: unverified
+    verifiedAt: null
+  - id: git-log-reference
+    title: "git-log"
+    source: "Git documentation"
+    url: https://git-scm.com/docs/git-log
+    kind: reference
+    topic: "Code archaeology"
+    why: "Searching history with --follow, -S and other filters."
+    status: unverified
+    verifiedAt: null
+  - id: git-bisect-reference
+    title: "git-bisect"
+    source: "Git documentation"
+    url: https://git-scm.com/docs/git-bisect
+    kind: reference
+    topic: "Finding regressions"
+    why: "Binary search through history to find the commit that introduced a bug."
+    status: unverified
+    verifiedAt: null

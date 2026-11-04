@@ -33,7 +33,7 @@ mastery:
   - Trace an LRU cache with a cost limit through a sequence of reads and writes.
   - Compute the prefetch and cancel sets for a scroll position.
   - Merge a refresh into a feed and say whether a gap exists.
-resources: [foundation-nscache, uikit-prefetching, xcode-reduce-memory, xcode-understanding-hitches, swiftui-performant-scrollable-stacks, uikit-diffable-data-sources, network-nwpath-isconstrained]
+resources: [foundation-nscache-totalcostlimit, foundation-nscache, uikit-prefetching, xcode-reduce-memory, xcode-understanding-hitches, swiftui-performant-scrollable-stacks, uikit-diffable-data-sources, network-nwpath-isconstrained]
 cards:
   - id: m48-l04-c1
     front: What does each cache in an image pipeline hold?

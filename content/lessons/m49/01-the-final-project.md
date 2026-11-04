@@ -8,7 +8,7 @@ level: advanced
 minutes: 55
 codeStatus: tested
 swiftVersion: "6.4"
-prerequisites: [m48-l01]
+prerequisites: [m48-l06]
 objectives:
   - Choose a capstone domain that exercises networking, persistence and sensitive data without needing a back end you can't build.
   - Scope the project to a fixed time budget with must, should and won't lists.

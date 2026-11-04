@@ -34,7 +34,7 @@ mastery:
   - Explain why `store.first()` on an `any Store` has type `Any`, and fix it two ways.
   - Trace a retain cycle between two objects and a closure, and break it with a weak capture.
   - Say when typed throws are worth it and when plain `throws` composes better.
-resources: [swift-book-structures-classes, swift-book-opaque-types, swift-book-generics, swift-book-closures, swift-book-arc, swift-book-error-handling]
+resources: [swift-isknownuniquelyreferenced, se-0352-implicit-open-existentials, se-0413-typed-throws, swift-book-structures-classes, swift-book-opaque-types, swift-book-generics, swift-book-closures, swift-book-arc, swift-book-error-handling]
 cards:
   - id: m47-l02-c1
     front: "After `var copy = original` (both arrays), do they share storage? After `copy[0] = 10`?"

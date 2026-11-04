@@ -29,7 +29,7 @@ mastery:
   - Walk through a constraint change to the frame on screen without hand-waving the deferred steps.
   - Predict which property changes invalidate an observation, including through a computed property and in-place collection mutation.
   - Find an unconditional write in updateUIView and explain the user-visible bug it causes.
-resources: [uikit-uiviewcontroller, uikit-nslayoutconstraint, uikit-compositional-layout, observation-tracking, swiftui-managing-model-data, swiftui-uiviewrepresentable, xcode-swiftui-performance]
+resources: [uikit-layoutsubviews, uikit-uiviewcontroller, uikit-nslayoutconstraint, uikit-compositional-layout, observation-tracking, swiftui-managing-model-data, swiftui-uiviewrepresentable, xcode-swiftui-performance]
 cards:
   - id: m47-l03-c1
     front: Where does code that depends on the view's final width go in a view controller?

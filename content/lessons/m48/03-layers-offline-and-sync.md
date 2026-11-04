@@ -34,7 +34,7 @@ mastery:
   - For a given pair of concurrent edits, say what last writer wins and a field-level merge produce.
   - Trace a sync queue's retries over time with a scripted server and a fixed clock.
   - Explain why a background push can't be the only freshness mechanism.
-resources: [backgroundtasks-strategies, backgroundtasks-bgtaskscheduler, foundation-background-downloads, swiftdata, network-nwpathmonitor, rfc-9110]
+resources: [usernotifications-background-updates, foundation-urlsessionwebsockettask, backgroundtasks-strategies, backgroundtasks-bgtaskscheduler, foundation-background-downloads, swiftdata, network-nwpathmonitor, rfc-9110]
 cards:
   - id: m48-l03-c1
     front: In an offline-capable app, what does the UI read from?

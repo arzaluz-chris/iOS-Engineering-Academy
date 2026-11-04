@@ -36,7 +36,7 @@ mastery:
   - Deliver consumable credits so that a re-delivered transaction is detected and ignored.
   - Set up a local StoreKit configuration file and write a StoreKitTest test, citing Apple's steps.
   - Decide whether a feature must use in-app purchase, citing the guideline number.
-resources: [app-review-guidelines, swift-task, swiftui-environment, swift-sendable]
+resources: [storekit-product, storekit-transaction-updates, xcode-storekit-testing, app-review-guidelines, swift-task, swiftui-environment, swift-sendable]
 cards:
   - id: m45-l01-c1
     front: What does Transaction.currentEntitlements include, and what does it leave out?

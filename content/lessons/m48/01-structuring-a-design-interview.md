@@ -8,7 +8,7 @@ level: advanced
 minutes: 55
 codeStatus: tested
 swiftVersion: "6.4"
-prerequisites: [m46-l06, m37-l06, m43-l01]
+prerequisites: [m47-l06, m46-l06, m37-l06, m43-l01]
 objectives:
   - Split 45 minutes into requirements, scope, high-level design, deep dives and trade-offs, and say what each phase leaves on the board.
   - Separate functional from non-functional requirements and connect each non-functional one to a concrete design decision.

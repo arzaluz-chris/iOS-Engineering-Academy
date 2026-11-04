@@ -30,7 +30,7 @@ mastery:
   - Show a passing test with a stub and a failing test with a spy for the same bug.
   - Answer a security question by naming the MASVS control and the iOS mechanism, without claiming the client can enforce what only the server can.
   - Write a validator that rejects non-ASCII digits and explain why isNumber isn't enough.
-resources: [fowler-test-double, swift-testing-docs, owasp-masvs, owasp-mastg, security-keychain-accessibility, localauthentication, apple-platform-security]
+resources: [swift-character-isnumber, fowler-test-double, swift-testing-docs, owasp-masvs, owasp-mastg, security-keychain-accessibility, localauthentication, apple-platform-security]
 cards:
   - id: m47-l05-c1
     front: What are the five parts of defending an architecture choice?

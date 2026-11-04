@@ -36,7 +36,7 @@ mastery:
   - Choose the audio session category and options for a feature and say what the Silent switch and other apps' audio will do.
   - Trace a player's state through play, pause and interruptions with and without shouldResume.
   - Compute a thumbnail size that keeps the aspect ratio and never upscales.
-resources: [photosui-phpickerviewcontroller, requesting-protected-resources, swiftui-task-id, swift-checkedcontinuation, swift-actor, app-review-guidelines]
+resources: [avfoundation-capture-session, avfoundation-media-playback, photosui-phpickerviewcontroller, requesting-protected-resources, swiftui-task-id, swift-checkedcontinuation, swift-actor, app-review-guidelines]
 cards:
   - id: m45-l03-c1
     front: Does PhotosPicker need Photos library permission?

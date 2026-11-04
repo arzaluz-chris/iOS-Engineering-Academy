@@ -36,7 +36,7 @@ mastery:
   - Write a small current-value subject and predict its output for subscribers that come and go.
   - Replace a Future with await and a subject with a for-await loop using values.
   - Recommend keeping or migrating a specific pipeline, with reasons.
-resources: [combine-observableobject, swiftui-migrating-to-observable, swift-checkedcontinuation, swift-task, foundation-notificationcenter]
+resources: [combine, combine-anycancellable, combine-observableobject, swiftui-migrating-to-observable, swift-checkedcontinuation, swift-task, foundation-notificationcenter]
 cards:
   - id: m45-l05-c1
     front: Why does a sink stop working as soon as the function that created it returns?

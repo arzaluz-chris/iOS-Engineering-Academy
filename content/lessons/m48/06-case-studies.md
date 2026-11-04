@@ -30,7 +30,7 @@ mastery:
   - Trace a chat timeline through sends, acknowledgments, echoes and a gap.
   - Write a reducer that applies versioned updates from several channels and ignores stale ones.
   - Adapt one of the designs when a requirement changes.
-resources: [foundation-urlsession, foundation-nscache, uikit-prefetching, backgroundtasks-strategies, activitykit-live-activities, activitykit-push-updates, usernotifications-asking-permission, metrickit]
+resources: [foundation-urlsessionwebsockettask, foundation-urlsession, foundation-nscache, uikit-prefetching, backgroundtasks-strategies, activitykit-live-activities, activitykit-push-updates, usernotifications-asking-permission, metrickit]
 cards:
   - id: m48-l06-c1
     front: "Photo feed: what should each post's payload carry for images?"

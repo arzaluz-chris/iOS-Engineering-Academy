@@ -36,7 +36,7 @@ mastery:
   - Pick the right database and subscription type for a feature, and say what needs an iCloud account.
   - Resolve a serverRecordChanged conflict with a three-way merge into the server record, and explain why merging into the client copy fails again.
   - Split pending changes into requests that respect the 250-record limit.
-resources: [keychain-services, app-review-guidelines, swift-actor, swift-sendable, swiftdata]
+resources: [signinwithapple-implementing, cloudkit-enabling, cloudkit-cksyncengine, keychain-services, app-review-guidelines, swift-actor, swift-sendable, swiftdata]
 cards:
   - id: m45-l04-c1
     front: When does Sign in with Apple give you the person's name and email?

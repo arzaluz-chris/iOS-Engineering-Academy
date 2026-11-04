@@ -29,7 +29,7 @@ mastery:
   - Explain inout from basic behavior down to static and dynamic exclusivity enforcement, with a program for each level.
   - Recover from a wrong answer in under thirty seconds, in words that keep the interviewer's trust.
   - Score a practice answer on the rubric and write the one change you'll make next time.
-resources: [swift-book-functions, swift-book-properties, swift-evolution, swift-actor, swift-book-concurrency]
+resources: [se-0176-exclusivity, swift-book-functions, swift-book-properties, swift-evolution, swift-actor, swift-book-concurrency]
 cards:
   - id: m47-l06-c1
     front: Name the six kinds of follow-up.

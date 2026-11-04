@@ -35,7 +35,7 @@ mastery:
   - Rewrite a technical status message for a product manager with the decision and impact first.
   - Turn a vague request for help into a question with a goal, attempts, observed and expected results, and a reproduction.
   - Write a 12-week learning plan with a weekly budget, outputs and review dates.
-resources: [swift-evolution, github-pull-request-reviews, conventional-commits, swift-api-design-guidelines, hig]
+resources: [google-cl-descriptions, swift-evolution, github-pull-request-reviews, conventional-commits, swift-api-design-guidelines, hig]
 cards:
   - id: m49-l06-c1
     front: How does a design doc differ from an ADR?

@@ -39,7 +39,7 @@ mastery:
   - Write a status update that a support lead or executive can act on without follow-up questions.
   - Choose a mitigation for a mobile incident and record how to undo it afterward.
   - Rewrite vague postmortem action items into specific, owned, dated ones, and report on overdue ones.
-resources: [asc-phased-release, xcode-crash-reports, metrickit, os-logger, apple-app-review]
+resources: [sre-managing-incidents, sre-postmortem-culture, asc-phased-release, xcode-crash-reports, metrickit, os-logger, apple-app-review]
 cards:
   - id: m49-l04-c1
     front: What are the three questions in Google's SRE book for declaring an incident?

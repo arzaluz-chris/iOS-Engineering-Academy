@@ -36,7 +36,7 @@ mastery:
   - Predict which positions a distance filter delivers along a path.
   - Choose which stores to register as conditions when there are more than 20.
   - Write tests for location logic that never touch CLLocationManager.
-resources: [requesting-protected-resources, information-property-list, app-review-guidelines, swift-checkedcontinuation, xcode-reducing-battery-use]
+resources: [corelocation-requesting-authorization, corelocation-liveupdates, requesting-protected-resources, information-property-list, app-review-guidelines, swift-checkedcontinuation, xcode-reducing-battery-use]
 cards:
   - id: m45-l02-c1
     front: Which Info.plist keys does location authorization need on iOS?

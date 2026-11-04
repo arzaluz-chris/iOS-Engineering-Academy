@@ -33,7 +33,7 @@ mastery:
   - Write a pagination contract and explain why a timestamp-only cursor loses items.
   - Decode a response that gained fields and enum cases without failing.
   - Map an HTTP status and error body to one of a small set of UI actions.
-resources: [rfc-9110, foundation-jsondecoder, foundation-encoding-custom-types, swift-decodingerror, foundation-urlsession, foundation-httpurlresponse]
+resources: [graphql-spec, rfc-9110, foundation-jsondecoder, foundation-encoding-custom-types, swift-decodingerror, foundation-urlsession, foundation-httpurlresponse]
 cards:
   - id: m48-l02-c1
     front: Why is a cursor of only the last item's timestamp unsafe?
