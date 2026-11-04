@@ -201,7 +201,7 @@ row.convert(button.frame, to: root)         // from the row's coordinates
 
 `bounds.origin` answers "which point of my own coordinate space appears at my top-left corner?" With (0, 0), a subview whose frame starts at y = 520 appears 520 points below the top. Set the origin to (0, 300) and the same subview appears at 220. The subviews' frames don't change; the window into them moves.
 
-That's exactly what a scroll needs: the content stays still in its own coordinates and the visible window slides over it. Apple's `UIScrollView` overview describes a scroll view as "a view with an origin that's adjustable over the content view", and `contentOffset` as "the point at which the origin of the content view is offset from the origin of the scroll view". In UIKit that adjustable origin **is** the scroll view's bounds origin, so `contentOffset` and `bounds.origin` are the same point. (The reference doesn't say it in one sentence, and it wasn't checked against a running app for this lesson; the model above shows why the arithmetic has to work this way.)
+That's exactly what a scroll needs: the content stays still in its own coordinates and the visible window slides over it. Apple's `UIScrollView` overview describes a scroll view as "a view with an origin that's adjustable over the content view", and `contentOffset` as "the point at which the origin of the content view is offset from the origin of the scroll view". In UIKit that adjustable origin **is** the scroll view's bounds origin, so `contentOffset` and `bounds.origin` are the same point. (The reference doesn't say it in one sentence, and it wasn't checked against a running app for this lesson. The model above shows that the arithmetic is consistent with it.)
 
 Two consequences you'll use in lesson 5:
 

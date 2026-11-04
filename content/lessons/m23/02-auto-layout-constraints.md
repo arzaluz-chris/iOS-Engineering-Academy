@@ -99,7 +99,7 @@ The archived Auto Layout Guide adds rules about what can be combined: you can't 
 
 A view needs its position and its size determined on each axis. The guide's rule of thumb: with the superview's size known, a nonambiguous layout needs **two constraints per view per dimension**. Horizontally, any two of these work: leading and trailing (width follows), leading and width (trailing follows), centerX and width. One isn't enough; three that disagree are a conflict.
 
-Views like labels and buttons bring their own width and height ("intrinsic content size", lesson 3), which counts as one constraint per dimension. That's why Module 22 could pin a label with only a top and a leading constraint.
+Views like labels and buttons bring their own width and height ("intrinsic content size", lesson 3), which counts as one constraint per dimension. That's why a label needs only a position: a top and a leading constraint are enough.
 
 ## A solver you can run
 
@@ -241,7 +241,7 @@ final class MessageViewController: UIViewController {
         bubble.numberOfLines = 0
         bubble.backgroundColor = .secondarySystemBackground
 
-        for subview in [avatar, bubble] {
+        for subview in [avatar, bubble] as [UIView] {
             subview.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(subview)
         }
@@ -348,7 +348,7 @@ Before Auto Layout, views were positioned with frames and an **autoresizing mask
 
 So, for every view you create in code and position with constraints: set it to `false`. Two more rules from the same page:
 
-- **Set it from outside.** "Set this property on a subview from a containing superview or view controller, not from within the view itself." A custom view that sets it on `self` in its initializer takes the choice away from whoever uses it, and some containers lay out with frames.
+- **Set it from outside.** "Set this property on a subview from a containing superview or view controller, not from within the view itself." A custom view that sets it on `self` in its initializer takes the choice away from whoever uses it.
 - **Leave it alone on views UIKit manages**, "such as `UITableViewCell`, `arrangedSubviews`, and `view`." A view controller's root view is sized by its container; a stack view's arranged subviews are positioned by the stack.
 
 Forgetting it doesn't crash. You get an unsatisfiable layout: your constraints say one thing, the generated ones (which appear in the log as `NSAutoresizingMaskLayoutConstraint`) say another. Lesson 6 reads those logs.
@@ -357,7 +357,7 @@ Forgetting it doesn't crash. You get an unsatisfiable layout: your constraints s
 
 Every constraint has a `priority` from 1 to 1000. Apple: "Constraints with a priority of 1,000 are required. All priorities less than 1,000 are optional. By default, all constraints are required." After solving the required ones, "Auto Layout tries to solve all the optional constraints in priority order from highest to lowest."
 
-`UILayoutPriority` names a few levels. The Swift reference describes them without numbers; the archived guide gives the values: `.required` is 1000, `.defaultHigh` 750, `.defaultLow` 250, and it advises clustering priorities around those, a point or two above or below to break ties. `UILayoutPriority(999)` creates any other value.
+`UILayoutPriority` names a few levels. The Swift reference describes them without numbers; the archived guide lists the system-defined levels as low (250), medium (500), high (750) and required (1000), which is what `.defaultLow`, `.defaultHigh` and `.required` stand for, and advises clustering priorities around them, a point or two above or below to break ties. `UILayoutPriority(999)` creates any other value.
 
 Two practical uses:
 
@@ -509,7 +509,7 @@ solution: |
 
       override func viewDidLoad() {
           super.viewDidLoad()
-          for subview in [field, saveButton] {
+          for subview in [field, saveButton] as [UIView] {
               subview.translatesAutoresizingMaskIntoConstraints = false
               view.addSubview(subview)
           }
@@ -589,7 +589,7 @@ solution: |
           super.viewDidLoad()
           let badge = UILabel()
           let icon = UIImageView()
-          for subview in [icon, badge] {
+          for subview in [icon, badge] as [UIView] {
               subview.translatesAutoresizingMaskIntoConstraints = false
               view.addSubview(subview)
           }

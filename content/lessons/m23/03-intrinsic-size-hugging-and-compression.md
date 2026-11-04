@@ -171,12 +171,12 @@ ambiguous: equal compression resistance 750
 title 222.0, date 120.0
 ```
 
-1. Label and field both hug at 250: there are 186 spare points and no reason to give them to one rather than the other. Ambiguous; the real engine picks one, and you may get a stretched label with the field squeezed next to it.
+1. Label and field both hug at 250: there are 186 spare points and no reason to give them to one rather than the other. Ambiguous; the real engine picks one, and you may get a stretched label next to a field at its natural width.
 2. With the label at 251, the field has the lowest hugging and takes all 186 extra points.
 3. Title and date need 378 points and get 350. Both resist at 750: ambiguous.
 4. With the date at 751, the title gives up the 28 points and truncates; the date stays whole.
 
-The guide calls the form-row case "so common that Interface Builder automatically handles it for you, setting the content-hugging priority for all labels to 251. If you are programmatically creating the layout, you need to modify the content-hugging priority yourself." In code, labels start at 250 like every other view.
+The guide calls the form-row case "so common that Interface Builder automatically handles it for you, setting the content-hugging priority for all labels to 251. If you are programmatically creating the layout, you need to modify the content-hugging priority yourself." In code, labels start at the default 250.
 
 The same two fixes in UIKit:
 
@@ -202,7 +202,7 @@ final class ContactRowViewController: UIViewController {
         // The date never truncates; the title does.
         dateLabel.setContentCompressionResistancePriority(UILayoutPriority(751), for: .horizontal)
 
-        for subview in [nameLabel, nameField, titleLabel, dateLabel] {
+        for subview in [nameLabel, nameField, titleLabel, dateLabel] as [UIView] {
             subview.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(subview)
         }
@@ -327,7 +327,7 @@ To ask for a fitting size directly, `systemLayoutSizeFitting(_:)` "returns the o
 > A fixed width on a label clips it at the next language or text size. Let the label keep its intrinsic width and give compression priority to whatever must stay whole.
 
 > [!error] Forgetting invalidateIntrinsicContentSize()
-> A custom view that changes its content without invalidating keeps its old size until something else triggers a layout of that view.
+> A custom view that changes its content without invalidating leaves Auto Layout working with the old size.
 
 > [!error] Setting CHCR priorities on a stack view
 > It has no intrinsic size, so they do nothing. Set them on its arranged subviews.
@@ -549,6 +549,12 @@ solution: |
 id: m23-l03-e6
 type: explain
 prompt: "Explain why Apple chose 250 for hugging and 750 for compression resistance by default, instead of equal values. Use a button as the example, and say what would go wrong with the defaults swapped."
+code: |
+  // What Auto Layout generates for a button whose title needs 90 × 44 points:
+  button.width  >= 90   // compression resistance, priority 750
+  button.width  <= 90   // content hugging, priority 250
+  button.height >= 44   // compression resistance, priority 750
+  button.height <= 44   // content hugging, priority 250
 rubric:
   - Hugging low means views stretch easily; compression high means they resist shrinking.
   - A stretched button still shows its whole title; a compressed one clips it.
