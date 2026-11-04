@@ -813,3 +813,111 @@ resources:
     why: How to create a storyboard view controller with your own initializer so you can inject dependencies.
     status: unverified
     verifiedAt: null
+  - id: uikit-nslayoutconstraint
+    title: NSLayoutConstraint
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/nslayoutconstraint
+    kind: official
+    topic: Constraints
+    why: The constraint equation, priorities and activation in Auto Layout.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-translates-autoresizing
+    title: translatesAutoresizingMaskIntoConstraints
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiview/translatesautoresizingmaskintoconstraints
+    kind: official
+    topic: Auto Layout in code
+    why: Why views created in code need this set to false before you add your own constraints.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uiview-frame
+    title: frame
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiview/frame
+    kind: official
+    topic: Frames
+    why: What a view's frame means, and why it's undefined when the transform isn't the identity.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-intrinsic-content-size
+    title: intrinsicContentSize
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiview/intrinsiccontentsize
+    kind: official
+    topic: Intrinsic content size
+    why: The natural size a view reports to Auto Layout and how custom views provide one.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-safe-area
+    title: Positioning content relative to the safe area
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/positioning-content-relative-to-the-safe-area
+    kind: official
+    topic: Safe areas
+    why: How the safe area keeps content clear of bars, the notch and the home indicator.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-layout-margins
+    title: Positioning content within layout margins
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/positioning-content-within-layout-margins
+    kind: official
+    topic: Layout margins
+    why: Layout margins and the readable content guide.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uiscrollview
+    title: UIScrollView
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiscrollview
+    kind: official
+    topic: Scroll views
+    why: Content size, content offset and the content and frame layout guides.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-keyboard-layout-guide
+    title: Adjusting your layout with keyboard layout guide
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/adjusting-your-layout-with-keyboard-layout-guide
+    kind: official
+    topic: Keyboard avoidance
+    why: How to keep content above the keyboard with keyboardLayoutGuide.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-scaling-fonts
+    title: Scaling fonts automatically
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/scaling-fonts-automatically
+    kind: official
+    topic: Dynamic Type
+    why: How text styles, UIFontMetrics and adjustsFontForContentSizeCategory make text scale.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-adapting-trait-changes
+    title: Adapting your app when traits change
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/adapting-your-app-when-traits-change
+    kind: official
+    topic: Trait changes
+    why: How to respond to trait changes such as the content size category with the iOS 17 trait APIs.
+    status: unverified
+    verifiedAt: null
+  - id: xcode-diagnosing-appearance
+    title: Diagnosing issues in the appearance of a running app
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/diagnosing-issues-in-the-appearance-of-your-running-app
+    kind: official
+    topic: Layout debugging
+    why: The view debugger and other tools for finding layout problems.
+    status: unverified
+    verifiedAt: null
+  - id: auto-layout-guide
+    title: Auto Layout Guide (archived)
+    source: Apple Developer Documentation Archive
+    url: https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/index.html
+    kind: official
+    topic: Auto Layout
+    why: Apple's long-form guide to constraints, priorities and debugging. It's archived, so some screenshots and log wording are old, but the model hasn't changed.
+    status: unverified
+    verifiedAt: null
