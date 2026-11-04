@@ -8,7 +8,7 @@ level: intermediate
 minutes: 55
 codeStatus: tested
 swiftVersion: "6.4"
-prerequisites: [m25-l03, m13-l04]
+prerequisites: [m25-l04, m13-l04]
 objectives:
   - Design a delegate protocol with clear will/did/should methods, the sender as the first parameter, and only the values the delegate needs.
   - Explain why delegate protocols are class-bound and when a framework keeps its delegate strongly instead.
