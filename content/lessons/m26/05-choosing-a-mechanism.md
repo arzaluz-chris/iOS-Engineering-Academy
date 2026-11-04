@@ -28,7 +28,7 @@ mastery:
   - Point at a notification in existing code and say whether it should be a delegate, a closure or stay a notification.
   - Refactor a child-to-parent notification into a delegate or closure and show that unrelated screens stop reacting.
   - Name the limits of each mechanism (one listener, no answer, no compile-time check, no ordering, lifetime management).
-resources: [uikit-target-action, swift-book-protocols, swift-book-closures, swift-mainactor]
+resources: [swift-kvo, foundation-notificationcenter, uikit-target-action, swift-book-protocols, swift-book-closures, swift-mainactor]
 cards:
   - id: m26-l05-c1
     front: Four questions for choosing a communication mechanism?

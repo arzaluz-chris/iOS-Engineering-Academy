@@ -29,7 +29,7 @@ mastery:
   - Spot a method reference used as a callback and rewrite it with [weak self].
   - Explain the ownership chain center → block → screen and run loop → timer → block → screen.
   - Decide whether a completion handler should capture self weakly or strongly, and say what changes for the user.
-resources: [swift-book-arc, swift-book-closures, swift-book-deinitialization, xcode-memory-use]
+resources: [foundation-timer-scheduled-target, foundation-notificationcenter, swift-book-arc, swift-book-closures, swift-book-deinitialization, xcode-memory-use]
 cards:
   - id: m26-l04-c1
     front: How do you check, in code, that an object is released?

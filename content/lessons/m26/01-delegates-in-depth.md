@@ -35,7 +35,7 @@ mastery:
   - Explain, with a running example, why a method declared only in a protocol extension doesn't call the conformer's version.
   - Write a weak-box list that notifies every live listener and drops released ones.
   - Fix the "crosses into main actor-isolated code" error two different ways.
-resources: [swift-book-protocols, swift-book-extensions, swift-book-arc, swift-mainactor, uikit-uitextfielddelegate]
+resources: [foundation-urlsession-init-delegate, swift-book-protocols, swift-book-extensions, swift-book-arc, swift-mainactor, uikit-uitextfielddelegate]
 cards:
   - id: m26-l01-c1
     front: Three kinds of delegate method, by name?

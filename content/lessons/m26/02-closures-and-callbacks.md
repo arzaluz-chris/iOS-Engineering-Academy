@@ -33,7 +33,7 @@ mastery:
   - Handle a Result callback with switch and print both outcomes.
   - Turn a three-level callback pyramid into named steps.
   - Wrap a Result-based callback API in an async throws function with withCheckedThrowingContinuation.
-resources: [swift-book-closures, swift-book-arc, swift-result, swift-book-error-handling]
+resources: [swift-checkedcontinuation, swift-book-closures, swift-book-arc, swift-result, swift-book-error-handling]
 cards:
   - id: m26-l02-c1
     front: Optional closure property vs closure in the initializer?

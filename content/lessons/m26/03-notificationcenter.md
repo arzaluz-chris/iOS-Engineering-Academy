@@ -34,7 +34,7 @@ mastery:
   - Write a typed helper that posts and reads a struct instead of raw userInfo keys.
   - Write a main-actor observer that removes its registration when it's released.
   - Explain why addObserver's closure can't touch a view controller's state directly in Swift 6, and two ways to deal with it.
-resources: [swift-mainactor, swift-book-arc, swift-book-closures]
+resources: [foundation-notificationcenter, foundation-notification-messages, swift-mainactor, swift-book-arc, swift-book-closures]
 cards:
   - id: m26-l03-c1
     front: With queue nil, when does an observer block run?
