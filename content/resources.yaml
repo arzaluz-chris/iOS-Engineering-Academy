@@ -3252,3 +3252,39 @@ resources:
     why: "How Swift opens an existential to pass it to a generic function."
     status: unverified
     verifiedAt: null
+  - id: usernotifications-background-updates
+    title: "Pushing background updates to your App"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app
+    kind: reference
+    topic: "Background push"
+    why: "Silent pushes, their priority and why delivery isn't guaranteed."
+    status: unverified
+    verifiedAt: null
+  - id: foundation-urlsessionwebsockettask
+    title: "URLSessionWebSocketTask"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/urlsessionwebsockettask
+    kind: reference
+    topic: "Real-time channels"
+    why: "WebSocket connections with URLSession."
+    status: unverified
+    verifiedAt: null
+  - id: foundation-nscache-totalcostlimit
+    title: "totalCostLimit"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/nscache/totalcostlimit
+    kind: reference
+    topic: "Cache limits"
+    why: "Why NSCache's cost limit isn't strict."
+    status: unverified
+    verifiedAt: null
+  - id: graphql-spec
+    title: "GraphQL Specification"
+    source: GraphQL Foundation
+    url: https://spec.graphql.org/
+    kind: reference
+    topic: GraphQL
+    why: "The language and execution rules behind GraphQL APIs, for comparing them with REST."
+    status: unverified
+    verifiedAt: null
