@@ -1191,3 +1191,129 @@ resources:
     why: URLSession's initializer, whose documentation says the session keeps a strong reference to its delegate.
     status: unverified
     verifiedAt: null
+  - id: uikit-uiviewpropertyanimator
+    title: UIViewPropertyAnimator
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiviewpropertyanimator
+    kind: official
+    topic: Interruptible animations
+    why: Animations you can pause, scrub, reverse and finish at a chosen position.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-reduce-motion
+    title: isReduceMotionEnabled
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiaccessibility/isreducemotionenabled
+    kind: official
+    topic: Reduce Motion
+    why: How to check the Reduce Motion setting and tone down animations.
+    status: unverified
+    verifiedAt: null
+  - id: quartzcore-calayer
+    title: CALayer
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/quartzcore/calayer
+    kind: official
+    topic: Layers
+    why: "The layer object behind every view: its properties, model and presentation layers."
+    status: unverified
+    verifiedAt: null
+  - id: quartzcore-cabasicanimation
+    title: CABasicAnimation
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/quartzcore/cabasicanimation
+    kind: official
+    topic: Explicit animations
+    why: Animating a single layer property from one value to another.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-gesture-state-machine
+    title: About the gesture recognizer state machine
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/about-the-gesture-recognizer-state-machine
+    kind: official
+    topic: Gesture states
+    why: The states a gesture recognizer moves through for discrete and continuous gestures.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-gesture-recognizer-delegate
+    title: UIGestureRecognizerDelegate
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uigesturerecognizerdelegate
+    kind: official
+    topic: Simultaneous gestures
+    why: How to let recognizers work together or require one to fail.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uigraphicsimagerenderer
+    title: UIGraphicsImageRenderer
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uigraphicsimagerenderer
+    kind: official
+    topic: Drawing images
+    why: The modern way to draw into an image with Core Graphics.
+    status: unverified
+    verifiedAt: null
+  - id: xcode-understanding-hitches
+    title: Understanding hitches in your app
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/understanding-hitches-in-your-app
+    kind: official
+    topic: Scroll performance
+    why: What a hitch is, the render loop, and how to measure them.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-nscache
+    title: NSCache
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/nscache
+    kind: official
+    topic: Caching
+    why: A cache that evicts objects under memory pressure, with cost and count limits.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-prefetching
+    title: UICollectionViewDataSourcePrefetching
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uicollectionviewdatasourceprefetching
+    kind: official
+    topic: Prefetching
+    why: Starting data loads before cells appear and cancelling them when they're no longer needed.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-supporting-voiceover
+    title: Supporting VoiceOver in your app
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/supporting-voiceover-in-your-app
+    kind: official
+    topic: VoiceOver
+    why: Labels, values, hints, traits and element order for VoiceOver.
+    status: unverified
+    verifiedAt: null
+  - id: accessibility-inspector
+    title: Accessibility Inspector
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/accessibility/accessibility-inspector
+    kind: official
+    topic: Accessibility testing
+    why: Inspecting and auditing your app's accessibility with Xcode's inspector.
+    status: unverified
+    verifiedAt: null
+  - id: xcode-string-catalog
+    title: Localizing and varying text with a string catalog
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/localizing-and-varying-text-with-a-string-catalog
+    kind: official
+    topic: String Catalogs
+    why: How String Catalogs store translations, plural variants and device variants.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-semantic-content-attribute
+    title: semanticContentAttribute
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiview/semanticcontentattribute
+    kind: official
+    topic: Right-to-left layout
+    why: How a view decides whether to flip for right-to-left languages.
+    status: unverified
+    verifiedAt: null
