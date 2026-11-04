@@ -1902,3 +1902,129 @@ resources:
     why: "LLDB's commands for breakpoints, stepping and inspecting variables."
     status: unverified
     verifiedAt: null
+  - id: swiftui-declaring-custom-view
+    title: "Declaring a custom view"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/declaring-a-custom-view
+    kind: official
+    topic: "SwiftUI views"
+    why: "How a view's body describes its content and how SwiftUI updates it."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-app
+    title: "App"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/app
+    kind: official
+    topic: "SwiftUI apps"
+    why: "The App protocol, scenes and the app's entry point."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-managing-ui-state
+    title: "Managing user interface state"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/managing-user-interface-state
+    kind: official
+    topic: "SwiftUI state"
+    why: "Where view state lives and how SwiftUI keeps it."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-configuring-views
+    title: "Configuring views"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/configuring-views
+    kind: official
+    topic: "Modifiers"
+    why: "How modifiers wrap views and why their order matters."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-viewmodifier
+    title: "ViewModifier"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/viewmodifier
+    kind: official
+    topic: "Custom modifiers"
+    why: "Packaging a set of modifiers into a reusable one."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-previews
+    title: "Previews in Xcode"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/previews-in-xcode
+    kind: official
+    topic: "Previews"
+    why: "Declaring previews with the #Preview macro."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-viewbuilder
+    title: "ViewBuilder"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/viewbuilder
+    kind: official
+    topic: "ViewBuilder"
+    why: "The result builder that turns view closures into views."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-accessibility-fundamentals
+    title: "Accessibility fundamentals"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/accessibility-fundamentals
+    kind: official
+    topic: "SwiftUI accessibility"
+    why: "Labels, traits and grouping for SwiftUI views."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-foreach
+    title: "ForEach"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/foreach
+    kind: official
+    topic: "Lists and identity"
+    why: "Building views from a collection with stable identifiers."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-performant-scrollable-stacks
+    title: "Creating performant scrollable stacks"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/creating-performant-scrollable-stacks
+    kind: official
+    topic: "Lazy stacks"
+    why: "When to use lazy stacks inside a scroll view."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-grid
+    title: "Grid"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/grid
+    kind: official
+    topic: "Grids"
+    why: "Two-dimensional layouts with Grid and GridRow."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-laying-out-simple-view
+    title: "Laying out a simple view"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/laying-out-a-simple-view
+    kind: official
+    topic: "SwiftUI layout"
+    why: "How parents propose sizes and children choose their own."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-layoutpriority
+    title: "layoutPriority(_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/layoutpriority(_:)
+    kind: official
+    topic: "Layout priority"
+    why: "How a stack gives space to higher-priority children first."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-composing-custom-layouts
+    title: "Composing custom layouts with SwiftUI"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/composing-custom-layouts-with-swiftui
+    kind: official
+    topic: "Custom layouts"
+    why: "Building a custom container with the Layout protocol."
+    status: unverified
+    verifiedAt: null
