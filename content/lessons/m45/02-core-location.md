@@ -178,10 +178,10 @@ final class WalkToStoreModel {
     func start() {
         guard updatesTask == nil else { return }
         updatesTask = Task { [weak self] in
+            let updates = CLLocationUpdate.liveUpdates()
             do {
-                for try await update in CLLocationUpdate.liveUpdates() {
-                    guard let self, !Task.isCancelled else { break }
-                    self.handle(update)
+                try await Self.consume(updates) { [weak self] (update: CLLocationUpdate) in
+                    await self?.handle(update)
                 }
             } catch {
                 self?.message = "Location isn't available right now."
@@ -193,6 +193,17 @@ final class WalkToStoreModel {
     func stop() {
         updatesTask?.cancel()
         updatesTask = nil
+    }
+
+    /// Iterates off the main actor until the task is cancelled; each update hops back.
+    private nonisolated static func consume(
+        _ updates: CLLocationUpdate.Updates,
+        handler: @Sendable (CLLocationUpdate) async -> Void
+    ) async throws {
+        for try await update in updates {
+            if Task.isCancelled { break }
+            await handler(update)
+        }
     }
 
     private func handle(_ update: CLLocationUpdate) {
@@ -210,6 +221,7 @@ final class WalkToStoreModel {
 ```
 
 - **The loop is the subscription.** Apple: "The loop doesn't terminate unless you explicitly use `return`, `break`, or throw an exception." Apple's SwiftUI sample stops by breaking out of the loop on the next update; `stop()` here does the same through `Task.isCancelled`, so the last update after leaving the screen is ignored.
+- **Iteration happens off the main actor.** `consume` is `nonisolated`, the same shape as the StoreKit listener in lesson 1, and each update hops to the main actor through `handler`. The `[weak self]` captures keep the endless loop from keeping the model alive.
 - **An update doesn't always carry a location.** Apple's pattern checks `update.location` first and then the state properties. On iOS 18 those properties (`authorizationDenied`, `locationUnavailable`, `accuracyLimited` and others) say why no location came; on iOS 17 you only know none did. That's why the check is behind `#available`.
 - **`isStationary`** lets the UI stop animating, and the system saves power on its own when the person stands still.
 - **Fallback.** Guideline 5.1.1(iv): "if a user declines to share Location, offer the ability to manually enter an address." The denied message points to both.
