@@ -58,7 +58,7 @@ cards:
 An `async` function can pause at each `await` without holding on to a thread, so code that waits for something reads top to bottom like ordinary code while the thread stays free for other work.
 
 > [!note] Where this lesson sits
-> Module 28 got work off the main thread with threads, dispatch queues and completion handlers, and ended with the data races Swift 6 catches at compile time. Module 26, lesson 2 previewed `withCheckedThrowingContinuation`. This module is Swift Concurrency proper: `async`/`await` here, tasks in lesson 2, cancellation in 3, actors in 4, `Sendable` and isolation in 5, and migration in 6. Swift Concurrency runs on Linux too, so the plain-Swift blocks were compiled and run with Swift 6.3 there, and every output was written so it doesn't depend on which thread runs what or how fast. Where code tells you where it's running, it uses `#isolation` (lesson 4) rather than `Thread.isMainThread`: on Linux, Swift 6.3 printed `false` from a task on the main actor, so thread checks aren't a reliable teaching tool inside async code.
+> Module 28 got work off the main thread with threads, dispatch queues and completion handlers, and ended with the data races Swift 6 catches at compile time. Module 26, lesson 2 previewed `withCheckedThrowingContinuation`. This module is Swift Concurrency proper: `async`/`await` here, tasks in lesson 2, cancellation in 3, actors in 4, `Sendable` and isolation in 5, and migration in 6. Swift Concurrency runs on Linux too, so the plain-Swift blocks were compiled and run with Swift 6.3 there, and every output was written so it doesn't depend on which thread runs what or how fast. Where code tells you where it's running, it uses `#isolation` (introduced in lesson 2) rather than `Thread.isMainThread`: on Linux, Swift 6.3 printed `false` from a task on the main actor, so thread checks aren't a reliable teaching tool inside async code.
 
 ## From a completion handler to an async function
 
@@ -322,7 +322,7 @@ Compare it with Module 28: no `DispatchQueue.main.async`, no `[weak self]` dance
 
 Every block in this lesson uses `await` at the top level of `main.swift`. When a `main.swift` contains an `await`, Swift runs its top-level code as an async program on the main actor ([SE-0343](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0343-top-level-concurrency.md), Swift 5.7). In an app you won't write `main.swift` code like this (UIKit and SwiftUI start your app), but command-line tools and these examples do.
 
-One consequence: the program exits when the top-level code reaches its end. Tasks still waiting are simply abandoned:
+One consequence: the program exits when the top-level code reaches its end. Tasks still waiting are abandoned:
 
 ```swift
 let task = Task {

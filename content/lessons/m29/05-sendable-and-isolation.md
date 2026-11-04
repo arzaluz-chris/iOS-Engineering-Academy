@@ -354,8 +354,8 @@ The fix is almost never "add an annotation until it compiles". Ask which domain 
 
 Two escape hatches turn checking **off** for something you synchronize yourself:
 
-- `final class TokenStore: @unchecked Sendable` — "don't check this class; I protect its state."
-- `nonisolated(unsafe) var cache: [String: Data] = [:]` — "don't check this variable; I protect it."
+- `final class TokenStore: @unchecked Sendable` says "don't check this class; I protect its state."
+- `nonisolated(unsafe) var cache: [String: Data] = [:]` says "don't check this variable; I protect it."
 
 Module 28, lesson 6 listed the conditions for an honest `@unchecked Sendable`: `final`, every mutable stored property `private`, every access (reads too) inside the lock or queue, a comment saying what guards what. The Swift migration guide says the same thing more briefly: "The compiler will not perform any checking on an `@unchecked Sendable` type, so this opt-out must be used with caution."
 

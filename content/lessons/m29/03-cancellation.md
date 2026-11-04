@@ -323,7 +323,7 @@ final class OrderStatusViewController: UIViewController {
         pollingTask?.cancel()
         pollingTask = Task { [weak self] in
             while !Task.isCancelled {
-                let status = await Self.fetchStatus()
+                let status = await OrderStatusViewController.fetchStatus()
                 self?.statusLabel.text = status
                 try? await Task.sleep(for: .seconds(5))
             }

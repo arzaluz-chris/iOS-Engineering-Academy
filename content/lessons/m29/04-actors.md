@@ -282,7 +282,7 @@ results: ["image-avatar-7"]
 downloads: 1
 ```
 
-Five concurrent requests, one download, in any interleaving. Whichever call runs first increments `downloads` and stores the task, all before its first `await`, so every later call finds either the finished image or the in-flight task. (The program prints a `Set` so five identical strings become one line.) The `Task { }` created inside the actor inherits the actor's isolation, but it spends nearly all its time suspended in `Task.sleep`, so it doesn't hold the actor up; in a real cache the work would be a `URLSession` call. Module 27, lesson 5 built the same deduplication with completion handlers and a dictionary of waiting callbacks; compare the length.
+Five concurrent requests, one download, in any interleaving. Whichever call runs first increments `downloads` and stores the task, all before its first `await`, so every later call finds either the finished image or the in-flight task. (The program prints a `Set` so five identical strings become one line.) The `Task { }` created inside the actor inherits the actor's isolation, but it spends nearly all its time suspended in `Task.sleep`, so it doesn't hold the actor up; in a real cache the work would be a `URLSession` call. Module 27, lesson 5 coalesced in-flight image loads by hand, without actors; compare the two.
 
 ## nonisolated
 

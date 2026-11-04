@@ -471,20 +471,20 @@ solution: |
 ````exercise
 id: m29-l02-e3
 type: solve
-prompt: "Write `func loadDashboard() async throws -> String` that loads a user name, an unread count and a balance concurrently using the given functions, and returns `\"<name>: <unread> unread, balance <balance>\"`. Then call it at the top level inside do/catch, print the result, and print whether it took under 250 ms (each call takes about 100 ms)."
+prompt: "Write `func loadDashboard() async throws -> String` that loads a user name, an unread count and a balance concurrently using the given functions, and returns `\"<name>: <unread> unread, balance <balance>\"`. Then call it at the top level inside do/catch, print the result, and print whether it took under 550 ms (each call takes about 200 ms)."
 starter: |
   func loadName() async throws -> String {
-      try await Task.sleep(for: .milliseconds(100))
+      try await Task.sleep(for: .milliseconds(200))
       return "Ana"
   }
 
   func loadUnreadCount() async throws -> Int {
-      try await Task.sleep(for: .milliseconds(100))
+      try await Task.sleep(for: .milliseconds(200))
       return 3
   }
 
   func loadBalance() async throws -> Int {
-      try await Task.sleep(for: .milliseconds(100))
+      try await Task.sleep(for: .milliseconds(200))
       return 250
   }
 
@@ -497,17 +497,17 @@ rubric:
 solution: |
   ```swift
   func loadName() async throws -> String {
-      try await Task.sleep(for: .milliseconds(100))
+      try await Task.sleep(for: .milliseconds(200))
       return "Ana"
   }
 
   func loadUnreadCount() async throws -> Int {
-      try await Task.sleep(for: .milliseconds(100))
+      try await Task.sleep(for: .milliseconds(200))
       return 3
   }
 
   func loadBalance() async throws -> Int {
-      try await Task.sleep(for: .milliseconds(100))
+      try await Task.sleep(for: .milliseconds(200))
       return 250
   }
 
@@ -526,15 +526,15 @@ solution: |
   } catch {
       print("failed: \(error)")
   }
-  print("under 250 ms: \(clock.now - start < .milliseconds(250))")
+  print("under 550 ms: \(clock.now - start < .milliseconds(550))")
   ```
 
   ```output
   Ana: 3 unread, balance 250
-  under 250 ms: true
+  under 550 ms: true
   ```
 
-  The three calls have different types, which is what `async let` handles well; a task group would need one shared result type. One `try await` covers the whole interpolated string. If any call throws, the error propagates and the other two children are cancelled and awaited when the function exits. Sequential awaits would take about 300 ms.
+  The three calls have different types, which is what `async let` handles well; a task group would need one shared result type. One `try await` covers the whole interpolated string. If any call throws, the error propagates and the other two children are cancelled and awaited when the function exits. Sequential awaits would take at least 600 ms.
 ````
 
 ````exercise
