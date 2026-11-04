@@ -36,7 +36,7 @@ mastery:
   - Compute which pending requests to remove and which to add when the app's data changes.
   - Register a category with actions and route each response to the right app action.
   - Write a remote payload that uses a category, a thread and mutable-content, and say what the service extension must do in time.
-resources: [requesting-protected-resources, hig, app-review-guidelines, foundation-notificationcenter]
+resources: [usernotifications-asking-permission, usernotifications-scheduling-local, usernotifications-actionable, requesting-protected-resources, hig, app-review-guidelines, foundation-notificationcenter]
 cards:
   - id: m44-l03-c1
     front: When should an app request notification permission?

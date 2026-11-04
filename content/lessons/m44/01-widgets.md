@@ -36,7 +36,7 @@ mastery:
   - Write the provider, the configuration and a family-aware view for a static widget.
   - Store widget data in an App Group container and read it from the provider.
   - Add a Toggle backed by an App Intent and explain why it updates optimistically.
-resources: [hig, foundation-userdefaults, foundation-jsondecoder, information-property-list]
+resources: [widgetkit-keeping-up-to-date, widgetkit-timelineprovider, widgetkit-interactivity, xcode-app-groups, hig, foundation-userdefaults, foundation-jsondecoder, information-property-list]
 cards:
   - id: m44-l01-c1
     front: What are the three timeline reload policies, and when does each fit?

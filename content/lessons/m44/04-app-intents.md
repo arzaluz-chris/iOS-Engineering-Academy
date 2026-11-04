@@ -36,7 +36,7 @@ mastery:
   - Rank text matches for an entity query.
   - Write an AppShortcutsProvider whose phrases include the app name and a parameter.
   - Reuse one intent in a widget button, a widget configuration and a control, and say which process runs it.
-resources: [swift-book-protocols, swift-book-concurrency, swift-actor, swiftui-app]
+resources: [appintents-first-intent, appintents-app-shortcuts, swift-book-protocols, swift-book-concurrency, swift-actor, swiftui-app]
 cards:
   - id: m44-l04-c1
     front: What are the minimum parts of an AppIntent?

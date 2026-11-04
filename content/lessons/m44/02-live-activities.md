@@ -36,7 +36,7 @@ mastery:
   - Translate order events into start, update with or without alert, and end with the right dismissal policy.
   - Compute when an ended Live Activity leaves the Lock Screen for each dismissal policy.
   - Choose apns-priority 5 or 10 for each push update and explain the budget.
-resources: [hig, foundation-jsondecoder, foundation-encoding-custom-types, information-property-list]
+resources: [activitykit-live-activities, activitykit-push-updates, hig, foundation-jsondecoder, foundation-encoding-custom-types, information-property-list]
 cards:
   - id: m44-l02-c1
     front: How long can a Live Activity run, and how long can it stay visible?

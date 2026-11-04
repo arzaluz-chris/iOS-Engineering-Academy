@@ -36,7 +36,7 @@ mastery:
   - Trace a refresh planner with a fake clock through successes, failures with backoff, and a skipped launch.
   - Split long maintenance into checkpointed batches that survive expiration.
   - Predict the result of submitting requests against the one-refresh, ten-processing limit.
-resources: [foundation-urlsessionconfiguration, foundation-urlsession, information-property-list, swift-task-cancellation-handler, swiftui-scenephase]
+resources: [backgroundtasks-strategies, backgroundtasks-bgtaskscheduler, foundation-background-downloads, foundation-urlsessionconfiguration, foundation-urlsession, information-property-list, swift-task-cancellation-handler, swiftui-scenephase]
 cards:
   - id: m44-l05-c1
     front: How much time does a BGAppRefreshTask get, and what must it do?
