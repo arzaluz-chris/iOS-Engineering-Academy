@@ -49,7 +49,7 @@ cards:
     back: "The app runs in another process and updates asynchronously. Use waitForExistence(timeout:) or wait(for:toEqual:timeout:), which return as soon as the condition holds. Never sleep for a fixed time."
   - id: m33-l05-c5
     front: What does the test pyramid recommend?
-    back: "Many unit tests (fast, precise, cheap), fewer integration tests, few UI tests (slow, broad, more fragile). Each UI test should cover a whole user journey that unit tests can't, not logic a view model test already checks."
+    back: "Many unit tests (fast, precise, cheap), fewer integration tests, few UI tests (slow, broad, more fragile). Each UI test should cover a whole user flow that unit tests can't, not logic a view model test already checks."
 ---
 
 ## The idea in one sentence
@@ -312,7 +312,7 @@ loading
 
 - **The recorder is the view's stand-in.** It sets `onChange`, exactly as the view controller does, and renders each change to one line. `[weak self, weak viewModel]` keeps it from creating a cycle with the view model it observes.
 - **Text, not values.** One line per change, in a format a person can read: `-` for unread, `+` for read, the alert in brackets. When it fails, you see what the screen showed.
-- **One assertion covers the journey.** The test compares the transcript with a multi-line string literal:
+- **One assertion covers the whole sequence.** The test compares the transcript with a multi-line string literal:
 
 ```swift illustrative
 import Testing
@@ -437,7 +437,7 @@ UI tests live in their own **UI testing target**. The test code runs in a separa
 
 ### Make the views findable
 
-UI tests find elements through queries like `app.cells["book-3"]`, which match an element's identifier, label or other attributes. Matching the **accessibility identifier** is the robust choice: users never see or hear it, so it doesn't change when the copy is edited or the app is localized. UIKit's [`accessibilityIdentifier`](https://developer.apple.com/documentation/uikit/uiaccessibilityidentification/accessibilityidentifier) is a property on every view:
+UI tests find elements through queries like `app.cells["book-3"]`, which match an element's identifier, label or other attributes. Matching the **accessibility identifier** is the reliable choice: users never see or hear it, so it doesn't change when the copy is edited or the app is localized. UIKit's [`accessibilityIdentifier`](https://developer.apple.com/documentation/uikit/uiaccessibilityidentification/accessibilityidentifier) is a property on every view:
 
 ```swift ios
 import UIKit
@@ -460,7 +460,7 @@ let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "BookCell")
 configure(cell, id: 3, title: "Piranesi", author: "Susanna Clarke", isRead: false)
 ```
 
-SwiftUI has the [`accessibilityIdentifier(_:)`](https://developer.apple.com/documentation/swiftui/view/accessibilityidentifier(_:)) modifier (Apple: "Use this value for testing. It isn't visible to the user."):
+SwiftUI has the `accessibilityIdentifier(_:)` modifier (Apple: "Use this value for testing. It isn't visible to the user."):
 
 ```swift ios
 import SwiftUI
@@ -589,7 +589,7 @@ Line by line, with the behavior Apple documents for each call:
 - **`app.staticTexts["reading-list.header"]`** is a query, not a lookup: it's evaluated when you use it, so it always reflects the current screen.
 - **`waitForExistence(timeout:)`** returns `true` as soon as the element exists, or `false` after the timeout. The list loads asynchronously, so check it instead of assuming.
 - **`app.cells["book-3"].tap()`** finds the cell by identifier and taps it.
-- **`wait(for: \.label, toEqual: "2 of 3 read", timeout: 2)`** waits for a property to reach a value. Apple's reference lists it from Xcode 16.3; with older Xcode versions, use `XCTNSPredicateExpectation` or check `waitForExistence` on an element that only appears after the change.
+- **`wait(for: \.label, toEqual: "2 of 3 read", timeout: 2)`** waits for a property to reach a value and returns `false` if the timeout expires first. Apple's reference lists it with Xcode 16.3 availability, like the rest of XCUIAutomation's symbols; if your Xcode doesn't offer it, use `waitForExistence(timeout:)` on an element that only appears after the change.
 - **`@MainActor`**: Apple declares `XCUIApplication` and `XCUIElement` as `@MainActor` classes.
 
 Xcode can also **record** a UI test: per Apple's article [Recording UI automation for testing](https://developer.apple.com/documentation/xcuiautomation/recording-ui-automation-for-testing), you click the record button in a test method and use the app, and Xcode writes the queries and actions, offering alternative queries for each element. Recorded queries often match by position or visible text, so choose the identifier-based alternative before keeping them.
@@ -604,7 +604,7 @@ For the reading list:
 | --- | --- | --- | --- |
 | Unit | Ordering, header text, importer, view model states and transitions, presenter calls | Dozens | Milliseconds each |
 | Integration | Repository + real `URLSession` with a `URLProtocol` stub; JSON contract tests (Module 30) | A handful per feature | Milliseconds to seconds |
-| UI | Launch, see the list, mark a book, see the header change; the offline screen | One or two per user journey | Seconds each |
+| UI | Launch, see the list, mark a book, see the header change; the offline screen | One or two per user flow | Seconds each |
 
 The table's main lesson is what the UI tests **don't** check: sort order rules, every error message, every no-op. A view model test checks those in a millisecond and points straight at the failing rule. A UI test that fails says "the header didn't change" and leaves you to find out why. Fowler's article notes that some teams argue for more integration tests and fewer unit tests, and that the disagreement is partly about what "unit" means; the constant is to push each check to the lowest level that can make it.
 
@@ -783,7 +783,7 @@ rubric:
   - Flags position- and text-based queries.
   - Flags the missing wait after the tap.
 solution: |
-  A better suite keeps one journey test: launch with `-ui-testing`, wait for `reading-list.header`, check its label, tap `app.cells["book-3"]`, wait for the label to become "2 of 3 read". The sort order goes to `ReadingListViewModelTests`, where it's already covered by `loadShowsUnreadBooksFirst`.
+  A better suite keeps one flow test: launch with `-ui-testing`, wait for `reading-list.header`, check its label, tap `app.cells["book-3"]`, wait for the label to become "2 of 3 read". The sort order goes to `ReadingListViewModelTests`, where it's already covered by `loadShowsUnreadBooksFirst`.
 ````
 
 ````exercise
@@ -1096,7 +1096,7 @@ rubric:
   - Unit tests for validation boundaries, progress formatting and rounding, the banner condition, and save failure states, many of them parameterized.
   - A transcript test for the sequence that matters (saving, saved, banner appears once).
   - Integration tests for the sync client with a URLProtocol stub and a contract test.
-  - One or two UI tests for the journey, launched with in-memory data and using identifiers.
+  - One or two UI tests for the main flow, launched with in-memory data and using identifiers.
   - States explicitly that boundaries and messages aren't re-tested in UI tests.
 solution: |
   **Unit (most tests):** a parameterized test for goal validation at 0, 1, 500, 501 and non-numeric input; progress text and percentage at 0, partial, exact and over-goal values, including rounding; the banner condition (shown once when crossing the goal, not again on reload); save failure leaves the old goal and sets an alert. A transcript test for "set goal" records saving → saved → banner, so a regression that shows the banner before the save completes is caught.
@@ -1115,4 +1115,4 @@ solution: |
 - Test a presenter by comparing a recording view's log, and check it holds the view weakly.
 - In XCTest, annotate tests of `@MainActor` code with `@MainActor`.
 - UI tests launch the app in another process and drive it through accessibility. Give views **accessibility identifiers**, select test data with **launch arguments** read by the composition root (inside `#if DEBUG`), and **wait** for elements instead of sleeping.
-- Follow the **test pyramid**: many unit tests, some integration tests, few UI tests that cover journeys, not rules.
+- Follow the **test pyramid**: many unit tests, some integration tests, few UI tests that cover flows, not rules.

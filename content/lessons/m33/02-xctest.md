@@ -46,7 +46,7 @@ cards:
     back: "UI tests (XCUIAutomation is driven from XCTest), performance tests with measure and metrics (Swift Testing documents no equivalent), and tests written in Objective-C."
   - id: m33-l02-c5
     front: What happens to a failing XCTAssert inside a Swift Testing test?
-    back: "With Swift 6.3 nothing: the test passes. Apple documents interoperability modes that report these failures only for 6.4 and later toolchains. Replace XCTest assertions in shared helpers with #expect before calling them from @Test functions."
+    back: "With Swift 6.3 nothing: the test passes, and a failing #expect inside an XCTest method passes too. Apple documents interoperability modes that report these failures with 6.4 and later toolchains. Until then, keep each framework's assertions in its own tests."
 ---
 
 ## The idea in one sentence
@@ -486,7 +486,25 @@ The helper's comparison fails (`"2 of 3 read"` isn't `"3 of 3 read"`), yet the r
 ✔ Test summaryThroughAnXCTestHelper() passed after 0.001 seconds.
 ```
 
-Apple's migration guide describes **interoperability modes** that make an XCTest assertion inside a Swift Testing test record an issue, and the reverse. It says the default depends on the toolchain: `none` before 6.4, `limited` or `complete` with a 6.4 toolchain, depending on the package's tools version. This course's tests ran on 6.3, so only the `none` behavior above was observed. Until your whole team builds with a toolchain that reports these issues, convert shared helpers to `#expect` before calling them from `@Test` functions. `#expect` inside an XCTest method is the direction Apple's guide recommends for gradual migration on newer toolchains; it wasn't verified on 6.3 here.
+The reverse fails silently too. In the same package, this XCTest method with a wrong `#expect` passed:
+
+```swift illustrative
+import Testing
+import XCTest
+@testable import Bookshelf
+
+final class ExpectInXCTestTests: XCTestCase {
+    func testSummaryWithExpect() {
+        #expect(ReadingList.summary(read: 2, total: 3) == "3 of 3 read")   // wrong on purpose
+    }
+}
+```
+
+```text
+Test Case 'ExpectInXCTestTests.testSummaryWithExpect' passed (0.001 seconds)
+```
+
+Apple's migration guide describes **interoperability modes** that make an XCTest assertion inside a Swift Testing test record an issue, and a Swift Testing expectation inside an XCTest method do the same. It says the default depends on the toolchain: `none` before 6.4, and `limited` or `complete` with a 6.4 toolchain, depending on the package's tools version. Both runs above used 6.3, so they show the `none` behavior. Until everyone on the team builds with a toolchain that reports these cross-framework failures (and you've checked that it does), keep each framework's checks inside its own tests: convert a shared helper to `#expect` only when every caller is a `@Test` function.
 
 ## Common mistakes
 
@@ -505,8 +523,8 @@ Apple's migration guide describes **interoperability modes** that make an XCTest
 > [!error] XCTAssert(a == b) for comparisons
 > The failure says only `XCTAssertTrue failed`. Use `XCTAssertEqual(a, b)` so the message shows both values.
 
-> [!error] XCTest helpers called from Swift Testing
-> With Swift 6.3 their failures are dropped and the test passes. Rewrite helpers with `#expect`.
+> [!error] Assertion helpers shared across frameworks
+> With Swift 6.3, an XCTest helper called from a `@Test` function, or an `#expect` helper called from an XCTest method, drops its failures and the test passes. Keep a helper per framework until the migration is done.
 
 ## Exercises
 
@@ -718,7 +736,7 @@ starter: |
 rubric:
   - Replaces setUp with a stored property initialized per instance (or an init), and drops tearDown, which only reset state.
   - Uses #expect for comparisons and try #require instead of XCTUnwrap.
-  - Translates XCTAssertThrowsError plus the cast to #expect(throws: ImportError.missingAuthor).
+  - "Translates XCTAssertThrowsError plus the cast to #expect(throws: ImportError.missingAuthor)."
   - "Changes the all-read test so it doesn't mutate shared fixtures in a loop, or explains why the mutation is safe in a fresh instance."
   - Keeps test names descriptive without the test prefix.
 solution: |
@@ -780,11 +798,11 @@ prompt: "Your team has 1,800 XCTest unit tests, 60 UI tests, 12 performance test
 rubric:
   - New tests in Swift Testing from now on; old ones migrated when touched, not in a big rewrite.
   - UI and performance tests stay in XCTest, with the reasons.
-  - Addresses the helper functions, recognizing that XCTest assertions inside @Test functions are silently ignored on 6.3.
+  - Addresses the helper functions, recognizing that on 6.3 assertions from one framework are silently ignored inside the other's tests.
   - Mentions parallel execution exposing order-dependent tests and the .serialized stopgap.
   - Mentions main-actor isolation for tests of @MainActor code.
 solution: |
-  1. **Start with the helpers.** Rewrite `assertSameBooks` and friends with `#expect` (and `Issue.record` for unconditional failures). On a 6.3 toolchain an `XCTAssert` inside a helper called from a `@Test` function records nothing, so the new tests would pass while checking nothing. Apple's guide suggests `#expect` can be used inside XCTest methods for gradual migration on newer toolchains; verify that on yours before relying on it, or keep two versions of each helper for a while.
+  1. **Start with the helpers.** On a 6.3 toolchain an `XCTAssert` inside a helper called from a `@Test` function records nothing, and an `#expect` inside an XCTest method records nothing either, so a helper written for one framework silently checks nothing in the other. Keep two versions of each helper while both frameworks are in use (`assertSameBooks` with `XCTAssertEqual`, `expectSameBooks` with `#expect`), and delete the XCTest one when its last caller migrates. Once the team's toolchain reports cross-framework issues (Apple documents this from 6.4), verify it with a deliberately failing test and simplify.
   2. **New tests in Swift Testing**, in the same targets. No new target is needed; both frameworks run together.
   3. **Migrate when touching.** When someone edits an XCTest class, they convert it: `setUp` to stored properties or `init`, assertions to `#expect`/`#require`, loops to `arguments:`.
   4. **Expect failures from parallelism.** Some converted tests will fail because they relied on running one at a time. Fix the shared state; use `.serialized` only as a temporary marker with a bug link.
@@ -798,5 +816,5 @@ solution: |
 - Checks are the `XCTAssert…` family; `XCTAssertEqual` and friends print both values, `XCTAssert(a == b)` doesn't. `try XCTUnwrap` unwraps or ends the test.
 - For completion handlers, fulfill an `XCTestExpectation` in the callback and wait with `wait(for:timeout:)` (sync tests) or `await fulfillment(of:timeout:)` (async tests). Better: wrap the API in a continuation and `await` it.
 - XCTest and Swift Testing run side by side in one target. Write new tests in Swift Testing, migrate old ones when you touch them, and keep UI, performance and Objective-C tests in XCTest.
-- With Swift 6.3, an `XCTAssert` inside a Swift Testing test is silently ignored. Convert shared helpers to `#expect` first.
+- With Swift 6.3, an `XCTAssert` inside a Swift Testing test is silently ignored, and so is an `#expect` inside an XCTest method. Keep each framework's assertions, including shared helpers, inside its own tests.
 - Swift Testing runs tests in parallel and off the main actor; migration can expose order-dependent tests and needs `@MainActor` on tests of main-actor code.

@@ -512,7 +512,7 @@ import Testing
 }
 ```
 
-It passed when this lesson ran it, in 0.351 seconds. It has two problems. It's slow: every debounce or timeout test adds its real duration to the suite, and suites with dozens of these take minutes. And it's timing-dependent: 350 ms is "300 ms plus some slack", and on a loaded CI machine the slack may not be enough, so it fails once a week for no reason. That's a **flaky test**, and flaky tests teach a team to ignore red builds.
+It passed when this lesson ran it, in 0.351 seconds. It has two problems. It's slow: every debounce or timeout test adds its real duration to the suite, and suites with dozens of these take minutes. And it's timing-dependent: 350 ms is "300 ms plus some slack", and on a loaded CI machine the slack may not be enough, so now and then it fails for no reason in the code. That's a **flaky test**, and flaky tests teach a team to ignore red builds.
 
 ### A manual clock
 

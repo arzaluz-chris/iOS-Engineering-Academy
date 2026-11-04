@@ -375,7 +375,7 @@ final class FreshInstanceTests {
 }
 ```
 
-Both tests pass, even though one adds a book and the other removes all of them. The output contains `init` and `deinit` twice, once per test. A class's `deinit` serves as teardown. Apple's migration guide recommends structs or actors for suites when you don't need `deinit`, because the compiler can check their concurrency safety better.
+Both tests pass, even though one adds a book and the other removes all of them. The output contains `init` and `deinit` twice, once per test. A class's `deinit` serves as teardown. Apple's migration guide generally recommends a struct or an actor over a class, because the compiler can check their concurrency safety better; when you need teardown, use a class or an actor and implement `deinit`.
 
 Two constraints come with the instance-per-test rule:
 
@@ -422,7 +422,7 @@ func unreadNeverFollowsRead(firstIsRead: Bool, secondIsRead: Bool) {
 - **Two collections** make every combination (Apple calls it the Cartesian product). `[false, true], [false, true]` gives four cases: both unread, both read, and each mix. That fits `unreadNeverFollowsRead`, which should hold for every combination.
 - **`zip(a, b)`** pairs elements by position instead, for when the second collection holds the expected result for each input. Apple's [parameterized testing article](https://developer.apple.com/documentation/testing/parameterizedtesting) recommends it to avoid the combinatorial count.
 
-The output reports each case with its arguments, which is the advantage over a `for` loop inside one test: a loop stops at nothing and tells you only that "the test" failed, while each case passes or fails by itself.
+The output reports each case with its arguments. That's the advantage over a `for` loop inside one test: in a loop, all inputs share one test, so a thrown error skips the remaining inputs and you can't rerun only the input that failed. Each case passes or fails by itself.
 
 ```text
 ◇ Test case passing 3 arguments read → 0, total → 0, expected → "No books yet" to summary(read:total:expected:) started.

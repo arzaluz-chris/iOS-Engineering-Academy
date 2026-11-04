@@ -252,7 +252,7 @@ print("never printed")
 created a dummy
 ```
 
-The dummy's methods call `fatalError`, so if the test turns out to use the dependency, it stops with a message naming the call: the program above prints `Fatal error: DummyRepository.books() was called`. A dummy that silently returned `[]` would let a test pass while exercising code it didn't intend to. The test:
+The dummy's methods call `fatalError`, so if the test turns out to use the dependency, it stops with a message naming the call: the program above crashes with the fatal error `DummyRepository.books() was called` after its first line. A dummy that silently returned `[]` would let a test pass while exercising code it didn't intend to. The test:
 
 ```swift illustrative
 @Test func startsInTheLoadingState() {
