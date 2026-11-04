@@ -6,6 +6,9 @@ import PackageDescription
 
 let package = Package(
     name: "AcademyChallenges",
+    // Swift concurrency (actors, CheckedContinuation) needs macOS 10.15; without this SwiftPM targets an
+    // older macOS and ConcurrencyLimiter doesn't compile there. It has no effect on Linux.
+    platforms: [.macOS(.v10_15)],
     products: [
         .library(name: "Challenges", targets: ["Challenges"]),
     ],

@@ -36,7 +36,7 @@ Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP
 
 **Tests run in the build environment:** `npm run validate` (no errors), `npm test` (35 tests, all pass), `npm run build` (succeeds), `swift test` in the `swift:6.3` container (Swift 6.3.3, Linux), a visual check in Chromium with no console errors.
 
-**Swift in CI:** the `swift.yml` workflow ("Swift · challenge tests") runs `swift test` on macOS (Xcode 26.6, Swift 6.3.3) on every push that touches `swift/` or `content/lessons/`. It passed for every batch in this increment. Its timeout went from 15 to 30 minutes when the 100 challenges were added: the macOS runner already took 5–9 minutes for `swift test`, and the run with all challenges hit 15 and was cancelled without any failure. The runner doesn't use Xcode 27 / Swift 6.4 yet; the code uses nothing specific to 6.4.
+**Swift in CI:** the `swift.yml` workflow ("Swift · challenge tests") runs `swift test` on macOS (Xcode 26.6, Swift 6.3.3) on every push that touches `swift/` or `content/lessons/`. It passed for every batch in this increment. Its timeout went from 15 to 30 minutes when the 100 challenges were added (the macOS runner already took 5–9 minutes for `swift test`, and one run was cancelled at 15 minutes with no log kept). The macOS run also caught that `ConcurrencyLimiter` (an actor using `CheckedContinuation`) didn't compile there: with no `platforms` in `Package.swift`, SwiftPM targets a macOS older than 10.15, and Linux doesn't check availability. The package now declares `.macOS(.v10_15)`. The runner doesn't use Xcode 27 / Swift 6.4 yet; the code uses nothing specific to 6.4.
 
 **Published:** https://arzaluz-chris.github.io/iOS-Engineering-Academy/
 
