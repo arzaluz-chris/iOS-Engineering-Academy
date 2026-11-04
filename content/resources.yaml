@@ -2631,3 +2631,156 @@ resources:
     why: "The iOS 26 method UIKit calls to apply observed property changes."
     status: unverified
     verifiedAt: null
+  - id: xcode-cloud
+    title: "Xcode Cloud"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/xcode-cloud
+    kind: official
+    topic: "Xcode Cloud"
+    why: "Apple's hosted CI/CD service for building, testing and distributing apps."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-distributing-beta-release
+    title: "Distributing your app for beta testing and releases"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases
+    kind: official
+    topic: "Distribution"
+    why: "Archiving, signing and uploading builds for TestFlight and the App Store."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-sharing-signing-certificates
+    title: "Sharing your team's signing certificates"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/sharing-your-teams-signing-certificates
+    kind: official
+    topic: "Signing in teams"
+    why: "How teams share distribution certificates and manage signing identities."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-crash-reports
+    title: "Acquiring crash reports and diagnostic logs"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/acquiring-crash-reports-and-diagnostic-logs
+    kind: official
+    topic: "Crash reports"
+    why: "Where crash reports come from: Organizer, devices, TestFlight and MetricKit."
+    status: unverified
+    verifiedAt: null
+  - id: asc-api-keys
+    title: "Creating API keys for App Store Connect API"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/appstoreconnectapi/creating-api-keys-for-app-store-connect-api
+    kind: official
+    topic: "App Store Connect API"
+    why: "Creating the API keys CI uses to upload builds without a person's account."
+    status: unverified
+    verifiedAt: null
+  - id: cfbundleshortversionstring
+    title: "CFBundleShortVersionString"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleshortversionstring
+    kind: official
+    topic: "Versioning"
+    why: "The user-visible version number and its format rules."
+    status: unverified
+    verifiedAt: null
+  - id: cfbundleversion
+    title: "CFBundleVersion"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleversion
+    kind: official
+    topic: "Build numbers"
+    why: "The build number and the rules each upload must follow."
+    status: unverified
+    verifiedAt: null
+  - id: metrickit
+    title: "MetricKit"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/metrickit
+    kind: official
+    topic: "MetricKit"
+    why: "On-device performance metrics and diagnostics delivered to your app."
+    status: unverified
+    verifiedAt: null
+  - id: asc-testflight-overview
+    title: "TestFlight overview"
+    source: "App Store Connect Help"
+    url: https://developer.apple.com/help/app-store-connect/test-a-beta-version/testflight-overview
+    kind: official
+    topic: "TestFlight"
+    why: "Internal and external testing, groups and beta review."
+    status: unverified
+    verifiedAt: null
+  - id: asc-phased-release
+    title: "Release a version update in phases"
+    source: "App Store Connect Help"
+    url: https://developer.apple.com/help/app-store-connect/update-your-app/release-a-version-update-in-phases
+    kind: official
+    topic: "Phased release"
+    why: "How a phased release rolls out over seven days and when you can pause it."
+    status: unverified
+    verifiedAt: null
+  - id: apple-app-review
+    title: "App Review"
+    source: "Apple Developer"
+    url: https://developer.apple.com/distribute/app-review/
+    kind: official
+    topic: "App Review"
+    why: "Expedited review, appeals and bug fix submissions."
+    status: unverified
+    verifiedAt: null
+  - id: app-privacy-details
+    title: "App privacy details on the App Store"
+    source: "Apple Developer"
+    url: https://developer.apple.com/app-store/app-privacy-details/
+    kind: official
+    topic: "App Privacy"
+    why: "What the privacy nutrition label asks and how to answer it."
+    status: unverified
+    verifiedAt: null
+  - id: gha-workflow-syntax
+    title: "Workflow syntax for GitHub Actions"
+    source: "GitHub Docs"
+    url: https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax
+    kind: official
+    topic: "GitHub Actions"
+    why: "The keys of a workflow file: triggers, jobs, steps, matrices and permissions."
+    status: unverified
+    verifiedAt: null
+  - id: gha-dependency-caching
+    title: "Dependency caching reference"
+    source: "GitHub Docs"
+    url: https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching
+    kind: official
+    topic: "CI caching"
+    why: "How actions/cache keys, restore keys and branch scopes work."
+    status: unverified
+    verifiedAt: null
+  - id: gha-sign-xcode
+    title: "Installing an Apple certificate on macOS runners for Xcode development"
+    source: "GitHub Docs"
+    url: https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications
+    kind: official
+    topic: "Signing in CI"
+    why: "Importing a signing certificate and profile into a temporary keychain on a runner."
+    status: unverified
+    verifiedAt: null
+  - id: semver
+    title: "Semantic Versioning 2.0.0"
+    source: "semver.org"
+    url: https://semver.org/
+    kind: reference
+    topic: "Semantic versioning"
+    why: "The rules for MAJOR.MINOR.PATCH versions."
+    status: unverified
+    verifiedAt: null
+  - id: conventional-commits
+    title: "Conventional Commits 1.0.0"
+    source: "conventionalcommits.org"
+    url: https://www.conventionalcommits.org/en/v1.0.0/
+    kind: reference
+    topic: "Commit messages"
+    why: "A commit message format that tools can turn into version bumps and changelogs."
+    status: unverified
+    verifiedAt: null
