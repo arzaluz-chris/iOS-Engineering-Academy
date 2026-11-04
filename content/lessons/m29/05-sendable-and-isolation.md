@@ -36,7 +36,7 @@ mastery:
   - Return a Sendable snapshot from an actor instead of a non-Sendable reference.
   - Review an @unchecked Sendable class and say whether its promise holds.
   - "Write a helper that runs on whatever actor calls it, using isolation: isolated (any Actor)? = #isolation."
-resources: [swift-sendable, swift-evolution, swift-book, xcode-data-races, synchronization-mutex]
+resources: [swift-sendable, swift-migration-guide, swift-evolution, swift-book, xcode-data-races, synchronization-mutex]
 cards:
   - id: m29-l05-c1
     front: Which types are Sendable without you writing anything?

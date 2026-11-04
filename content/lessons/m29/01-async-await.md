@@ -34,7 +34,7 @@ mastery:
   - Explain to a colleague why two awaits in a row don't run in parallel.
   - Replace a semaphore or Thread.sleep inside async code with a non-blocking alternative.
   - Call an async function from a button handler with Task and keep a handle when it must be cancelled or awaited.
-resources: [swift-book, swift-evolution, swift-mainactor, understanding-hangs]
+resources: [swift-book-concurrency, swift-task, swift-book, swift-evolution, swift-mainactor, understanding-hangs]
 cards:
   - id: m29-l01-c1
     front: What does await mean?

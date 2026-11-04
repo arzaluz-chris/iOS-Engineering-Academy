@@ -36,7 +36,7 @@ mastery:
   - Make a throwing task group fail fast and say what happens to the other children.
   - Say what Task { } inherits from main-actor code and why Task.detached is rarely the answer.
   - Explain priority escalation when a high-priority task awaits a low-priority one.
-resources: [swift-book, swift-evolution, swift-mainactor]
+resources: [swift-task, swift-taskgroup, swift-book, swift-evolution, swift-mainactor]
 cards:
   - id: m29-l02-c1
     front: Task vs thread?

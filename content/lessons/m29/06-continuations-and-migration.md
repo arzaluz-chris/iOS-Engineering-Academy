@@ -36,7 +36,7 @@ mastery:
   - Expose a progress callback as an AsyncStream and stop the producer in onTermination.
   - Plan a migration from a serial-queue class with completion handlers to an actor, keeping callers working at each step.
   - Read a project's build settings and say where an unannotated function or async function will run.
-resources: [swift-checkedcontinuation, swift-evolution, swift-mainactor, swift-sendable, dispatch-dispatchqueue]
+resources: [swift-adopting-swift6, swift-migration-guide, xcode-build-settings-reference, swift-checkedcontinuation, swift-evolution, swift-mainactor, swift-sendable, dispatch-dispatchqueue]
 cards:
   - id: m29-l06-c1
     front: What's the one rule for a continuation?

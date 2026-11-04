@@ -31,7 +31,7 @@ mastery:
   - Predict the output when a cancelled parent has async let children and an inner Task { }.
   - Wrap a legacy cancellable operation so cancelling the task cancels the operation.
   - Store a screen's task in a property, cancel it in viewDidDisappear and deinit, and explain why a strong self capture defeats the deinit.
-resources: [swift-book, swift-evolution, swift-checkedcontinuation]
+resources: [swift-task-cancellation-handler, swift-cancellationerror, swift-book, swift-evolution, swift-checkedcontinuation]
 cards:
   - id: m29-l03-c1
     front: What does task.cancel() do?

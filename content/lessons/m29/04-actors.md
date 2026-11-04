@@ -34,7 +34,7 @@ mastery:
   - Write an image cache actor that starts at most one download per key, however many callers ask.
   - Make an actor conform to CustomStringConvertible with a nonisolated property.
   - Call a @MainActor function from nonisolated async code, and mark a UIKit-facing type @MainActor.
-resources: [swift-book, swift-mainactor, swift-evolution, xcode-data-races]
+resources: [swift-actor, swift-globalactor, swift-book, swift-mainactor, swift-evolution, xcode-data-races]
 cards:
   - id: m29-l04-c1
     front: What does an actor guarantee?
