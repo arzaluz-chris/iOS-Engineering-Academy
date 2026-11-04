@@ -32,7 +32,7 @@ mastery:
   - Attach onOpenURL to the root view and route the URL through the parser.
   - Encode the recipes path to Data, decode it at launch, and fall back to the root when decoding fails.
   - Trim a restored path at the first route whose recipe no longer exists.
-resources: [xcode-custom-url-scheme, xcode-universal-links, foundation-urlcomponents, foundation-encoding-custom-types, swiftui-scenephase, swift-book-enumerations]
+resources: [swiftui-onopenurl, swiftui-scenestorage, swiftui-navigationpath, xcode-custom-url-scheme, xcode-universal-links, foundation-urlcomponents, foundation-encoding-custom-types, swiftui-scenephase, swift-book-enumerations]
 cards:
   - id: m35-l05-c1
     front: Why give navigation state a single owner (a router)?

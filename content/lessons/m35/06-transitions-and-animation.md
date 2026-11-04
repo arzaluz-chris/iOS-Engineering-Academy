@@ -32,7 +32,7 @@ mastery:
   - Slide a banner in from the top and fade it out, with an asymmetric transition.
   - Move a selected tag chip from one row to another with matchedGeometryEffect.
   - Turn a zoom or slide into a cross-fade when Reduce Motion is on.
-resources: [uikit-reduce-motion, hig, swift-book-closures]
+resources: [swiftui-withanimation, swiftui-matchedgeometryeffect, uikit-reduce-motion, hig, swift-book-closures]
 cards:
   - id: m35-l06-c1
     front: withAnimation vs animation(_:value:)?

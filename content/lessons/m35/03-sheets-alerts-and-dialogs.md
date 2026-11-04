@@ -32,7 +32,7 @@ mastery:
   - Give a sheet medium and large detents and a visible drag indicator.
   - Write a Done button inside a sheet that dismisses it, and explain why reading dismiss in the presenting view doesn't work.
   - Confirm a deletion with a confirmationDialog that has a destructive button and passes the item with presenting.
-resources: [uikit-sheet-presentation, uikit-uialertcontroller, swift-book-enumerations, hig]
+resources: [swiftui-sheet-item, swiftui-confirmationdialog, uikit-sheet-presentation, uikit-uialertcontroller, swift-book-enumerations, hig]
 cards:
   - id: m35-l03-c1
     front: sheet(isPresented:) or sheet(item:)?

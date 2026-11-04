@@ -32,7 +32,7 @@ mastery:
   - Model a stack as an array in plain Swift and predict what's on screen after a sequence of pushes and pops.
   - Choose between [Route] and NavigationPath for a given app.
   - Find a navigationDestination placed inside a List row and move it out.
-resources: [uikit-uinavigationcontroller, swift-book-enumerations, swift-book-protocols, hig]
+resources: [swiftui-navigationstack, swiftui-navigationpath, swiftui-migrating-navigation, uikit-uinavigationcontroller, swift-book-enumerations, swift-book-protocols, hig]
 cards:
   - id: m35-l02-c1
     front: NavigationLink(value:) + navigationDestination(for:) in one sentence?

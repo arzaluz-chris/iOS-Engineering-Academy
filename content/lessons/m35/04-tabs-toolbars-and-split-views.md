@@ -32,7 +32,7 @@ mastery:
   - Build a categories → recipes → detail split view and describe what an iPhone user sees after selecting a category.
   - Keep a tab's selection meaningful when an iPad window becomes compact.
   - Replace navigationBarTrailing with topBarTrailing in old code.
-resources: [uikit-uitabbarcontroller, uikit-uitab, uikit-adapting-trait-changes, hig]
+resources: [swiftui-tabview, swiftui-navigationsplitview, uikit-uitabbarcontroller, uikit-uitab, uikit-adapting-trait-changes, hig]
 cards:
   - id: m35-l04-c1
     front: TabView on iOS 18 vs iOS 17?

@@ -34,7 +34,7 @@ mastery:
   - Replace foregroundColor and cornerRadius in old code with foregroundStyle and clipShape.
   - Render a symbol in palette mode with two colors, and say which layer each color goes to.
   - Show a Wi-Fi strength with a variable-value symbol and give it an accessibility label.
-resources: [hig, uikit-scaling-fonts]
+resources: [swiftui-symbolrenderingmode, swiftui-foregroundstyle, hig, uikit-scaling-fonts]
 cards:
   - id: m35-l01-c1
     front: stroke(_:lineWidth:) vs strokeBorder(_:lineWidth:)?
