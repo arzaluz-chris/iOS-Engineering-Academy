@@ -73,12 +73,12 @@ The reasons rarely survive in the code. A comment explains a line, a commit mess
 Nygard's format has five parts, and he kept it short on purpose: "The whole document should be one or two pages long."
 
 - **Title.** "These documents have names that are short noun phrases." Numbered: `ADR 1: Keychain for the session token`.
-- **Context.** "The forces at play, including technological, political, social, and project local. These forces are probably in tension, and should be called out as such. The language in this section is value-neutral. It is simply describing facts."
-- **Decision.** "Our response to these forces. It is stated in full sentences, with active voice. 'We will …'"
+- **Context.** "This section describes the forces at play, including technological, political, social, and project local. These forces are probably in tension, and should be called out as such. The language in this section is value-neutral. It is simply describing facts."
+- **Decision.** "This section describes our response to these forces. It is stated in full sentences, with active voice. 'We will …'"
 - **Status.** "A decision may be 'proposed' if the project stakeholders haven't agreed with it yet, or 'accepted' once it is agreed. If a later ADR changes or reverses a decision, it may be marked as 'deprecated' or 'superseded' with a reference to its replacement."
-- **Consequences.** "The resulting context, after applying the decision. All consequences should be listed here, not just the 'positive' ones."
+- **Consequences.** "This section describes the resulting context, after applying the decision. All consequences should be listed here, not just the 'positive' ones."
 
-Two practical additions most teams make, and Project 7's first milestone asks for one of them:
+Two additions many teams make, and Project 7's first milestone asks for the first one:
 
 - **Alternatives considered**, each with the reason it lost. Without them, a reader can't tell whether the obvious option was rejected or never thought of.
 - **A date and the people involved**, so the reader knows how old the context is.
@@ -126,7 +126,8 @@ without asking the user to sign in again. The token grants read access to
 account data, so anyone who obtains it can read the user's balances.
 
 UserDefaults is the simplest storage and is already used for preferences, but it
-is a plist inside the app container and ends up in unencrypted backups. The
+is a plist inside the app container and is included in device backups,
+including unencrypted ones. The
 Keychain is encrypted by the system and supports accessibility classes that
 control when an item can be read and whether it migrates to another device.
 Project 7 requires that a device backup reveals no tokens.

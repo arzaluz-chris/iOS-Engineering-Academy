@@ -100,7 +100,7 @@ final class PantryStore {
     func start() {
         guard updatesTask == nil else { return }
         updatesTask = Task { [weak self] in
-            await Self.listenForTransactions { [weak self] (result: VerificationResult<Transaction>) in
+            await Self.listenForTransactions { [weak self] (result: VerificationResult<StoreKit.Transaction>) in
                 await self?.process(result)
             }
         }
@@ -141,7 +141,7 @@ final class PantryStore {
         }
     }
 
-    private func process(_ result: VerificationResult<Transaction>) async {
+    private func process(_ result: VerificationResult<StoreKit.Transaction>) async {
         guard case .verified(let transaction) = result else { return }
         await refreshEntitlements()
         await transaction.finish()
@@ -150,16 +150,16 @@ final class PantryStore {
     // The two loops run off the main actor and hop back to it for each result.
 
     private nonisolated static func listenForTransactions(
-        _ handle: @Sendable (VerificationResult<Transaction>) async -> Void
+        _ handle: @Sendable (VerificationResult<StoreKit.Transaction>) async -> Void
     ) async {
-        for await result in Transaction.updates {
+        for await result in StoreKit.Transaction.updates {
             await handle(result)
         }
     }
 
     private nonisolated static func verifiedEntitlementIDs() async -> Set<String> {
         var unlocked: Set<String> = []
-        for await result in Transaction.currentEntitlements {
+        for await result in StoreKit.Transaction.currentEntitlements {
             if case .verified(let transaction) = result, transaction.revocationDate == nil {
                 unlocked.insert(transaction.productID)
             }
@@ -219,6 +219,7 @@ What each part does, and where the rule comes from:
 - **Three results, plus errors.** Apple's `PurchaseResult` example verifies `.success`, delivers, and calls `finish()`; for `.pending` it says "the purchase requires action from the customer. If the transaction completes, it's available through `Transaction.updates`." So pending isn't failure: say so in the UI and let the listener grant access later. Cancellation needs no message. A thrown error (`PurchaseError`, `StoreKitError`) is the network or the store failing.
 - **Verify, deliver, finish, in that order.** `finish()` "indicates to the App Store that the app delivered the purchased content or enabled the service." Finish before delivering and a crash in between loses the purchase. Not finishing at all leaves it in `Transaction.unfinished`.
 - **The listener starts at launch.** From `Transaction.updates`: "Create a Task to iterate through the transactions from the listener as soon as your app launches. If your app has unfinished transactions, the updates listener receives them once, immediately after the app launches. Without the Task to listen for these transactions, your app may miss them." Pantry calls `store.start()` from the app's `init`, before any view appears. A purchase made through `purchase` itself comes back as `.success`, not through `updates`, which is why both paths call `refreshEntitlements()`.
+- **`StoreKit.Transaction`, not `Transaction`.** SwiftUI has its own `Transaction` type (animation context), so a file that imports both SwiftUI and StoreKit gets "'Transaction' is ambiguous for type lookup in this context". The block above qualifies the name, and so should any file that imports both; a file that imports only StoreKit can write plain `Transaction`, as Apple's examples do.
 - **The loops run off the main actor.** `listenForTransactions` and `verifiedEntitlementIDs` are `nonisolated`, so iterating StoreKit's sequences doesn't occupy the main actor, and each result hops back with `await` (Module 29's isolation rules). Apple's own listener example does the same thing from a class that isn't main-actor isolated, with `Task(priority: .background)`.
 - **`[weak self]`** keeps the endless loop from owning the store. Pantry's store lives for the whole process, so the task is never cancelled; a shorter-lived owner would cancel it, as Apple's sample does in `deinit`.
 - **Restore calls `AppStore.sync()`**, and only from the button. Apple: it "displays a system prompt that asks users to authenticate," so "call this function only in response to an explicit user action," and "in regular operations, there's no need to call `sync()`" because a reinstalled app "automatically has all transactions available to it upon initial launch." Guideline 3.1.1 still asks for "a restore mechanism for any restorable in-app purchases," so the button stays.
@@ -531,9 +532,9 @@ type: fill-in
 prompt: "Complete Pantry's transaction handling."
 code: |
   private nonisolated static func listenForTransactions(
-      _ handle: @Sendable (VerificationResult<Transaction>) async -> Void
+      _ handle: @Sendable (VerificationResult<StoreKit.Transaction>) async -> Void
   ) async {
-      for await result in Transaction.[[1]] {
+      for await result in StoreKit.Transaction.[[1]] {
           await handle(result)
       }
   }

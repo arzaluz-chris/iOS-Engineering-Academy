@@ -153,7 +153,7 @@ Cut: Reminders (no time), iCloud sync (won't)
 Hours used: 46 of 48
 ```
 
-- **The sort key is a tuple** `(priority, original position)`, so features keep the order you listed them within each priority. Without the position, two shoulds could swap between runs of a sort that isn't stable.
+- **The sort key is a tuple** `(priority, original position)`, so features keep the order you listed them within each priority. The standard library doesn't document `sorted(by:)` as stable, so without the position you'd be relying on behavior nobody promised.
 - **Reminders (8 hours) didn't fit, but CSV export (4) did.** After the musts (34 hours) and the chart (8), 6 hours were left. That's greedy filling: fine for a first cut, and a reason to order the shoulds by value before running it, since the tool will happily keep a small, low-value feature over a bigger, more useful one.
 - **A must that doesn't fit is flagged, not dropped.** If a must is over budget, the plan is wrong, and the answer is a conversation about scope or time (lesson 5), not silently cutting a must.
 - **46 of 48 hours leaves no buffer.** The budget should include one: lesson 5 shows how to size it from the uncertainty in each estimate.
@@ -260,13 +260,13 @@ enum Area: String, CaseIterable {
     case tests, accessibility, localization, security, performance, documentation
 }
 
-enum Result {
+enum CheckResult {
     case passed
     case failed(String)
     case notApplicable(String)
 }
 
-func evaluate(slice: String, results: [Area: Result]) -> Bool {
+func evaluate(slice: String, results: [Area: CheckResult]) -> Bool {
     var problems: [String] = []
     for area in Area.allCases {
         switch results[area] {
@@ -287,14 +287,14 @@ func evaluate(slice: String, results: [Area: Result]) -> Bool {
     return problems.isEmpty
 }
 
-let slice2: [Area: Result] = [
+let slice2: [Area: CheckResult] = [
     .tests: .passed,
     .accessibility: .failed("check-in button has no label"),
     .security: .passed,
     .performance: .notApplicable("no lists or startup work in this slice"),
     .documentation: .passed,
 ]
-let slice1: [Area: Result] = [
+let slice1: [Area: CheckResult] = [
     .tests: .passed, .accessibility: .passed, .localization: .passed,
     .security: .passed, .performance: .passed, .documentation: .passed,
 ]
@@ -315,14 +315,14 @@ Slices done: 1 of 2
 - **The loop walks `Area.allCases`, not the dictionary.** Iterating a Swift dictionary gives an order that can change between runs; iterating the enum's cases gives the same order every time, so the report is stable.
 - **`case .passed?, .notApplicable?:`** matches the optional values from the dictionary lookup; `case nil` catches areas nobody filled in.
 - **`.notApplicable` needs a reason.** "No lists or startup work in this slice" tells a reviewer you thought about performance. An empty answer would tell them nothing.
-- **Slice 2 fails twice:** a real accessibility bug, and an area nobody checked. The second is the more common failure in practice, and the reason the checklist exists.
+- **Slice 2 fails twice:** a real accessibility bug, and an area nobody checked. The second is the easier one to miss, and it's why the checklist exists.
 
 > [!tip] Put the checklist in the pull request template
 > GitHub reads `.github/pull_request_template.md` into every new pull request's description. Put the six areas there as checkboxes, so each slice's PR is also its definition-of-done record.
 
 ## What goes in the portfolio
 
-The repository is what a hiring engineer will open, often for five minutes. Make those five minutes count:
+The repository is what a hiring engineer will open, sometimes for only a few minutes. Make the first screen count:
 
 - **README first screen**: one sentence on what the app does, two or three screenshots (include one at a large Dynamic Type size and one in dark mode), the build instructions, and the requirements it was built on (Xcode version, iOS deployment target).
 - **The quality checklist** Project 8 asks for, with each acceptance criterion and how it was verified (the table from earlier).

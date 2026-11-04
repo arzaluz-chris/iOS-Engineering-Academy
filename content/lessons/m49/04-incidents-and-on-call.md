@@ -524,7 +524,7 @@ rubric:
   - Roles are assigned so the incident commander doesn't also debug, with an explicit handoff rule.
   - The update template has impact, actions, unknowns and the next update time.
   - Postmortem triggers are listed, and action items have owners, dates and a review.
-  - Mobile specifics appear: flags, phased release, App Review timing.
+  - "Mobile specifics appear: flags, phased release, App Review timing."
 solution: |
   A model process:
 
