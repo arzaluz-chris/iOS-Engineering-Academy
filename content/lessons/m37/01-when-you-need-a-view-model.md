@@ -333,7 +333,7 @@ None of that is a reason to avoid view models. It's a reason to add one when the
 
 Two camps, both with working apps behind them.
 
-**MV ("model-view").** SwiftUI views are already lightweight descriptions bound to state, so a per-screen view model is a layer with nothing to do. Put the logic in models: `@Observable` stores and services shared through the environment, SwiftData models read with `@Query` (lesson 5), plain structs for rules. Views read the models and call their methods. Most of Apple's SwiftUI sample code is written this way: an app-level or feature-level model, not one view model per screen.
+**MV ("model-view").** SwiftUI views are already lightweight descriptions bound to state, so a per-screen view model is a layer with nothing to do. Put the logic in models: `@Observable` stores and services shared through the environment, SwiftData models read with `@Query` (lesson 5), plain structs for rules. Views read the models and call their methods. Apple's own documentation leans this way: "Managing model data in your app" builds a `Library` model that views read and change directly, with no view model per screen.
 
 ```swift ios
 import SwiftUI
