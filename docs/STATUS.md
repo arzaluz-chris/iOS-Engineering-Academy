@@ -59,7 +59,6 @@ Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP
 2. Coding challenges for the array and hashing patterns, now that M7 is in place.
 3. Check Module 3's Xcode UI instructions in Xcode 27 and, if they match, note it here.
 4. When the links workflow confirms the 262 unverified resources, change their `status` to `verified` with a date.
-5. `docs/RESEARCH.md` lists UIKit's automatic observation tracking as unverified; Apple's docs now document it (opt-in on iOS 18 via `UIObservationTrackingEnabled`, on by default from iOS 26, `updateProperties()` from iOS 26). Update that note.
 
 How a module is produced: one agent per module with a fixed list of lesson ids and titles, following `docs/CONTENT.md`; every code block and prediction must pass `LessonSnippetsTests` before the module is accepted. Each module is then verified on a clean checkout of `main` containing only that module (`npm run validate`, `tsc`, `vitest`, `vite build`, `swift test`) and committed on its own.
 
