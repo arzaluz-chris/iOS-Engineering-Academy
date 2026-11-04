@@ -32,7 +32,7 @@ mastery:
   - Write the scene manifest for a code-only app and say what changes if you use a storyboard.
   - Return a UISceneConfiguration from the app delegate and say when you'd do that.
   - Diagnose a black screen caused by a local window, a missing makeKeyAndVisible() or a wrong delegate class name.
-resources: [tn3187-scenes, apple-documentation, swift-book-arc]
+resources: [uikit-uiwindowscene, uikit-specifying-scenes, tn3187-scenes, swift-book-arc]
 cards:
   - id: m22-l01-c1
     front: From UIApplication down to a view on screen, what objects are in the chain?

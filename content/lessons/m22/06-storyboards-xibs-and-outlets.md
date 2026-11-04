@@ -34,7 +34,7 @@ mastery:
   - Write the init?(coder:store:) and creator closure that inject a dependency into a storyboard view controller.
   - Load a custom view from a XIB with UINib.
   - Give two concrete reasons a team might avoid storyboards and two reasons to keep them.
-resources: [apple-documentation, swift-book-initialization, swift-book-arc]
+resources: [uikit-instantiate-with-creator, uikit-uiviewcontroller, swift-book-initialization, swift-book-arc]
 cards:
   - id: m22-l06-c1
     front: How does UIKit create a view controller from a storyboard?

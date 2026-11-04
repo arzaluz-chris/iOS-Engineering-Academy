@@ -32,7 +32,7 @@ mastery:
   - Given a frame, write the bounds and center, and recompute the frame after changing the bounds size.
   - Write a function that converts a point from a nested view to the window's coordinates.
   - Write four anchor constraints that pin a label under the safe area's top edge.
-resources: [apple-documentation, hig]
+resources: [uikit-uiview, uikit-nslayoutanchor, hig]
 cards:
   - id: m22-l03-c1
     front: Frame vs bounds?

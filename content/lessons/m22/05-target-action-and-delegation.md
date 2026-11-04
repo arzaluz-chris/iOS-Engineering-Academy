@@ -33,7 +33,7 @@ mastery:
   - Declare a custom delegate protocol for a reusable view and adopt it in a view controller.
   - Show, with a plain-Swift model, that a strong delegate leaks and a weak one doesn't.
   - Name the next responder of a view, a root view, a view controller, a window, a window scene and the application.
-resources: [apple-documentation, swift-book-protocols, swift-book-arc, swift-book-closures]
+resources: [uikit-target-action, uikit-responder-chain, uikit-uitextfielddelegate, swift-book-protocols, swift-book-arc]
 cards:
   - id: m22-l05-c1
     front: Does a UIControl retain the target you pass to addTarget(_:action:for:)?

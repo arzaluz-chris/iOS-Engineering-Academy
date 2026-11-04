@@ -32,7 +32,7 @@ mastery:
   - Write a loadView() override that installs a custom UIView subclass as the root view.
   - Explain why reading view in an initializer is a bug.
   - Say which callbacks fire when the user goes to the Home Screen, and which don't.
-resources: [apple-documentation, swift-book-inheritance, swift-book-initialization]
+resources: [uikit-uiviewcontroller, uikit-viewisappearing, swift-book-inheritance, swift-book-initialization]
 cards:
   - id: m22-l02-c1
     front: When does a view controller create its view?

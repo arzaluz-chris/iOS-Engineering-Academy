@@ -33,7 +33,7 @@ mastery:
   - Add an initializer that takes a dependency and the init(coder:) that Swift requires with it.
   - Move parsing and validation out of the view controller into a function you can test with print or Swift Testing.
   - Spot the usual mistakes in programmatic layout code.
-resources: [apple-documentation, hig, swift-book-initialization, swift-result]
+resources: [uikit-uistackview, uikit-nslayoutanchor, hig, swift-book-initialization]
 cards:
   - id: m22-l04-c1
     front: Which views need translatesAutoresizingMaskIntoConstraints = false in a stack-view screen?
