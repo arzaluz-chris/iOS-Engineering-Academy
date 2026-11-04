@@ -1794,3 +1794,111 @@ resources:
     why: "The proposal for the package access level: visible across modules in the same package, hidden from clients."
     status: unverified
     verifiedAt: null
+  - id: testing-migrating-from-xctest
+    title: "Migrating a test from XCTest"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/testing/migratingfromxctest
+    kind: official
+    topic: "Swift Testing and XCTest"
+    why: "How XCTest assertions, setup and expectations map to Swift Testing."
+    status: unverified
+    verifiedAt: null
+  - id: testing-organizing-tests
+    title: "Organizing test functions with suite types"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/testing/organizingtests
+    kind: official
+    topic: "Test suites"
+    why: "How @Suite types group tests and share setup."
+    status: unverified
+    verifiedAt: null
+  - id: testing-parameterized
+    title: "Implementing parameterized tests"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/testing/parameterizedtesting
+    kind: official
+    topic: "Parameterized tests"
+    why: "Running one test over many arguments with @Test(arguments:)."
+    status: unverified
+    verifiedAt: null
+  - id: testing-traits
+    title: "Traits"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/testing/traits
+    kind: official
+    topic: "Test traits"
+    why: "Disabling, tagging, time-limiting and annotating tests with traits."
+    status: unverified
+    verifiedAt: null
+  - id: testing-async-code
+    title: "Testing asynchronous code"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/testing/testing-asynchronous-code
+    kind: official
+    topic: "Async tests"
+    why: "Async test functions and confirmations for events."
+    status: unverified
+    verifiedAt: null
+  - id: xctest
+    title: "XCTest"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xctest
+    kind: official
+    topic: "XCTest"
+    why: "Test cases, assertions, expectations and performance tests."
+    status: unverified
+    verifiedAt: null
+  - id: xcuiautomation
+    title: "XCUIAutomation"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcuiautomation
+    kind: official
+    topic: "UI tests"
+    why: "Driving an app's interface from UI tests."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-performance-tests
+    title: "Writing and running performance tests"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/writing-and-running-performance-tests
+    kind: official
+    topic: "Performance tests"
+    why: "Measuring code with measure and setting baselines."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-improving-performance
+    title: "Improving your app's performance"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/improving-your-app-s-performance
+    kind: official
+    topic: "Profiling"
+    why: "Finding and fixing performance problems with Instruments and metrics."
+    status: unverified
+    verifiedAt: null
+  - id: fowler-test-double
+    title: "Test Double"
+    source: "Martin Fowler"
+    url: https://martinfowler.com/bliki/TestDouble.html
+    kind: article
+    topic: "Test doubles"
+    why: "Meszaros' vocabulary for dummies, stubs, spies, mocks and fakes."
+    status: unverified
+    verifiedAt: null
+  - id: fowler-test-pyramid
+    title: "Test Pyramid"
+    source: "Martin Fowler"
+    url: https://martinfowler.com/bliki/TestPyramid.html
+    kind: article
+    topic: "Test strategy"
+    why: "Why most tests should be fast unit tests and few should drive the UI."
+    status: unverified
+    verifiedAt: null
+  - id: lldb-gdb-map
+    title: "GDB to LLDB command map"
+    source: "LLVM"
+    url: https://lldb.llvm.org/use/map.html
+    kind: article
+    topic: "LLDB"
+    why: "LLDB's commands for breakpoints, stepping and inspecting variables."
+    status: unverified
+    verifiedAt: null
