@@ -1191,3 +1191,111 @@ resources:
     why: URLSession's initializer, whose documentation says the session keeps a strong reference to its delegate.
     status: unverified
     verifiedAt: null
+  - id: dispatch-dispatchqueue
+    title: DispatchQueue
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/dispatch/dispatchqueue
+    kind: official
+    topic: Dispatch queues
+    why: Serial and concurrent queues, quality of service, and sync versus async.
+    status: unverified
+    verifiedAt: null
+  - id: dispatch-dispatchgroup
+    title: DispatchGroup
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/dispatch/dispatchgroup
+    kind: official
+    topic: Dispatch groups
+    why: Waiting for a set of tasks with enter, leave, notify and wait.
+    status: unverified
+    verifiedAt: null
+  - id: dispatch-dispatchsemaphore
+    title: DispatchSemaphore
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/dispatch/dispatchsemaphore
+    kind: official
+    topic: Semaphores
+    why: Counting semaphores for limiting concurrent work.
+    status: unverified
+    verifiedAt: null
+  - id: dispatch-dispatchworkitem
+    title: DispatchWorkItem
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/dispatch/dispatchworkitem
+    kind: official
+    topic: Work items
+    why: Wrapping work so it can be cancelled, waited on or notified.
+    status: unverified
+    verifiedAt: null
+  - id: dispatch-barrier-flag
+    title: barrier
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/dispatch/dispatchworkitemflags/barrier
+    kind: official
+    topic: Barriers
+    why: How a barrier block gets exclusive access on a concurrent queue.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-operationqueue
+    title: OperationQueue
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/operationqueue
+    kind: official
+    topic: Operation queues
+    why: Dependencies, concurrency limits and cancellation with operations.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-operation
+    title: Operation
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/operation
+    kind: official
+    topic: Operations
+    why: The operation life cycle and how cancellation is checked.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-nslock
+    title: NSLock
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/nslock
+    kind: official
+    topic: Locks
+    why: A basic mutual exclusion lock and its rules.
+    status: unverified
+    verifiedAt: null
+  - id: os-allocated-unfair-lock
+    title: OSAllocatedUnfairLock
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/os/osallocatedunfairlock
+    kind: official
+    topic: Locks on Apple platforms
+    why: Apple's low-level lock that protects state it owns.
+    status: unverified
+    verifiedAt: null
+  - id: synchronization-mutex
+    title: Mutex
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/synchronization/mutex
+    kind: official
+    topic: Mutex
+    why: The Swift standard Mutex type from the Synchronization module.
+    status: unverified
+    verifiedAt: null
+  - id: swift-sendable
+    title: Sendable
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/sendable
+    kind: official
+    topic: Sendable
+    why: The protocol that marks values safe to share across concurrency domains.
+    status: unverified
+    verifiedAt: null
+  - id: xcode-data-races
+    title: Data races
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/data-races
+    kind: official
+    topic: Thread Sanitizer
+    why: What a data race is and how Thread Sanitizer reports one.
+    status: unverified
+    verifiedAt: null
