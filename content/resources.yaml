@@ -597,3 +597,120 @@ resources:
     why: How to conform a type to Comparable and the rules its < operator must follow.
     status: unverified
     verifiedAt: null
+  - id: uikit-app-launch-sequence
+    title: About the app launch sequence
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/about-the-app-launch-sequence
+    kind: official
+    topic: App launch
+    why: The order in which UIKit runs your code at launch, from main to the first scene.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-app-life-cycle
+    title: Managing your app's life cycle
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/managing-your-app-s-life-cycle
+    kind: official
+    topic: App and scene life cycles
+    why: Which app and scene states exist, how transitions happen, and what to do in each.
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-scenephase
+    title: ScenePhase
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/scenephase
+    kind: official
+    topic: SwiftUI scene phases
+    why: The active, inactive and background phases SwiftUI reports and how to read them from the environment.
+    status: unverified
+    verifiedAt: null
+  - id: information-property-list
+    title: Information Property List
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/bundleresources/information-property-list
+    kind: official
+    topic: Info.plist
+    why: The reference for Info.plist keys, including the scene manifest and usage descriptions.
+    status: unverified
+    verifiedAt: null
+  - id: swift-mainactor
+    title: MainActor
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/mainactor
+    kind: official
+    topic: Main actor
+    why: The global actor for main-thread work and how @MainActor isolates code.
+    status: unverified
+    verifiedAt: null
+  - id: understanding-hangs
+    title: Understanding hangs in your app
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/understanding-hangs-in-your-app
+    kind: official
+    topic: Hangs
+    why: What a hang is, why blocking the main thread causes one, and how to find the cause.
+    status: unverified
+    verifiedAt: null
+  - id: requesting-protected-resources
+    title: Requesting access to protected resources
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/requesting-access-to-protected-resources
+    kind: official
+    topic: Permissions
+    why: How to ask for access to the camera, location and other protected resources, and handle refusals.
+    status: unverified
+    verifiedAt: null
+  - id: privacy-manifest-files
+    title: Privacy manifest files
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/bundleresources/privacy-manifest-files
+    kind: official
+    topic: Privacy manifests
+    why: What goes in PrivacyInfo.xcprivacy and when Apple requires it.
+    status: unverified
+    verifiedAt: null
+  - id: tn3125-provisioning-profiles
+    title: "TN3125: Inside Code Signing: Provisioning Profiles"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/technotes/tn3125-inside-code-signing-provisioning-profiles
+    kind: official
+    topic: Code signing
+    why: What a provisioning profile contains and how it ties certificates, devices and entitlements together.
+    status: unverified
+    verifiedAt: null
+  - id: xcode-running-code-specific-version
+    title: Running code on a specific platform or OS version
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/running-code-on-a-specific-version
+    kind: official
+    topic: Availability
+    why: How to use #available and @available against your deployment target.
+    status: unverified
+    verifiedAt: null
+  - id: xcode-build-configuration-file
+    title: Adding a build configuration file to your project
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+    kind: official
+    topic: Build configurations
+    why: How xcconfig files work and how to assign them per configuration.
+    status: unverified
+    verifiedAt: null
+  - id: os-logger
+    title: Logger
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/os/logger
+    kind: official
+    topic: Logging
+    why: The unified logging API, its levels and its privacy options for interpolated values.
+    status: unverified
+    verifiedAt: null
+  - id: xcode-symbolicate-crash-report
+    title: Adding identifiable symbol names to a crash report
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/adding-identifiable-symbol-names-to-a-crash-report
+    kind: official
+    topic: Symbolication
+    why: How dSYMs turn addresses in a crash report into function names and lines.
+    status: unverified
+    verifiedAt: null
