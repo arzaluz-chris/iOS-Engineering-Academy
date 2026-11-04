@@ -1515,3 +1515,120 @@ resources:
     why: The Swift project's guide to data-race safety and incremental migration.
     status: unverified
     verifiedAt: null
+  - id: foundation-urlsession
+    title: URLSession
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/urlsession
+    kind: official
+    topic: URLSession
+    why: Creating sessions and tasks, and the async data(for:) API.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-urlrequest
+    title: URLRequest
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/urlrequest
+    kind: official
+    topic: Requests
+    why: Methods, headers, bodies and per-request timeouts.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-httpurlresponse
+    title: HTTPURLResponse
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/httpurlresponse
+    kind: official
+    topic: Responses
+    why: Status codes and header lookup on an HTTP response.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-urlcomponents
+    title: URLComponents
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/urlcomponents
+    kind: official
+    topic: Building URLs
+    why: Building URLs and query items without string concatenation.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-urlsessionconfiguration
+    title: URLSessionConfiguration
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/urlsessionconfiguration
+    kind: official
+    topic: Session configuration
+    why: Timeouts, connectivity behavior and custom protocol classes.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-urlprotocol
+    title: URLProtocol
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/urlprotocol
+    kind: official
+    topic: Stubbing requests
+    why: The class you subclass to intercept requests, for example in tests.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-urlerror
+    title: URLError
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/urlerror
+    kind: official
+    topic: Network errors
+    why: The error codes URLSession reports, such as timeouts and lost connections.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-jsondecoder
+    title: JSONDecoder
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/jsondecoder
+    kind: official
+    topic: JSON decoding
+    why: Decoding strategies for keys, dates and data.
+    status: unverified
+    verifiedAt: null
+  - id: foundation-encoding-custom-types
+    title: Encoding and decoding custom types
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/encoding-and-decoding-custom-types
+    kind: official
+    topic: Codable
+    why: Custom coding keys and manual encoding and decoding.
+    status: unverified
+    verifiedAt: null
+  - id: swift-decodingerror
+    title: DecodingError
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/decodingerror
+    kind: official
+    topic: Decoding errors
+    why: The cases a decoder throws and the context each one carries.
+    status: unverified
+    verifiedAt: null
+  - id: security-storing-keys-keychain
+    title: Storing keys in the keychain
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/security/storing-keys-in-the-keychain
+    kind: official
+    topic: Keychain
+    why: How to store and retrieve secrets with the keychain item APIs.
+    status: unverified
+    verifiedAt: null
+  - id: rfc-9110
+    title: "RFC 9110: HTTP Semantics"
+    source: IETF
+    url: https://www.rfc-editor.org/rfc/rfc9110.html
+    kind: reference
+    topic: HTTP
+    why: "The HTTP standard: methods, safe and idempotent requests, status codes and headers such as Retry-After."
+    status: unverified
+    verifiedAt: null
+  - id: rfc-6750
+    title: "RFC 6750: Bearer Token Usage"
+    source: IETF
+    url: https://www.rfc-editor.org/rfc/rfc6750.html
+    kind: reference
+    topic: Authentication
+    why: How bearer tokens are sent in the Authorization header and how servers report invalid tokens.
+    status: unverified
+    verifiedAt: null
