@@ -3198,3 +3198,57 @@ resources:
     why: "XOR and other bitwise operators, and the &+ family of overflow operators."
     status: unverified
     verifiedAt: null
+  - id: swift-isknownuniquelyreferenced
+    title: "isKnownUniquelyReferenced(_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/isknownuniquelyreferenced(_:)-98zpp
+    kind: reference
+    topic: "Copy-on-write"
+    why: "Checking whether a class instance has a single strong reference, the basis of custom copy-on-write."
+    status: unverified
+    verifiedAt: null
+  - id: uikit-layoutsubviews
+    title: "layoutSubviews()"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiview/layoutsubviews()
+    kind: reference
+    topic: "Layout pass"
+    why: "When UIKit lays out subviews and what belongs in this method."
+    status: unverified
+    verifiedAt: null
+  - id: swift-character-isnumber
+    title: "isNumber"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/character/isnumber
+    kind: reference
+    topic: "Unicode digits"
+    why: "Why Character.isNumber accepts more than ASCII digits."
+    status: unverified
+    verifiedAt: null
+  - id: se-0176-exclusivity
+    title: "SE-0176: Enforce Exclusive Access to Memory"
+    source: Swift Evolution
+    url: https://github.com/swiftlang/swift-evolution/blob/main/proposals/0176-enforce-exclusive-access-to-memory.md
+    kind: reference
+    topic: "Exclusivity"
+    why: "The rule behind overlapping-access errors and the runtime exclusivity check."
+    status: unverified
+    verifiedAt: null
+  - id: se-0413-typed-throws
+    title: "SE-0413: Typed throws"
+    source: Swift Evolution
+    url: https://github.com/swiftlang/swift-evolution/blob/main/proposals/0413-typed-throws.md
+    kind: reference
+    topic: "Typed throws"
+    why: "What typed throws adds and when untyped throws remains the better default."
+    status: unverified
+    verifiedAt: null
+  - id: se-0352-implicit-open-existentials
+    title: "SE-0352: Implicitly Opened Existentials"
+    source: Swift Evolution
+    url: https://github.com/swiftlang/swift-evolution/blob/main/proposals/0352-implicit-open-existentials.md
+    kind: reference
+    topic: "Existentials"
+    why: "How Swift opens an existential to pass it to a generic function."
+    status: unverified
+    verifiedAt: null
