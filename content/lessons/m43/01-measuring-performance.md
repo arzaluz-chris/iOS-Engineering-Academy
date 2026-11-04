@@ -34,7 +34,7 @@ mastery:
   - Write a UI test that measures launch until the app is responsive and a signposted interval.
   - Compute p50 and p90 from MetricKit-style histogram buckets.
   - Compare two implementations with a harness whose output doesn't depend on the machine's speed.
-resources: [xcode-improving-performance, xcode-performance-tests, understanding-hangs, uikit-app-launch-sequence, os-ossignposter, metrickit, swift-clock, xctest]
+resources: [xcode-reducing-launch-time, xctest-launch-metric, xcode-improving-performance, xcode-performance-tests, understanding-hangs, uikit-app-launch-sequence, os-ossignposter, metrickit, swift-clock, xctest]
 cards:
   - id: m43-l01-c1
     front: Which numbers does Apple give for responsiveness budgets?

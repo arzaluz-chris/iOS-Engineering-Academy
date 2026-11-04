@@ -32,7 +32,7 @@ mastery:
   - Write a UI test that audits each main screen and filters only reviewed issues.
   - Check that every control's spoken label contains its visible text, and add input labels for icon-only controls.
   - Complete a main task with Screen Curtain on, and with Voice Control's "Show numbers."
-resources: [accessibility-inspector, xcuiautomation, uikit-supporting-voiceover, swiftui-accessibility-fundamentals, uikit-accessibility-traits, uikit-scaling-fonts, swiftui-scaledmetric, hig]
+resources: [accessibility-performing-audits, accessibility-inspector, xcuiautomation, uikit-supporting-voiceover, swiftui-accessibility-fundamentals, uikit-accessibility-traits, uikit-scaling-fonts, swiftui-scaledmetric, hig]
 cards:
   - id: m43-l04-c1
     front: Which audits does Accessibility Inspector run for iOS?

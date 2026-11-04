@@ -35,7 +35,7 @@ mastery:
   - Bound a cache that grows with scrolling, and purge on a memory warning.
   - Design a background refresh with Apple's exponential backoff and a batched analytics upload.
   - Map Low Power Mode and thermal state to concrete feature changes.
-resources: [understanding-hangs, xcode-memory-use, xcode-reduce-memory, metrickit, swift-mainactor, foundation-nscache, foundation-urlsessionconfiguration]
+resources: [xcode-watchdog-terminations, xcode-jetsam-reports, xcode-reducing-battery-use, understanding-hangs, xcode-memory-use, xcode-reduce-memory, metrickit, swift-mainactor, foundation-nscache, foundation-urlsessionconfiguration]
 cards:
   - id: m43-l02-c1
     front: What thresholds does Apple use for hangs?

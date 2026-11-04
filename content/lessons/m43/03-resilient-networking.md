@@ -32,7 +32,7 @@ mastery:
   - Predict whether a trickling transfer finishes, hits the idle timeout or hits the resource timeout.
   - Trace a retry policy over a scripted sequence of failures and connectivity changes.
   - Choose image quality and prefetching from the path's constrained and expensive flags.
-resources: [foundation-urlsessionconfiguration, foundation-urlsession, foundation-urlerror, network-nwpathmonitor, rfc-9110]
+resources: [foundation-allows-constrained-network, network-nwpath-isconstrained, foundation-urlsessionconfiguration, foundation-urlsession, foundation-urlerror, network-nwpathmonitor, rfc-9110]
 cards:
   - id: m43-l03-c1
     front: How does Apple suggest configuring discretionary network work?

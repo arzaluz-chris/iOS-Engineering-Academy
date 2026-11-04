@@ -2928,3 +2928,102 @@ resources:
     why: "What each file protection class means and when its keys are available."
     status: unverified
     verifiedAt: null
+  - id: xcode-reducing-launch-time
+    title: "Reducing your app's launch time"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/reducing-your-app-s-launch-time
+    kind: official
+    topic: "Launch time"
+    why: "What happens during launch and how to make each phase faster."
+    status: unverified
+    verifiedAt: null
+  - id: xctest-launch-metric
+    title: "XCTApplicationLaunchMetric"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xctest/xctapplicationlaunchmetric
+    kind: official
+    topic: "Launch performance tests"
+    why: "Measuring launch time in an XCTest performance test."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-watchdog-terminations
+    title: "Addressing watchdog terminations"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/addressing-watchdog-terminations
+    kind: official
+    topic: "Watchdog"
+    why: "Why the system kills apps that block the main thread at launch or on resume."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-jetsam-reports
+    title: "Identifying high-memory use with jetsam event reports"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/identifying-high-memory-use-with-jetsam-event-reports
+    kind: official
+    topic: "Memory limits"
+    why: "Reading jetsam reports when the system ends an app for using too much memory."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-reducing-battery-use
+    title: "Reducing your app's battery use"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/reducing-your-app-s-battery-use
+    kind: official
+    topic: "Energy"
+    why: "Apple's guidance on CPU, networking, location and background work that drains the battery."
+    status: unverified
+    verifiedAt: null
+  - id: foundation-allows-constrained-network
+    title: "allowsConstrainedNetworkAccess"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/urlsessionconfiguration/allowsconstrainednetworkaccess
+    kind: official
+    topic: "Low Data Mode"
+    why: "Respecting Low Data Mode in URLSession."
+    status: unverified
+    verifiedAt: null
+  - id: network-nwpath-isconstrained
+    title: "isConstrained"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/network/nwpath/isconstrained
+    kind: official
+    topic: "Constrained networks"
+    why: "Detecting Low Data Mode on a network path."
+    status: unverified
+    verifiedAt: null
+  - id: accessibility-performing-audits
+    title: "Performing accessibility audits for your app"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/accessibility/performing-accessibility-audits-for-your-app
+    kind: official
+    topic: "Accessibility audits"
+    why: "Running audits with Accessibility Inspector and in UI tests."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-exporting-localizations
+    title: "Exporting localizations"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/exporting-localizations
+    kind: official
+    topic: "Localization workflow"
+    why: "Exporting strings for translators as localization catalogs."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-preparing-interface-localization
+    title: "Preparing your interface for localization"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/preparing-your-interface-for-localization
+    kind: official
+    topic: "Pseudolanguages"
+    why: "Testing layouts with pseudolanguages and long strings before translation."
+    status: unverified
+    verifiedAt: null
+  - id: xcode-localizing-package-resources
+    title: "Localizing package resources"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/xcode/localizing-package-resources
+    kind: official
+    topic: "Localized packages"
+    why: "Localizing strings and resources in Swift packages."
+    status: unverified
+    verifiedAt: null

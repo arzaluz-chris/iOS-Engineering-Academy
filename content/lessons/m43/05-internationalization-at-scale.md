@@ -34,7 +34,7 @@ mastery:
   - Pseudolocalize a string without breaking its format specifiers, and explain what each Xcode pseudolanguage finds.
   - Sort product names for display with localizedStandard and explain why sorted() is wrong for it.
   - Decide whether a given icon, control or number should mirror in a right-to-left layout.
-resources: [xcode-string-catalog, swiftui-preparing-localization, hig-right-to-left, uikit-semantic-content-attribute, packagedescription-target, foundation-inflectionrule]
+resources: [xcode-exporting-localizations, xcode-preparing-interface-localization, xcode-localizing-package-resources, xcode-string-catalog, swiftui-preparing-localization, hig-right-to-left, uikit-semantic-content-attribute, packagedescription-target, foundation-inflectionrule]
 cards:
   - id: m43-l05-c1
     front: How does code in a framework or package find its own translations?
