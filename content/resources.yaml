@@ -3153,3 +3153,48 @@ resources:
     why: "Background URLSession downloads that continue while the app isn't running."
     status: unverified
     verifiedAt: null
+  - id: swift-string
+    title: "String"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/string
+    kind: reference
+    topic: "Strings"
+    why: "Swift strings as collections of Characters, and their index types."
+    status: unverified
+    verifiedAt: null
+  - id: swift-character
+    title: "Character"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/character
+    kind: reference
+    topic: "Characters"
+    why: "Extended grapheme clusters and properties such as asciiValue."
+    status: unverified
+    verifiedAt: null
+  - id: swift-int-adding-reporting-overflow
+    title: "addingReportingOverflow(_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/int/addingreportingoverflow(_:)
+    kind: reference
+    topic: "Overflow"
+    why: "Detecting integer overflow instead of trapping."
+    status: unverified
+    verifiedAt: null
+  - id: swift-dictionary-default-subscript
+    title: "subscript(_:default:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swift/dictionary/subscript(_:default:)
+    kind: reference
+    topic: "Dictionaries"
+    why: "Reading and updating with a default value, as in frequency counts."
+    status: unverified
+    verifiedAt: null
+  - id: swift-book-advanced-operators
+    title: "Advanced Operators (The Swift Programming Language)"
+    source: Swift.org
+    url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/advancedoperators/
+    kind: official
+    topic: "Bitwise and overflow operators"
+    why: "XOR and other bitwise operators, and the &+ family of overflow operators."
+    status: unverified
+    verifiedAt: null
