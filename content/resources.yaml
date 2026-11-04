@@ -1731,3 +1731,66 @@ resources:
     why: "When a keychain item can be read, such as only after first unlock."
     status: unverified
     verifiedAt: null
+  - id: observation
+    title: "Observation"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/observation
+    kind: official
+    topic: "Observation"
+    why: "The Observation framework: the @Observable macro and how property reads are tracked."
+    status: unverified
+    verifiedAt: null
+  - id: observation-tracking
+    title: "withObservationTracking(_:onChange:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/observation/withobservationtracking(_:onchange:)
+    kind: official
+    topic: "Observation tracking"
+    why: "How a read is tracked and when the change handler runs."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-migrating-to-observable
+    title: "Migrating from the Observable Object protocol to the Observable macro"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/migrating-from-the-observable-object-protocol-to-the-observable-macro
+    kind: official
+    topic: "Observable in SwiftUI"
+    why: "How @Observable replaces ObservableObject and @Published in SwiftUI."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-environmentvalues
+    title: "EnvironmentValues"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/environmentvalues
+    kind: official
+    topic: "Environment injection"
+    why: "Passing dependencies down a SwiftUI view hierarchy through the environment."
+    status: unverified
+    verifiedAt: null
+  - id: uikit-custom-container
+    title: "Creating a custom container view controller"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/creating-a-custom-container-view-controller
+    kind: official
+    topic: "Child view controllers"
+    why: "Adding and removing child view controllers correctly."
+    status: unverified
+    verifiedAt: null
+  - id: packagedescription-target
+    title: "Target"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/packagedescription/target
+    kind: official
+    topic: "Package targets"
+    why: "How targets and their dependencies are declared in Package.swift."
+    status: unverified
+    verifiedAt: null
+  - id: se-0386-package-access
+    title: "SE-0386: New access modifier: package"
+    source: Swift Evolution
+    url: https://github.com/swiftlang/swift-evolution/blob/main/proposals/0386-package-access-modifier.md
+    kind: reference
+    topic: Access control
+    why: "The proposal for the package access level: visible across modules in the same package, hidden from clients."
+    status: unverified
+    verifiedAt: null
