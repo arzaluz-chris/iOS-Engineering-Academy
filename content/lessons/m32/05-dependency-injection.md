@@ -33,7 +33,7 @@ mastery:
   - Give a coordinator a factory closure instead of the whole container.
   - Explain from an example why a shared singleton makes one test's result depend on another.
   - Fix a "non-Sendable type" error in a dependency struct in three different ways and say what each costs.
-resources: [swift-sendable, swift-actor, swift-mainactor, swift-book-initialization, swift-book-closures]
+resources: [swiftui-environmentvalues, swift-sendable, swift-actor, swift-mainactor, swift-book-initialization, swift-book-closures]
 cards:
   - id: m32-l05-c1
     front: What is the composition root?

@@ -32,7 +32,7 @@ mastery:
   - Decide between package and public for a helper shared by two targets.
   - "Given a module graph, list what recompiles when one module's public interface changes, and which modules can build in parallel."
   - Pick an architecture for three different screens and defend the choice with the decision table.
-resources: [swiftpm-docs, swift-book-access-control, swift-book-protocols, swift-testing-docs]
+resources: [packagedescription-target, se-0386-package-access, swiftpm-docs, swift-book-access-control, swift-book-protocols, swift-testing-docs]
 cards:
   - id: m32-l06-c1
     front: Layer modules vs feature modules?

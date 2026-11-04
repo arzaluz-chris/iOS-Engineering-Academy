@@ -31,7 +31,7 @@ mastery:
   - Write a UITableViewDataSource object driven by a display struct, and explain why the controller must hold it strongly.
   - Write a model controller with load and mark-as-read, test its state changes with a fake repository, and wire it to a controller with a weak closure.
   - Write embed and remove helpers for a child view controller in the right order.
-resources: [uikit-uiviewcontroller, uikit-uitableview, uikit-list-content-configuration, uikit-uialertcontroller, swift-book-closures]
+resources: [uikit-custom-container, uikit-uiviewcontroller, uikit-uitableview, uikit-list-content-configuration, uikit-uialertcontroller, swift-book-closures]
 cards:
   - id: m32-l02-c1
     front: What are the three roles in Apple's MVC?

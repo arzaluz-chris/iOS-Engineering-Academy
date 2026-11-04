@@ -32,7 +32,7 @@ mastery:
   - Predict when withObservationTracking's onChange runs and when it doesn't.
   - Write a passive view protocol, a presenter that drives it, and a recording fake whose log a test compares.
   - Say what breaks a presenter test that a view model test would survive, and the reverse.
-resources: [swift-book-protocols, swift-mainactor, swift-book-closures, swift-book-enumerations]
+resources: [observation, observation-tracking, swiftui-migrating-to-observable, swift-book-protocols, swift-mainactor, swift-book-closures, swift-book-enumerations]
 cards:
   - id: m32-l03-c1
     front: What does a view model contain, and what must it never contain?
