@@ -30,7 +30,7 @@ mastery:
   - Explain how a constraint like n ≤ 10⁵ rules out an O(n²) solution.
   - Predict count, unicodeScalars.count and utf8.count for a short string with an accent or a flag.
   - Write a list of test cases where every case traces back to a clarifying answer or an edge case.
-resources: [swift-book-strings, swift-dictionary, swift-set, swift-array]
+resources: [swift-string, swift-character, swift-book-strings, swift-dictionary, swift-set, swift-array]
 cards:
   - id: m46-l02-c1
     front: Which clarifying questions apply to almost every array problem?

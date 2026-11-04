@@ -28,7 +28,7 @@ mastery:
   - Give time and space for each approach the moment you propose it, naming n.
   - Explain when the brute force is worth coding and when one sentence is enough.
   - Write a trade-off statement comparing two solutions that ends with a choice and a condition for switching.
-resources: [swift-set, swift-array, swift-array-sort, swift-book-basic-operators]
+resources: [swift-book-advanced-operators, swift-set, swift-array, swift-array-sort, swift-book-basic-operators]
 cards:
   - id: m46-l03-c1
     front: What three kinds of sentences carry most of thinking out loud?

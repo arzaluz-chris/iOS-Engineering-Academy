@@ -32,7 +32,7 @@ mastery:
   - Explain why Int.max + 1 doesn't compile but the same addition at runtime stops the program, and use addingReportingOverflow.
   - Count with a default subscript and print counts in a deterministic order.
   - Predict the result of mutating a struct read out of a dictionary, and of Array(repeating:count:) with a class instance.
-resources: [swift-book-strings, swift-book-basic-operators, swift-dictionary, swift-array-sort, swift-book-functions, swift-book-structures-classes]
+resources: [swift-string, swift-int-adding-reporting-overflow, swift-dictionary-default-subscript, swift-book-strings, swift-book-basic-operators, swift-dictionary, swift-array-sort, swift-book-functions, swift-book-structures-classes]
 cards:
   - id: m46-l05-c1
     front: "Why doesn't word[0] compile for a String, and what do you write instead?"
