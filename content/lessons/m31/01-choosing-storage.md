@@ -481,7 +481,17 @@ solution: |
 ````exercise
 id: m31-l01-e7
 type: explain
-prompt: "A colleague says: \"Our cached book list is always up to date, because we save it every time we fetch.\" Explain what \"source of truth\" means for that list and two situations in which the cached copy is wrong."
+prompt: "A colleague says: \"Our cached book list is always up to date, because we save it every time we fetch.\" Here's their code. Explain what \"source of truth\" means for that list and two situations in which the cached copy is wrong."
+code: |
+  func refreshBooks() async throws -> [Book] {
+      let books = try await api.books()
+      try cache.save(books)          // "always up to date"
+      return books
+  }
+
+  func booksAtLaunch() -> [Book] {
+      (try? cache.load()) ?? []      // shown before any refresh
+  }
 rubric:
   - States that the server's list is the source of truth and the cache is a derived copy.
   - Gives a case where the server changed after the last fetch (another device, an admin, another user).

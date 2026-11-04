@@ -617,7 +617,16 @@ solution: |
 ````exercise
 id: m31-l04-e6
 type: explain
-prompt: "Explain why Core Data gives you a main-queue viewContext and separate background contexts, instead of one context you can use from anywhere."
+prompt: "Explain why Core Data gives you a main-queue viewContext and separate background contexts, instead of one context you can use from anywhere. Refer to the lines below."
+code: |
+  let viewContext = container.viewContext                 // main queue
+  viewContext.automaticallyMergesChangesFromParent = true
+
+  let importContext = container.newBackgroundContext()    // private queue
+  try await importContext.perform {
+      // insert thousands of books
+      try importContext.save()
+  }
 rubric:
   - A context and its objects aren't thread-safe; each is bound to one queue.
   - The UI needs a context on the main queue so views can read objects directly.

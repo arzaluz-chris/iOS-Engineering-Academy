@@ -599,7 +599,7 @@ func resolve(base: Note, local: Note, remote: Note, strategy: ConflictStrategy) 
         return local
     case .fieldMerge:
         var merged = remote
-        // Text: take the side that changed it; if both did, keep the server's (and flag it).
+        // Text: take the side that changed it; if both did, keep the server's.
         if local.text != base.text && remote.text == base.text {
             merged.text = local.text
         }
@@ -640,7 +640,7 @@ fieldMerge: "Great opening chapter" tags=["reread", "sci-fi"] pages=90
 ```
 
 - **Server wins** loses everything the phone did offline: the new text, the new tag, the progress.
-- **Client wins** undoes the tablet's removal of `classic` and its progress. Whoever syncs last silently erases the other device's work.
+- **Client wins** undoes the tablet's removal of `classic`. The phone's progress happens to be higher here; had the tablet read further, its progress would be lost too. Whoever syncs last silently erases the other device's work.
 - **Field merge** keeps both: the phone's text (the tablet didn't touch it), the phone's added tag and the tablet's removed one, and the furthest progress. Only a field changed on **both** sides needs a tie-breaker, and that's where you choose per field: keep the server's text and save the other as a conflict copy, ask the person, or concatenate.
 
 Choosing per field is the real design work, and it's a product decision as much as an engineering one: progress takes the maximum, tags merge as sets, a title probably takes the newest server version and keeps the other as a visible conflict. Write the rules down, as functions, with tests like this one.
@@ -818,7 +818,7 @@ starter: |
   // Rename the lesson's Library to LibraryV3, then write the new Library and migrate(_ v3:).
 rubric:
   - Version 3's type is kept unchanged under a new name; older steps don't change.
-  - The new step splits only at the first ": " and leaves subtitle nil otherwise.
+  - "The new step splits only at the first \": \" and leaves subtitle nil otherwise."
   - The loader chains steps so a version 1 file passes through every step.
   - Versions newer than 4 still throw.
 solution: |
@@ -1007,7 +1007,21 @@ solution: |
 ````exercise
 id: m31-l06-e7
 type: explain
-prompt: "The lesson's push loop records operations (setText, setPagesRead) in the outbox instead of a snapshot of the whole note. Explain what that buys during a conflict, using the phone and tablet example."
+prompt: "The lesson's push loop records operations in the outbox instead of a snapshot of the whole note. Explain what that buys during a conflict, using the phone and tablet example."
+code: |
+  enum Change {
+      case setText(String)
+      case setPagesRead(Int)
+  }
+
+  func apply(_ change: Change, to note: Note) -> Note {
+      var note = note
+      switch change {
+      case .setText(let text): note.text = text
+      case .setPagesRead(let pages): note.pagesRead = max(note.pagesRead, pages)
+      }
+      return note
+  }
 rubric:
   - On conflict, the client can take the server's current copy as the new base and replay its operations.
   - Operations carry intent, so non-overlapping changes from both devices survive.

@@ -668,12 +668,22 @@ solution: |
 ````exercise
 id: m31-l02-e7
 type: explain
-prompt: "Explain why `JSONFile.load()` in the lesson catches only `CocoaError.fileReadNoSuchFile` and lets every other error through, instead of returning nil for any failure."
+prompt: "Explain why `JSONFile.load()` from the lesson catches only `CocoaError.fileReadNoSuchFile` and lets every other error through, instead of returning nil for any failure."
+code: |
+  func load() throws -> Value? {
+      let data: Data
+      do {
+          data = try Data(contentsOf: url)
+      } catch CocoaError.fileReadNoSuchFile {
+          return nil
+      }
+      return try JSONDecoder().decode(Value.self, from: data)
+  }
 rubric:
   - A missing file is an expected state (first launch) and means "no data yet".
   - Other errors (damaged content, permissions, locked protected file) mean data exists but can't be read.
   - Returning nil for those would make the caller start empty and probably save over the real data.
-  - The caller is in a better position to choose: retry later, move the file aside, or tell the person.
+  - "The caller is in a better position to choose: retry later, move the file aside, or tell the person."
 solution: |
   A missing file is normal: on first launch, or after the person deletes everything, there's nothing to read, and "empty" is the right answer. Every other failure means the data exists but can't be read right now: it's damaged, the app lacks permission, or it's a `.complete` file and the device is locked. If `load()` returned `nil` for those, the caller would start with an empty library and the next `save` would overwrite the real one. Throwing hands the decision to code that knows the context: a background task can retry after unlock, the launch path can move a damaged file aside and tell the person, and nothing silently destroys data.
 ````

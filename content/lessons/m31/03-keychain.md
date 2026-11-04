@@ -723,6 +723,18 @@ solution: |
 id: m31-l03-e6
 type: explain
 prompt: "A background refresh reads the refresh token and gets a failure status that isn't errSecItemNotFound. The current code signs the person out on any read failure. Explain why that's wrong and what the code should do instead."
+code: |
+  func refreshInBackground() async {
+      do {
+          guard let token = try await secrets.value(String.self, for: "refresh-token") else {
+              await session.signOut()
+              return
+          }
+          try await authClient.refresh(using: token)
+      } catch {
+          await session.signOut()      // any failure, including a failed Keychain read
+      }
+  }
 rubric:
   - Distinguishes "no item" (errSecItemNotFound) from "item exists but isn't readable now".
   - Connects the failure to the accessibility class and the device being locked.

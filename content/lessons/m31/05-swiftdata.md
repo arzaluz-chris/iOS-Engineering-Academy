@@ -188,7 +188,7 @@ Line by line:
 - **`FetchDescriptor`** takes a `Predicate` and an array of `SortDescriptor`; `fetchLimit` and `fetchOffset` page through results. `fetch(_:)` returns `[Book]`; `fetchCount(_:)` counts without loading the models.
 - **The predicate** captures `minimumPages`, a local constant. Foundation's documentation: a predicate "can refer to constants that are in scope". The closure isn't run as Swift code; the macro turns it into a description that SwiftData translates into a store query.
 - **`book.shelf?.name == "Sci-fi"`** follows a relationship, with optional chaining, inside the query.
-- **Update** is just assignment. `@Model` tracks the change; the next save writes it.
+- **Update** is assignment. `@Model` tracks the change; the next save writes it.
 - **Delete** with `delete(_:)`. Because the relationship's rule is `.cascade`, the shelf's three books go too, and the final count is 0.
 
 By the logic of the code, it prints `["Dune", "The Dispossessed"]`, `3` and `0`; this block was type-checked, not run.
@@ -683,7 +683,24 @@ solution: |
 ````exercise
 id: m31-l05-e6
 type: explain
-prompt: "In a SwiftUI app with SwiftData, a teammate asks why the list updates by itself after a background import, but only if the importer calls save(). Explain the path a change takes from the model actor to the screen."
+prompt: "In a SwiftUI app with SwiftData, a teammate asks why the list below updates by itself after a background import, but only if the importer calls save(). Explain the path a change takes from the model actor to the screen."
+code: |
+  @ModelActor
+  actor BookImporter {
+      func importBooks(_ records: [BookRecord]) throws {
+          for record in records {
+              modelContext.insert(Book(title: record.title, pages: record.pages))
+          }
+          try modelContext.save()      // remove this line and the list never changes
+      }
+  }
+
+  struct AllBooksView: View {
+      @Query(sort: \Book.title) private var books: [Book]
+      var body: some View {
+          List(books) { Text($0.title) }
+      }
+  }
 rubric:
   - The actor's context holds inserted models in memory until save() writes them to the container's store.
   - Without save(), nothing reaches the store, so other contexts can't see the models.
