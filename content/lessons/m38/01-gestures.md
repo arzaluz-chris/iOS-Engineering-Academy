@@ -109,7 +109,7 @@ struct RecipeRow: View {
 }
 ```
 
-The heart could have been `Image(...).onTapGesture { isFavorite.toggle() }`. It would respond to a finger the same way, but a `Button` also gets the button trait (VoiceOver says "button"), a pressed appearance, activation from a hardware keyboard, Switch Control and Voice Control, and a disabled state with `.disabled(_:)`. An `onTapGesture` gets none of that. **If tapping performs an action, it's a button.**
+The heart could have been `Image(...).onTapGesture { isFavorite.toggle() }`. It would respond to a finger the same way, but a `Button` also gets the button trait (VoiceOver says "button"), a pressed appearance, and activation from a hardware keyboard, Switch Control and Voice Control. An `onTapGesture` gets none of that. **If tapping performs an action, it's a button.**
 
 `onTapGesture` is the right tool when the tap isn't a control: tapping a canvas to drop a pin, tapping a photo to hide the chrome. iOS 17 added `onTapGesture(count:coordinateSpace:perform:)`, which passes the tap's location:
 
@@ -133,6 +133,7 @@ struct PinBoard: View {
         .onTapGesture { location in
             pins.append(location)
         }
+        .accessibilityElement()
         .accessibilityLabel("Pin board")
         .accessibilityValue("\(pins.count) pins")
     }
@@ -141,7 +142,7 @@ struct PinBoard: View {
 
 - **`location`** is in the view's local coordinate space by default, so it can go straight into `.position(_:)`.
 - **`.contentShape(Rectangle())`** defines the hit-testing area. Without it, only the parts of a view that draw something receive taps; the gaps in an `HStack` with a `Spacer`, or a transparent area, don't. Here the yellow fill already covers the board, but on a row made of text and a `Spacer` it's the difference between "the row is tappable" and "only the words are."
-- **Accessibility.** VoiceOver users can't aim at a spot on a canvas. The label and value describe the board; lesson 5 adds actions so the feature isn't touch-only.
+- **Accessibility.** VoiceOver users can't aim at a spot on a canvas. `accessibilityElement()` makes the board one element so the label and value have somewhere to go; a named accessibility action (lesson 5) that drops a pin in the center would make the feature usable without aiming.
 
 ## Dragging: committed state plus gesture state
 
@@ -238,7 +239,7 @@ after cancel: (80, 10)
 The second drag starts from (80, 10) and its translation is measured from where *it* started, so (−20, 40) shows the card at (60, 50). When it's cancelled, only the live part goes away.
 
 > [!tip] Animating the reset
-> A cancelled drag snaps back instantly. To animate it, set the transaction's animation in `updating` (`transaction.animation = .snappy`) or declare the property with `@GestureState(resetTransaction: Transaction(animation: .snappy))`. Both appear on Apple's `GestureState` page; the second applies to every reset.
+> A cancelled drag snaps back instantly. To animate it, declare the property with a reset transaction, `@GestureState(resetTransaction: Transaction(animation: .snappy)) private var dragOffset = CGSize.zero`; Apple's `GestureState` page lists initializers that take one. It applies to every reset.
 
 ### Deciding when the finger lifts
 
@@ -479,7 +480,7 @@ gesture, including: .subviews ["child"]
 
 Two cases you'll meet:
 
-- **A row with a tap and a button inside it.** With `.onTapGesture` on the row (the same as `.gesture(TapGesture())`), tapping the button runs the button's action, not the row's. That's usually what you want.
+- **A row with a tap and a button inside it.** With `.onTapGesture` on the row, which attaches a tap gesture at normal precedence, tapping the button usually runs the button's action, not the row's. That's usually what you want; check it on a device when the row sits inside a `List`, which adds its own row selection.
 - **A drag inside a scroll view.** A `DragGesture` attached with `.gesture` inside a `ScrollView` competes with scrolling. If the drag starts immediately (`minimumDistance: 0`) or is attached with `highPriorityGesture`, the user may not be able to scroll by touching that view. Test it on a device; prefer system components (swipe actions on a `List` row, for example) where they fit.
 
 ## Common mistakes
