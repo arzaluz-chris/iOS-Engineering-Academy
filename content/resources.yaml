@@ -921,3 +921,120 @@ resources:
     why: Apple's long-form guide to constraints, priorities and debugging. It's archived, so some screenshots and log wording are old, but the model hasn't changed.
     status: unverified
     verifiedAt: null
+  - id: uikit-button-configuration
+    title: UIButton.Configuration
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uibutton/configuration-swift.struct
+    kind: official
+    topic: Buttons
+    why: How button configurations set the style, title, image and padding of a UIButton.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-accessibility-traits
+    title: UIAccessibilityTraits
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uiaccessibilitytraits
+    kind: official
+    topic: Accessibility
+    why: The traits VoiceOver uses to describe what an element is and how it behaves.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uialertcontroller
+    title: UIAlertController
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uialertcontroller
+    kind: official
+    topic: Alerts
+    why: Alert and action sheet styles, actions, text fields and presentation.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-popover-sourceitem
+    title: sourceItem
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uipopoverpresentationcontroller/sourceitem
+    kind: official
+    topic: Popovers
+    why: How to anchor a popover or an action sheet on iPad.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uitableview
+    title: UITableView
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uitableview
+    kind: official
+    topic: Table views
+    why: "The table view reference: data source, delegate and cell reuse."
+    status: unverified
+    verifiedAt: null
+  - id: uikit-prepareforreuse
+    title: prepareForReuse()
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uitableviewcell/prepareforreuse()
+    kind: official
+    topic: Cell reuse
+    why: What to reset when a cell is reused, and what to leave to the data source.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-list-content-configuration
+    title: UIListContentConfiguration
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uilistcontentconfiguration-swift.struct
+    kind: official
+    topic: Cell content
+    why: The content configuration that replaces textLabel and imageView on list cells.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-cell-registration
+    title: UICollectionView.CellRegistration
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uicollectionview/cellregistration
+    kind: official
+    topic: Cell registration
+    why: Registering and configuring cells with a typed registration instead of string identifiers.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-list-configuration
+    title: UICollectionLayoutListConfiguration
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uicollectionlayoutlistconfiguration-swift.struct
+    kind: official
+    topic: List layout
+    why: How to build table-like lists with a collection view.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-diffable-data-sources
+    title: Updating collection views using diffable data sources
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/updating-collection-views-using-diffable-data-sources
+    kind: official
+    topic: Diffable data sources
+    why: Apple's guide to snapshots, identifiers and applying updates.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-diffable-snapshot
+    title: NSDiffableDataSourceSnapshot
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/nsdiffabledatasourcesnapshot-swift.struct
+    kind: official
+    topic: Snapshots
+    why: "The snapshot API: sections, items, reconfiguring and reloading."
+    status: unverified
+    verifiedAt: null
+  - id: uikit-compositional-layout
+    title: UICollectionViewCompositionalLayout
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uicollectionviewcompositionallayout
+    kind: official
+    topic: Compositional layout
+    why: Items, groups and sections, and how to build a layout from them.
+    status: unverified
+    verifiedAt: null
+  - id: uikit-modern-collection-views
+    title: Implementing modern collection views
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/implementing-modern-collection-views
+    kind: official
+    topic: Collection views
+    why: Apple's sample project combining compositional layout, cell registration and diffable data sources.
+    status: unverified
+    verifiedAt: null
