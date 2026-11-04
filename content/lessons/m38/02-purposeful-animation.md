@@ -405,6 +405,10 @@ enum SaveStatus: Equatable {
     case idle, saving, saved, failed
 }
 
+struct ShakeValues {
+    var offset = 0.0
+}
+
 struct SaveButton: View {
     let status: SaveStatus
     let save: () -> Void
@@ -416,14 +420,14 @@ struct SaveButton: View {
 
     var body: some View {
         button
-            .keyframeAnimator(initialValue: CGFloat(0), trigger: shakeTrigger) { content, offset in
-                content.offset(x: offset)
+            .keyframeAnimator(initialValue: ShakeValues(), trigger: shakeTrigger) { content, value in
+                content.offset(x: value.offset)
             } keyframes: { _ in
-                KeyframeTrack {
-                    LinearKeyframe(CGFloat(-10), duration: 0.06)
-                    LinearKeyframe(CGFloat(10), duration: 0.08)
-                    LinearKeyframe(CGFloat(-6), duration: 0.08)
-                    SpringKeyframe(CGFloat(0), duration: 0.2)
+                KeyframeTrack(\.offset) {
+                    LinearKeyframe(-10.0, duration: 0.06)
+                    LinearKeyframe(10.0, duration: 0.08)
+                    LinearKeyframe(-6.0, duration: 0.08)
+                    SpringKeyframe(0.0, duration: 0.2)
                 }
             }
             .sensoryFeedback(.success, trigger: status) { _, new in new == .saved }
@@ -451,7 +455,7 @@ struct SaveButton: View {
 ```
 
 - **Two haptics, two conditions.** Success plays only on arriving at `.saved`; error only on `saving → failed`. Going back to `.idle` plays nothing.
-- **The shake** is a keyframe animation on a single `CGFloat` (a track with no key path animates the whole value). The values are typed explicitly and the button is a separate property because, written as one long chain with untyped literals, this `body` made the Swift 6.3 compiler give up with "unable to type-check this expression in reasonable time" when it was checked against the iOS SDK. Splitting a long modifier chain and naming literal types is the standard fix. It's triggered by a failure counter, so two failures in a row shake twice, which a `status` trigger wouldn't do if the status were already `.failed`.
+- **The shake** animates a small `ShakeValues` struct through one key-path track, the same shape as the bell example. A first version animated a bare number with a track that had no key path, all in one long modifier chain; checked against the iOS SDK, Swift 6.3 gave up with "unable to type-check this expression in reasonable time", and splitting the chain alone didn't fix it. A struct with key-path tracks gives the compiler concrete types to work with, and it's also easier to extend when the effect grows a second property.
 - **Reduce Motion** stops the shake but not the haptic. The failure is also visible in whatever error text the screen shows; a shake alone isn't enough for someone who isn't looking at the button.
 
 Use haptics the way you'd use sound: for outcomes and for physical-feeling interactions (snapping to a detent, reaching a limit). A haptic on every scroll or every keystroke becomes noise, and people stop noticing the ones that matter. The Human Interface Guidelines have a Playing haptics page with Apple's guidance.
