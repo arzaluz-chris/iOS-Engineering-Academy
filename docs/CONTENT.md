@@ -69,7 +69,8 @@ The `swift/Tests/LessonSnippetsTests` target reads `content/lessons/`, compiles 
   - ```` ```swift no-compile <diagnostic text> ```` must fail to compile with a diagnostic containing that text. Use it for compiler-error examples.
   - ```` ```swift warning <text> ```` must compile with a warning containing `warning: <text>` and run cleanly.
   - ```` ```swift runtime-error <text> ```` must compile, stop with a runtime error and write `<text>` to stderr (for example `Index out of range`). With an ```` ```output ```` block after it, what it printed before the error is compared.
-  - ```` ```swift illustrative ```` isn't run: code that depends on another block, or Apple framework code that doesn't build outside Xcode.
+  - ```` ```swift illustrative ```` isn't run: code that depends on another block, or a fragment that can't stand alone.
+- **In any lesson**, ```` ```swift ios ```` (or ```` ```swift ios 18.0 ```` for a deployment target other than the default iOS 17.0) marks self-contained Apple-framework code (UIKit, SwiftUI, OSLog…). It is type-checked, not run, against the iOS simulator SDK in Swift 6 mode (`swiftc -typecheck`, compiled as `main.swift`, so top-level statements are allowed and `@main` isn't). That needs Xcode, so it happens on the macOS CI runner; on Linux the test is skipped. Include the imports and keep each block self-contained; use `illustrative` for fragments and `@main` entry points. A self-test proves the check rejects broken UIKit code.
 
 The site only uses the first word of the fence for highlighting, so these markers are invisible to readers.
 

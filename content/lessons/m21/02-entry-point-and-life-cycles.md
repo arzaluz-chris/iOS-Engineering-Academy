@@ -6,7 +6,7 @@ module: m21
 order: 2
 level: intermediate
 minutes: 55
-codeStatus: reviewed
+codeStatus: tested
 swiftVersion: "6.4"
 prerequisites: [m21-l01]
 objectives:
@@ -61,7 +61,7 @@ cards:
 An iOS app has one **process** that the system launches and may later end, and one or more **scenes**, each a copy of the UI that moves independently between the foreground and the background; UIKit and SwiftUI tell you about both through callbacks, and your job is to do the right amount of work in each.
 
 > [!note] About this lesson's code
-> The UIKit and SwiftUI blocks here are marked as fragments: the course's tests run Swift on Linux, where those frameworks don't exist. Method names, signatures and call order were checked against Apple's documentation (UIKit's life-cycle articles, `UISceneDelegate`, `UIApplicationDelegate`, SwiftUI's `App` and `ScenePhase`, TN3187) in November 2026; they weren't run in Xcode. That's why this lesson is marked `reviewed`. The pure-Swift model near the end and the compiler errors quoted were compiled and run with Swift 6.3.
+> Method names, signatures and call order were checked against Apple's documentation (UIKit's life-cycle articles, `UISceneDelegate`, `UIApplicationDelegate`, SwiftUI's `App` and `ScenePhase`, TN3187) in November 2026. Blocks that use UIKit or SwiftUI were type-checked against the iOS SDK but not run; the ones with `@main` are fragments and weren't compiled at all. The pure-Swift model near the end and the compiler errors quoted were compiled and run with Swift 6.3.
 
 ## Where a Swift program starts
 
@@ -79,11 +79,18 @@ struct Backup {
 }
 ```
 
-You can't have both. Put that `@main` type in a file named `main.swift` and Swift 6.3 refuses:
+You can't have both. Put that `@main` type in a file named `main.swift` and the compiler refuses, even though the file contains nothing else:
 
-```output
-error: 'main' attribute cannot be used in a module that contains top-level code
+```swift no-compile 'main' attribute cannot be used in a module that contains top-level code
+@main
+struct Backup {
+    static func main() {
+        print("starting backup")
+    }
+}
 ```
+
+Swift 6.3 says `error: 'main' attribute cannot be used in a module that contains top-level code`. A file named `main.swift` **is** top-level code by definition, so there would be two entry points.
 
 An app never has a `main.swift`. Its entry point is a type marked `@main`, and you don't write `main()` yourself, because the framework protocol already provides it:
 
@@ -109,6 +116,12 @@ UIKit's documentation for `UIApplicationDelegate.main()`: "The system calls the 
 
 > [!error] error: 'UIApplicationMain' is deprecated
 > Older projects (and some of Apple's own sample code, including TN3187's) write `@UIApplicationMain`. SE-0383 deprecated it in Swift 5.10 and made it a hard error in the Swift 6 language mode. Swift 6.3 reports exactly this message, with the note `use '@main' instead`. Replace the attribute with `@main`; nothing else changes.
+
+```swift no-compile 'UIApplicationMain' is deprecated
+@UIApplicationMain
+class AppDelegate {
+}
+```
 
 ### What main() does in a UIKit app
 
@@ -187,8 +200,10 @@ Things that surprise people:
 
 The minimal scene delegate creates a window in code (Module 22 builds a full one):
 
-```swift illustrative
+```swift ios
 import UIKit
+
+class ForecastViewController: UIViewController {}
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -289,6 +304,24 @@ struct WeatherApp: App {
                 // Every scene is in the background: release what you can.
             }
         }
+    }
+}
+```
+
+The same environment value works inside a view, where it describes that view's scene. This is the pattern Apple's `ScenePhase` page shows for starting and stopping a timer:
+
+```swift ios
+import SwiftUI
+
+struct ForecastView: View {
+    @Environment(\.scenePhase) private var scenePhase
+    @State private var isAutoRefreshing = false
+
+    var body: some View {
+        Text(isAutoRefreshing ? "Auto-refresh on" : "Auto-refresh paused")
+            .onChange(of: scenePhase) {
+                isAutoRefreshing = (scenePhase == .active)
+            }
     }
 }
 ```

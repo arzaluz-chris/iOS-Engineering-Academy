@@ -60,7 +60,7 @@ cards:
 When you press Run, Xcode turns a **target** in your project into a **bundle**: a folder named `Weather.app` that holds one executable, an `Info.plist` telling the system how to run it, and the resources the code loads, and that folder is what gets signed and installed.
 
 > [!note] Where this lesson's facts come from
-> The bundle layout, Info.plist keys and Xcode behavior below come from Apple's documentation (Bundle Resources, "Placing content in a bundle", "Managing your app's information property list values", "Configuring a new target in your project"), read in November 2026. Xcode's UI wasn't checked in a running Xcode. The Swift blocks were compiled and run with Swift 6.3 on Linux, which is also why none of them imports UIKit.
+> The bundle layout, Info.plist keys and Xcode behavior below come from Apple's documentation (Bundle Resources, "Placing content in a bundle", "Managing your app's information property list values", "Configuring a new target in your project"), read in November 2026. Xcode's UI wasn't checked in a running Xcode. The plain Swift blocks were compiled and run with Swift 6.3 on Linux. The two blocks that use `Bundle` and UIKit were only type-checked against the iOS SDK, not run.
 
 ## From project to product
 
@@ -141,7 +141,7 @@ When you do need a real file (for keys that have no build setting), you create o
 
 `Bundle` (from Foundation) represents a bundle on disk, and `Bundle.main` is the one containing the running code. A few keys have properties; the rest you read by name:
 
-```swift illustrative
+```swift ios
 import Foundation
 
 let bundleID = Bundle.main.bundleIdentifier                     // CFBundleIdentifier
@@ -151,7 +151,7 @@ print("\(bundleID ?? "?") \(version ?? "?") (\(build ?? "?"))")
 // In an app built with the values above: com.example.Weather 2.4.1 (317)
 ```
 
-This block is illustrative: in a command-line program there's no app bundle around the executable, so these values aren't the ones an app would see. Every value comes back as an optional, because a key may be missing.
+This block was type-checked against the iOS SDK but not run: outside an app bundle these values aren't the ones an app would see. Every value comes back as an optional, because a key may be missing.
 
 ## Version strings are numbers, not text
 
@@ -216,7 +216,7 @@ An **asset catalog** (`Assets.xcassets`, created with every template) organizes 
 
 In code you ask for the set by name and the system picks the variant for the current device:
 
-```swift illustrative
+```swift ios
 import UIKit
 
 let logo = UIImage(named: "Logo")          // picks the variant for this screen and appearance
@@ -269,7 +269,7 @@ UIKit: not part of this SDK
 The standard library works anywhere: 3 cities
 ```
 
-This ran on Linux, where there's no UIKit. Built for iOS, the second check would print "available". That's the whole reason the code in this course's tests is pure Swift, and the UIKit and SwiftUI snippets in this module are marked as fragments that weren't run.
+This ran on Linux, where there's no UIKit. Built for iOS, the second check would print "available". That's why this course runs pure-Swift blocks on Linux, while UIKit and SwiftUI blocks are only type-checked against the iOS SDK or marked as fragments.
 
 Why it matters on the job:
 
@@ -476,7 +476,7 @@ solution: |
 ````exercise
 id: m21-l01-e6
 type: explain
-prompt: "A new teammate asks why the course's tests can run `print(cities.count)` on Linux but every block that uses `UIImage` is marked as a fragment. Explain the difference using the three layers from the lesson."
+prompt: "A new teammate asks why the course's tests can run `print(cities.count)` on Linux but every block that uses `UIImage` can only be type-checked against the iOS SDK on a Mac. Explain the difference using the three layers from the lesson."
 code: |
   import UIKit
 
@@ -490,7 +490,7 @@ rubric:
 solution: |
   Line A only uses the **Swift standard library**: `Array` and `String` come with the language, and the same compiler builds them for iOS, macOS or Linux. Line B uses **UIKit**, which is part of Apple's iOS SDK. Linux has a Swift compiler but no UIKit, so `import UIKit` fails there; `#if canImport(UIKit)` evaluates to `false`, as the lesson's block showed.
 
-  Foundation sits in between: it exists on Linux as an open-source implementation, but some APIs differ, which is why Foundation code is run when it can be and checked carefully when it can't.
+  Foundation sits in between: it exists on Linux as an open-source implementation, but some APIs differ, which is why Foundation code that matters on iOS is also type-checked against the iOS SDK.
 
   The same split pays off in an app: models, parsing and business rules written against the standard library and Foundation can live in a package and be tested with `swift test` in seconds. Only the thin layer that touches UIKit or SwiftUI needs a simulator.
 ````
