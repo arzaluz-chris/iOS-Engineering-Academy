@@ -14,6 +14,34 @@ struct LessonSnippetsTests {
         try check(snippet)
     }
 
+    @Test("iOS blocks type-check against the iOS SDK", .enabled(if: SwiftRunner.iosSDKPath != nil), arguments: try LessonSource.iosSnippets())
+    func iosBlocks(_ snippet: IOSSnippet) throws {
+        let diagnostics = try SwiftRunner.typecheckForIOS(snippet.code, deploymentTarget: snippet.deploymentTarget)
+        #expect(diagnostics == nil, "Doesn't type-check for iOS \(snippet.deploymentTarget):\n\(diagnostics ?? "")")
+    }
+
+    /// Proves the iOS check is real: UIKit code passes, and a mistake in it fails.
+    @Test("The iOS type-check accepts UIKit code and rejects broken code", .enabled(if: SwiftRunner.iosSDKPath != nil))
+    func iosCheckWorks() throws {
+        let good = """
+            import UIKit
+
+            final class GreetingViewController: UIViewController {
+                private let label = UILabel()
+
+                override func viewDidLoad() {
+                    super.viewDidLoad()
+                    label.text = "Hello"
+                    view.addSubview(label)
+                }
+            }
+            """
+        #expect(try SwiftRunner.typecheckForIOS(good, deploymentTarget: IOSSnippet.defaultTarget) == nil)
+        let bad = good.replacingOccurrences(of: "label.text = \"Hello\"", with: "label.txt = \"Hello\"")
+        let diagnostics = try SwiftRunner.typecheckForIOS(bad, deploymentTarget: IOSSnippet.defaultTarget)
+        #expect(diagnostics?.contains("has no member 'txt'") == true, "\(diagnostics ?? "no diagnostics")")
+    }
+
     @Test("A prediction solution repeats its output exactly")
     func solucionesConsistentes() throws {
         for item in try LessonSource.predictionSolutionOutputs() {
