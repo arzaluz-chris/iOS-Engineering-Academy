@@ -190,8 +190,8 @@ resources:
     kind: official
     topic: if, for-in, while and switch
     why: Describes Swift's decision and loop statements, which are what the course's pseudocode translates into.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-functions
     title: Functions (The Swift Programming Language)
     source: Swift.org
@@ -199,8 +199,8 @@ resources:
     kind: official
     topic: Functions
     why: Shows how a procedure with input and output becomes a Swift function with parameters and a return value.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-components
     title: Downloading and installing additional Xcode components
     source: Apple Developer
@@ -208,8 +208,8 @@ resources:
     kind: official
     topic: Xcode simulators and platforms
     why: Explains how to install simulator runtimes and platform support from Xcode › Settings › Components or with xcodebuild.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-create-project
     title: Creating an Xcode project for an app
     source: Apple Developer
@@ -217,8 +217,8 @@ resources:
     kind: official
     topic: Xcode projects
     why: Apple's step-by-step guide to creating a project from a template, including the organization identifier and the main window.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-breakpoints
     title: Setting breakpoints to pause your running app
     source: Apple Developer
@@ -226,8 +226,8 @@ resources:
     kind: official
     topic: Breakpoints
     why: How to set, move, add conditions to and manage breakpoints in Xcode.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-stepping
     title: Stepping through code and inspecting variables to isolate bugs
     source: Apple Developer
@@ -235,8 +235,8 @@ resources:
     kind: official
     topic: Stepping through code
     why: Covers Step Over, Step Into, Step Out, the variables view, and the v, p and po commands in the LLDB console.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftpm-docs
     title: Swift Package Manager
     source: Swift.org
@@ -244,8 +244,8 @@ resources:
     kind: official
     topic: Swift packages
     why: What a package is, what goes in Package.swift, and how to build and test with swift build, swift run and swift test.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-cli-getting-started
     title: Build a Command-line Tool
     source: Swift.org
@@ -253,8 +253,8 @@ resources:
     kind: tutorial
     topic: Swift from the terminal
     why: The official guide to creating an executable with swift package init and running it with swift run.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: lldb-tutorial
     title: LLDB Tutorial
     source: LLVM
@@ -262,8 +262,8 @@ resources:
     kind: reference
     topic: LLDB debugger
     why: A reference for the commands of the debugger Xcode uses under the hood, such as breakpoint, frame variable and expression.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-strings
     title: Strings and Characters (The Swift Programming Language)
     source: Swift.org
@@ -271,8 +271,8 @@ resources:
     kind: official
     topic: String, Character, interpolation and multiline literals
     why: The official reference for interpolation, escape sequences, multiline string literals and raw string literals.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-closures
     title: Closures (The Swift Programming Language)
     source: Swift.org
@@ -280,8 +280,8 @@ resources:
     kind: official
     topic: Closures and functions as values
     why: Covers closure expression syntax, trailing closures and capturing values, which is what you need once functions start taking other functions.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-collection-types
     title: Collection Types (The Swift Programming Language)
     source: Swift.org
@@ -289,8 +289,8 @@ resources:
     kind: official
     topic: Array, Set and Dictionary
     why: The reference for creating, reading and changing arrays, sets and dictionaries, and for iterating over them.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-api-design-guidelines
     title: Swift API Design Guidelines
     source: Swift.org
@@ -298,8 +298,8 @@ resources:
     kind: official
     topic: Naming functions, parameters and argument labels
     why: The official rules behind names like insert(_:at:) and remove(at:). Read it once you start writing your own functions; it explains why call sites should read like English phrases.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-array
     title: Array
     source: Apple Developer
@@ -307,8 +307,8 @@ resources:
     kind: official
     topic: Array API
     why: Every Array method and property in one place, with the complexity of each operation noted where it matters.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-dictionary
     title: Dictionary
     source: Apple Developer
@@ -316,8 +316,8 @@ resources:
     kind: official
     topic: Dictionary API
     why: Lookups, the default-value subscript, updating and removing entries, and why iteration order isn't guaranteed.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-set
     title: Set
     source: Apple Developer
@@ -325,8 +325,8 @@ resources:
     kind: official
     topic: Set API
     why: Membership, insertion and the set algebra operations (union, intersection, subtracting) with their exact behavior.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-dictionary-grouping
     title: init(grouping:by:)
     source: Apple Developer
@@ -334,8 +334,8 @@ resources:
     kind: official
     topic: Grouping values into a dictionary
     why: The initializer behind the grouping examples in the collections module.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-optional
     title: Optional
     source: Apple Developer
@@ -343,8 +343,8 @@ resources:
     kind: official
     topic: Optional API
     why: The reference for Optional itself, including the enum cases, nil-coalescing and optional chaining as the standard library defines them.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-optional-map
     title: Optional.map(_:)
     source: Apple Developer
@@ -352,8 +352,8 @@ resources:
     kind: official
     topic: Transforming optionals
     why: How map transforms the wrapped value only when there is one, which is what the nested-optionals lesson builds on.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-fatalerror
     title: fatalError(_:file:line:)
     source: Apple Developer
@@ -361,8 +361,8 @@ resources:
     kind: official
     topic: Stopping on programmer errors
     why: The function to reach for when a nil really means a bug, instead of a bare force unwrap.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-protocols
     title: Protocols (The Swift Programming Language)
     source: Swift.org
@@ -370,8 +370,8 @@ resources:
     kind: official
     topic: Requirements, conformance, protocol extensions and composition
     why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-access-control
     title: Access Control (The Swift Programming Language)
     source: Swift.org
@@ -379,8 +379,8 @@ resources:
     kind: official
     topic: private, fileprivate, internal, package, public and open
     why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-inheritance
     title: Inheritance (The Swift Programming Language)
     source: Swift.org
@@ -388,8 +388,8 @@ resources:
     kind: official
     topic: Subclassing, overriding and preventing overrides with final
     why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-opaque-types
     title: Opaque and Boxed Protocol Types (The Swift Programming Language)
     source: Swift.org
@@ -397,8 +397,8 @@ resources:
     kind: official
     topic: some vs any and when each fits
     why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-extensions
     title: Extensions (The Swift Programming Language)
     source: Swift.org
@@ -406,8 +406,8 @@ resources:
     kind: official
     topic: Adding functionality to existing types
     why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-methods
     title: Methods (The Swift Programming Language)
     source: Swift.org
@@ -415,8 +415,8 @@ resources:
     kind: official
     topic: Instance methods, mutating methods and type methods
     why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-structures-classes
     title: Structures and Classes (The Swift Programming Language)
     source: Swift.org
@@ -424,8 +424,8 @@ resources:
     kind: official
     topic: Structs vs classes, value vs reference types
     why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-initialization
     title: Initialization (The Swift Programming Language)
     source: Swift.org
@@ -433,8 +433,8 @@ resources:
     kind: official
     topic: Initializers, failable initializers and two-phase class initialization
     why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-properties
     title: Properties (The Swift Programming Language)
     source: Swift.org
@@ -442,8 +442,8 @@ resources:
     kind: official
     topic: Stored, computed, lazy and type properties, and property observers
     why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-enumerations
     title: Enumerations (The Swift Programming Language)
     source: Swift.org
@@ -451,8 +451,8 @@ resources:
     kind: official
     topic: Enums, raw values, associated values and indirect cases
     why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-generics
     title: Generics (The Swift Programming Language)
     source: Swift.org
@@ -460,8 +460,8 @@ resources:
     kind: official
     topic: Generic functions and types, constraints and associated types
     why: The language reference chapter for this topic. Read it after the lesson to see every rule in one place.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-error-handling
     title: Error Handling (The Swift Programming Language)
     source: Swift.org
@@ -469,8 +469,8 @@ resources:
     kind: official
     topic: throws, try, do-catch, typed throws and defer
     why: The language reference for throwing, propagating and handling errors, including typed throws. Read it after the error-handling lessons.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-arc
     title: Automatic Reference Counting (The Swift Programming Language)
     source: Swift.org
@@ -478,8 +478,8 @@ resources:
     kind: official
     topic: ARC, strong reference cycles, weak and unowned
     why: Explains strong reference cycles between instances and with closures, and how capture lists with weak or unowned break them.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-result
     title: Result
     source: Apple Developer
@@ -487,8 +487,8 @@ resources:
     kind: official
     topic: Result type
     why: The Result API, including init(catching:), get() and map/flatMap over success and failure.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-localizederror
     title: LocalizedError
     source: Apple Developer
@@ -496,8 +496,8 @@ resources:
     kind: official
     topic: User-facing error messages
     why: The protocol behind errorDescription and recoverySuggestion, which SwiftUI's alert(isPresented:error:actions:) reads.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-precondition
     title: precondition(_:_:file:line:)
     source: Apple Developer
@@ -505,8 +505,8 @@ resources:
     kind: official
     topic: Checking conditions that must hold
     why: How precondition differs from assert and fatalError, including what happens in optimized builds.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-memory-use
     title: Gathering information about memory use
     source: Apple Developer
@@ -514,8 +514,8 @@ resources:
     kind: official
     topic: Memory Graph Debugger, memory report and Allocations
     why: Apple's walkthrough of the memory gauge, the Debug Memory Graph and the Allocations instrument, which is the workflow the leaks lesson follows.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-reduce-memory
     title: Making changes to reduce memory use
     source: Apple Developer
@@ -523,8 +523,8 @@ resources:
     kind: official
     topic: Leaks instrument and abandoned memory
     why: Explains what the Leaks instrument finds, what it can't (abandoned memory), and how to fix the usual causes.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: git-commit-reference
     title: git-commit
     source: Git documentation
@@ -532,8 +532,8 @@ resources:
     kind: reference
     topic: Git commits
     why: The exact behavior of git commit and its options, including amending a commit and writing the message.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: git-merge-reference
     title: git-merge
     source: Git documentation
@@ -541,8 +541,8 @@ resources:
     kind: reference
     topic: Git merging
     why: How merges work, fast-forward versus merge commits, and how Git presents conflicts.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: pro-git-rebasing
     title: Git Branching - Rebasing
     source: Pro Git book
@@ -550,8 +550,8 @@ resources:
     kind: tutorial
     topic: Git rebase
     why: What rebase does to your commits, how it compares with merge, and the rule about not rebasing shared history.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: github-pull-request-reviews
     title: Pull request reviews
     source: GitHub Docs
@@ -559,8 +559,8 @@ resources:
     kind: official
     topic: Code review
     why: The review states on GitHub (comment, approve, request changes) and how reviews relate to merging.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-deinitialization
     title: Deinitialization (The Swift Programming Language)
     source: Swift.org
@@ -568,8 +568,8 @@ resources:
     kind: official
     topic: deinit
     why: When a class instance's deinitializer runs, what it can access, and how superclass deinitializers are called.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-array-sort
     title: sort()
     source: Apple Developer Documentation
@@ -577,8 +577,8 @@ resources:
     kind: reference
     topic: Sorting in place
     why: What Swift's sort guarantees (stability and O(n log n)) and what it requires of the element type.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-array-sorted-by
     title: sorted(by:)
     source: Apple Developer Documentation
@@ -586,8 +586,8 @@ resources:
     kind: reference
     topic: Sorting with a comparator
     why: The strict weak ordering a custom comparator must follow, and what sorted(by:) returns.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-comparable
     title: Comparable
     source: Apple Developer Documentation
@@ -595,8 +595,8 @@ resources:
     kind: reference
     topic: Ordering values
     why: How to conform a type to Comparable and the rules its < operator must follow.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-app-launch-sequence
     title: About the app launch sequence
     source: Apple Developer Documentation
@@ -604,8 +604,8 @@ resources:
     kind: official
     topic: App launch
     why: The order in which UIKit runs your code at launch, from main to the first scene.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-app-life-cycle
     title: Managing your app's life cycle
     source: Apple Developer Documentation
@@ -613,8 +613,8 @@ resources:
     kind: official
     topic: App and scene life cycles
     why: Which app and scene states exist, how transitions happen, and what to do in each.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-scenephase
     title: ScenePhase
     source: Apple Developer Documentation
@@ -622,8 +622,8 @@ resources:
     kind: official
     topic: SwiftUI scene phases
     why: The active, inactive and background phases SwiftUI reports and how to read them from the environment.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: information-property-list
     title: Information Property List
     source: Apple Developer Documentation
@@ -631,8 +631,8 @@ resources:
     kind: official
     topic: Info.plist
     why: The reference for Info.plist keys, including the scene manifest and usage descriptions.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-mainactor
     title: MainActor
     source: Apple Developer Documentation
@@ -640,8 +640,8 @@ resources:
     kind: official
     topic: Main actor
     why: The global actor for main-thread work and how @MainActor isolates code.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: understanding-hangs
     title: Understanding hangs in your app
     source: Apple Developer Documentation
@@ -649,8 +649,8 @@ resources:
     kind: official
     topic: Hangs
     why: What a hang is, why blocking the main thread causes one, and how to find the cause.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: requesting-protected-resources
     title: Requesting access to protected resources
     source: Apple Developer Documentation
@@ -658,8 +658,8 @@ resources:
     kind: official
     topic: Permissions
     why: How to ask for access to the camera, location and other protected resources, and handle refusals.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: privacy-manifest-files
     title: Privacy manifest files
     source: Apple Developer Documentation
@@ -667,8 +667,8 @@ resources:
     kind: official
     topic: Privacy manifests
     why: What goes in PrivacyInfo.xcprivacy and when Apple requires it.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: tn3125-provisioning-profiles
     title: "TN3125: Inside Code Signing: Provisioning Profiles"
     source: Apple Developer Documentation
@@ -676,8 +676,8 @@ resources:
     kind: official
     topic: Code signing
     why: What a provisioning profile contains and how it ties certificates, devices and entitlements together.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-running-code-specific-version
     title: Running code on a specific platform or OS version
     source: Apple Developer Documentation
@@ -685,8 +685,8 @@ resources:
     kind: official
     topic: Availability
     why: How to use #available and @available against your deployment target.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-build-configuration-file
     title: Adding a build configuration file to your project
     source: Apple Developer Documentation
@@ -694,8 +694,8 @@ resources:
     kind: official
     topic: Build configurations
     why: How xcconfig files work and how to assign them per configuration.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: os-logger
     title: Logger
     source: Apple Developer Documentation
@@ -703,8 +703,8 @@ resources:
     kind: official
     topic: Logging
     why: The unified logging API, its levels and its privacy options for interpolated values.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-symbolicate-crash-report
     title: Adding identifiable symbol names to a crash report
     source: Apple Developer Documentation
@@ -712,8 +712,8 @@ resources:
     kind: official
     topic: Symbolication
     why: How dSYMs turn addresses in a crash report into function names and lines.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uiwindowscene
     title: UIWindowScene
     source: Apple Developer Documentation
@@ -721,8 +721,8 @@ resources:
     kind: official
     topic: Window scenes
     why: The scene object that manages your app's windows and how the scene delegate receives it.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-specifying-scenes
     title: Specifying the scenes your app supports
     source: Apple Developer Documentation
@@ -730,8 +730,8 @@ resources:
     kind: official
     topic: Scene configuration
     why: How the scene manifest in Info.plist declares your scene delegate and configurations.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uiviewcontroller
     title: UIViewController
     source: Apple Developer Documentation
@@ -739,8 +739,8 @@ resources:
     kind: official
     topic: View controllers
     why: The view controller reference, including its view-loading and appearance callbacks.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-viewisappearing
     title: viewIsAppearing(_:)
     source: Apple Developer Documentation
@@ -748,8 +748,8 @@ resources:
     kind: official
     topic: Appearance callbacks
     why: Where viewIsAppearing falls in the appearance order and what's already set when it runs.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uiview
     title: UIView
     source: Apple Developer Documentation
@@ -757,8 +757,8 @@ resources:
     kind: official
     topic: Views
     why: "The base view class: geometry, the view hierarchy, drawing and layout."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uistackview
     title: UIStackView
     source: Apple Developer Documentation
@@ -766,8 +766,8 @@ resources:
     kind: official
     topic: Stack views
     why: How a stack view arranges its subviews along an axis, with distribution, alignment and spacing.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-nslayoutanchor
     title: NSLayoutAnchor
     source: Apple Developer Documentation
@@ -775,8 +775,8 @@ resources:
     kind: official
     topic: Layout anchors
     why: The anchor API for building Auto Layout constraints in code.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-target-action
     title: Responding to control-based events using target-action
     source: Apple Developer Documentation
@@ -784,8 +784,8 @@ resources:
     kind: official
     topic: Target-action
     why: How controls send actions to targets, in code and from Interface Builder.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-responder-chain
     title: Using responders and the responder chain to handle events
     source: Apple Developer Documentation
@@ -793,8 +793,8 @@ resources:
     kind: official
     topic: Responder chain
     why: How UIKit routes events through responders and how to change the chain.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uitextfielddelegate
     title: UITextFieldDelegate
     source: Apple Developer Documentation
@@ -802,8 +802,8 @@ resources:
     kind: official
     topic: Delegation
     why: The text field delegate methods for editing and validating input.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-instantiate-with-creator
     title: instantiateViewController(identifier:creator:)
     source: Apple Developer Documentation
@@ -811,8 +811,8 @@ resources:
     kind: official
     topic: Storyboards and dependency injection
     why: How to create a storyboard view controller with your own initializer so you can inject dependencies.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-nslayoutconstraint
     title: NSLayoutConstraint
     source: Apple Developer Documentation
@@ -820,8 +820,8 @@ resources:
     kind: official
     topic: Constraints
     why: The constraint equation, priorities and activation in Auto Layout.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-translates-autoresizing
     title: translatesAutoresizingMaskIntoConstraints
     source: Apple Developer Documentation
@@ -829,8 +829,8 @@ resources:
     kind: official
     topic: Auto Layout in code
     why: Why views created in code need this set to false before you add your own constraints.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uiview-frame
     title: frame
     source: Apple Developer Documentation
@@ -838,8 +838,8 @@ resources:
     kind: official
     topic: Frames
     why: What a view's frame means, and why it's undefined when the transform isn't the identity.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-intrinsic-content-size
     title: intrinsicContentSize
     source: Apple Developer Documentation
@@ -847,8 +847,8 @@ resources:
     kind: official
     topic: Intrinsic content size
     why: The natural size a view reports to Auto Layout and how custom views provide one.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-safe-area
     title: Positioning content relative to the safe area
     source: Apple Developer Documentation
@@ -856,8 +856,8 @@ resources:
     kind: official
     topic: Safe areas
     why: How the safe area keeps content clear of bars, the notch and the home indicator.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-layout-margins
     title: Positioning content within layout margins
     source: Apple Developer Documentation
@@ -865,8 +865,8 @@ resources:
     kind: official
     topic: Layout margins
     why: Layout margins and the readable content guide.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uiscrollview
     title: UIScrollView
     source: Apple Developer Documentation
@@ -874,8 +874,8 @@ resources:
     kind: official
     topic: Scroll views
     why: Content size, content offset and the content and frame layout guides.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-keyboard-layout-guide
     title: Adjusting your layout with keyboard layout guide
     source: Apple Developer Documentation
@@ -883,8 +883,8 @@ resources:
     kind: official
     topic: Keyboard avoidance
     why: How to keep content above the keyboard with keyboardLayoutGuide.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-scaling-fonts
     title: Scaling fonts automatically
     source: Apple Developer Documentation
@@ -892,8 +892,8 @@ resources:
     kind: official
     topic: Dynamic Type
     why: How text styles, UIFontMetrics and adjustsFontForContentSizeCategory make text scale.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-adapting-trait-changes
     title: Adapting your app when traits change
     source: Apple Developer Documentation
@@ -901,8 +901,8 @@ resources:
     kind: official
     topic: Trait changes
     why: How to respond to trait changes such as the content size category with the iOS 17 trait APIs.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-diagnosing-appearance
     title: Diagnosing issues in the appearance of a running app
     source: Apple Developer Documentation
@@ -910,8 +910,8 @@ resources:
     kind: official
     topic: Layout debugging
     why: The view debugger and other tools for finding layout problems.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: auto-layout-guide
     title: Auto Layout Guide (archived)
     source: Apple Developer Documentation Archive
@@ -919,8 +919,8 @@ resources:
     kind: official
     topic: Auto Layout
     why: Apple's long-form guide to constraints, priorities and debugging. It's archived, so some screenshots and log wording are old, but the model hasn't changed.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-button-configuration
     title: UIButton.Configuration
     source: Apple Developer Documentation
@@ -928,8 +928,8 @@ resources:
     kind: official
     topic: Buttons
     why: How button configurations set the style, title, image and padding of a UIButton.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-accessibility-traits
     title: UIAccessibilityTraits
     source: Apple Developer Documentation
@@ -937,8 +937,8 @@ resources:
     kind: official
     topic: Accessibility
     why: The traits VoiceOver uses to describe what an element is and how it behaves.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uialertcontroller
     title: UIAlertController
     source: Apple Developer Documentation
@@ -946,8 +946,8 @@ resources:
     kind: official
     topic: Alerts
     why: Alert and action sheet styles, actions, text fields and presentation.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-popover-sourceitem
     title: sourceItem
     source: Apple Developer Documentation
@@ -955,8 +955,8 @@ resources:
     kind: official
     topic: Popovers
     why: How to anchor a popover or an action sheet on iPad.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uitableview
     title: UITableView
     source: Apple Developer Documentation
@@ -964,8 +964,8 @@ resources:
     kind: official
     topic: Table views
     why: "The table view reference: data source, delegate and cell reuse."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-prepareforreuse
     title: prepareForReuse()
     source: Apple Developer Documentation
@@ -973,8 +973,8 @@ resources:
     kind: official
     topic: Cell reuse
     why: What to reset when a cell is reused, and what to leave to the data source.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-list-content-configuration
     title: UIListContentConfiguration
     source: Apple Developer Documentation
@@ -982,8 +982,8 @@ resources:
     kind: official
     topic: Cell content
     why: The content configuration that replaces textLabel and imageView on list cells.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-cell-registration
     title: UICollectionView.CellRegistration
     source: Apple Developer Documentation
@@ -991,8 +991,8 @@ resources:
     kind: official
     topic: Cell registration
     why: Registering and configuring cells with a typed registration instead of string identifiers.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-list-configuration
     title: UICollectionLayoutListConfiguration
     source: Apple Developer Documentation
@@ -1000,8 +1000,8 @@ resources:
     kind: official
     topic: List layout
     why: How to build table-like lists with a collection view.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-diffable-data-sources
     title: Updating collection views using diffable data sources
     source: Apple Developer Documentation
@@ -1009,8 +1009,8 @@ resources:
     kind: official
     topic: Diffable data sources
     why: Apple's guide to snapshots, identifiers and applying updates.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-diffable-snapshot
     title: NSDiffableDataSourceSnapshot
     source: Apple Developer Documentation
@@ -1018,8 +1018,8 @@ resources:
     kind: official
     topic: Snapshots
     why: "The snapshot API: sections, items, reconfiguring and reloading."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-compositional-layout
     title: UICollectionViewCompositionalLayout
     source: Apple Developer Documentation
@@ -1027,8 +1027,8 @@ resources:
     kind: official
     topic: Compositional layout
     why: Items, groups and sections, and how to build a layout from them.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-modern-collection-views
     title: Implementing modern collection views
     source: Apple Developer Documentation
@@ -1036,8 +1036,8 @@ resources:
     kind: official
     topic: Collection views
     why: Apple's sample project combining compositional layout, cell registration and diffable data sources.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uinavigationcontroller
     title: UINavigationController
     source: Apple Developer Documentation
@@ -1045,8 +1045,8 @@ resources:
     kind: official
     topic: Navigation stacks
     why: "The navigation stack: pushing, popping and the navigation bar."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uinavigationitem
     title: UINavigationItem
     source: Apple Developer Documentation
@@ -1054,8 +1054,8 @@ resources:
     kind: official
     topic: Navigation bar items
     why: Titles, bar button items and back button settings for each screen.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-navigation-delegate
     title: UINavigationControllerDelegate
     source: Apple Developer Documentation
@@ -1063,8 +1063,8 @@ resources:
     kind: official
     topic: Navigation events
     why: How to learn when a screen was shown or popped, including the interactive back swipe.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uitabbarcontroller
     title: UITabBarController
     source: Apple Developer Documentation
@@ -1072,8 +1072,8 @@ resources:
     kind: official
     topic: Tab bars
     why: Tab bar controllers, their tabs and selection.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uitab
     title: UITab
     source: Apple Developer Documentation
@@ -1081,8 +1081,8 @@ resources:
     kind: official
     topic: Tabs (iOS 18)
     why: The newer tab API introduced in iOS 18.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-sheet-presentation
     title: UISheetPresentationController
     source: Apple Developer Documentation
@@ -1090,8 +1090,8 @@ resources:
     kind: official
     topic: Sheets
     why: Sheet detents, grabbers and resizing.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-adaptive-presentation-delegate
     title: UIAdaptivePresentationControllerDelegate
     source: Apple Developer Documentation
@@ -1099,8 +1099,8 @@ resources:
     kind: official
     topic: Dismissal
     why: How to learn about and control interactive dismissal of a sheet.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-open-url-contexts
     title: "scene(_:openURLContexts:)"
     source: Apple Developer Documentation
@@ -1108,8 +1108,8 @@ resources:
     kind: official
     topic: Deep links
     why: Where a running scene receives URLs opened by the system.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-custom-url-scheme
     title: Defining a custom URL scheme for your app
     source: Apple Developer Documentation
@@ -1117,8 +1117,8 @@ resources:
     kind: official
     topic: URL schemes
     why: How to register a URL scheme and handle the URLs it opens.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-universal-links
     title: Supporting universal links in your app
     source: Apple Developer Documentation
@@ -1126,8 +1126,8 @@ resources:
     kind: official
     topic: Universal links
     why: How universal links tie your website and app together.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-restoring-state
     title: Restoring your app's state
     source: Apple Developer Documentation
@@ -1135,8 +1135,8 @@ resources:
     kind: official
     topic: State restoration
     why: How scenes save and restore their interface state.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-notificationcenter
     title: NotificationCenter
     source: Apple Developer Documentation
@@ -1144,8 +1144,8 @@ resources:
     kind: official
     topic: NotificationCenter
     why: Posting and observing notifications, and how observers are removed.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-notification-messages
     title: Notification center messages
     source: Apple Developer Documentation
@@ -1153,8 +1153,8 @@ resources:
     kind: official
     topic: Typed notifications
     why: "The iOS 26 typed message API: MainActorMessage, AsyncMessage and observation tokens."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-checkedcontinuation
     title: CheckedContinuation
     source: Apple Developer Documentation
@@ -1162,8 +1162,8 @@ resources:
     kind: official
     topic: Continuations
     why: How to bridge a callback API to async/await, and the rule that a continuation resumes exactly once.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-timer-scheduled-target
     title: scheduledTimer(timeInterval:target:selector:userInfo:repeats:)
     source: Apple Developer Documentation
@@ -1171,8 +1171,8 @@ resources:
     kind: official
     topic: Timers
     why: The selector-based timer, which keeps a strong reference to its target until invalidated.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-kvo
     title: Using Key-Value Observing in Swift
     source: Apple Developer Documentation
@@ -1180,8 +1180,8 @@ resources:
     kind: official
     topic: Key-value observing
     why: How to observe a property of an NSObject subclass with observe(_:options:changeHandler:).
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-urlsession-init-delegate
     title: init(configuration:delegate:delegateQueue:)
     source: Apple Developer Documentation
@@ -1189,8 +1189,8 @@ resources:
     kind: official
     topic: Strong delegates
     why: URLSession's initializer, whose documentation says the session keeps a strong reference to its delegate.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uiviewpropertyanimator
     title: UIViewPropertyAnimator
     source: Apple Developer Documentation
@@ -1198,8 +1198,8 @@ resources:
     kind: official
     topic: Interruptible animations
     why: Animations you can pause, scrub, reverse and finish at a chosen position.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-reduce-motion
     title: isReduceMotionEnabled
     source: Apple Developer Documentation
@@ -1207,8 +1207,8 @@ resources:
     kind: official
     topic: Reduce Motion
     why: How to check the Reduce Motion setting and tone down animations.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: quartzcore-calayer
     title: CALayer
     source: Apple Developer Documentation
@@ -1216,8 +1216,8 @@ resources:
     kind: official
     topic: Layers
     why: "The layer object behind every view: its properties, model and presentation layers."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: quartzcore-cabasicanimation
     title: CABasicAnimation
     source: Apple Developer Documentation
@@ -1225,8 +1225,8 @@ resources:
     kind: official
     topic: Explicit animations
     why: Animating a single layer property from one value to another.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-gesture-state-machine
     title: About the gesture recognizer state machine
     source: Apple Developer Documentation
@@ -1234,8 +1234,8 @@ resources:
     kind: official
     topic: Gesture states
     why: The states a gesture recognizer moves through for discrete and continuous gestures.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-gesture-recognizer-delegate
     title: UIGestureRecognizerDelegate
     source: Apple Developer Documentation
@@ -1243,8 +1243,8 @@ resources:
     kind: official
     topic: Simultaneous gestures
     why: How to let recognizers work together or require one to fail.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uigraphicsimagerenderer
     title: UIGraphicsImageRenderer
     source: Apple Developer Documentation
@@ -1252,8 +1252,8 @@ resources:
     kind: official
     topic: Drawing images
     why: The modern way to draw into an image with Core Graphics.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-understanding-hitches
     title: Understanding hitches in your app
     source: Apple Developer Documentation
@@ -1261,8 +1261,8 @@ resources:
     kind: official
     topic: Scroll performance
     why: What a hitch is, the render loop, and how to measure them.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-nscache
     title: NSCache
     source: Apple Developer Documentation
@@ -1270,8 +1270,8 @@ resources:
     kind: official
     topic: Caching
     why: A cache that evicts objects under memory pressure, with cost and count limits.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-prefetching
     title: UICollectionViewDataSourcePrefetching
     source: Apple Developer Documentation
@@ -1279,8 +1279,8 @@ resources:
     kind: official
     topic: Prefetching
     why: Starting data loads before cells appear and cancelling them when they're no longer needed.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-supporting-voiceover
     title: Supporting VoiceOver in your app
     source: Apple Developer Documentation
@@ -1288,8 +1288,8 @@ resources:
     kind: official
     topic: VoiceOver
     why: Labels, values, hints, traits and element order for VoiceOver.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: accessibility-inspector
     title: Accessibility Inspector
     source: Apple Developer Documentation
@@ -1297,8 +1297,8 @@ resources:
     kind: official
     topic: Accessibility testing
     why: Inspecting and auditing your app's accessibility with Xcode's inspector.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-string-catalog
     title: Localizing and varying text with a string catalog
     source: Apple Developer Documentation
@@ -1306,8 +1306,8 @@ resources:
     kind: official
     topic: String Catalogs
     why: How String Catalogs store translations, plural variants and device variants.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-semantic-content-attribute
     title: semanticContentAttribute
     source: Apple Developer Documentation
@@ -1315,8 +1315,8 @@ resources:
     kind: official
     topic: Right-to-left layout
     why: How a view decides whether to flip for right-to-left languages.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: dispatch-dispatchqueue
     title: DispatchQueue
     source: Apple Developer Documentation
@@ -1324,8 +1324,8 @@ resources:
     kind: official
     topic: Dispatch queues
     why: Serial and concurrent queues, quality of service, and sync versus async.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: dispatch-dispatchgroup
     title: DispatchGroup
     source: Apple Developer Documentation
@@ -1333,8 +1333,8 @@ resources:
     kind: official
     topic: Dispatch groups
     why: Waiting for a set of tasks with enter, leave, notify and wait.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: dispatch-dispatchsemaphore
     title: DispatchSemaphore
     source: Apple Developer Documentation
@@ -1342,8 +1342,8 @@ resources:
     kind: official
     topic: Semaphores
     why: Counting semaphores for limiting concurrent work.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: dispatch-dispatchworkitem
     title: DispatchWorkItem
     source: Apple Developer Documentation
@@ -1351,8 +1351,8 @@ resources:
     kind: official
     topic: Work items
     why: Wrapping work so it can be cancelled, waited on or notified.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: dispatch-barrier-flag
     title: barrier
     source: Apple Developer Documentation
@@ -1360,8 +1360,8 @@ resources:
     kind: official
     topic: Barriers
     why: How a barrier block gets exclusive access on a concurrent queue.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-operationqueue
     title: OperationQueue
     source: Apple Developer Documentation
@@ -1369,8 +1369,8 @@ resources:
     kind: official
     topic: Operation queues
     why: Dependencies, concurrency limits and cancellation with operations.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-operation
     title: Operation
     source: Apple Developer Documentation
@@ -1378,8 +1378,8 @@ resources:
     kind: official
     topic: Operations
     why: The operation life cycle and how cancellation is checked.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-nslock
     title: NSLock
     source: Apple Developer Documentation
@@ -1387,8 +1387,8 @@ resources:
     kind: official
     topic: Locks
     why: A basic mutual exclusion lock and its rules.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: os-allocated-unfair-lock
     title: OSAllocatedUnfairLock
     source: Apple Developer Documentation
@@ -1396,8 +1396,8 @@ resources:
     kind: official
     topic: Locks on Apple platforms
     why: Apple's low-level lock that protects state it owns.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: synchronization-mutex
     title: Mutex
     source: Apple Developer Documentation
@@ -1405,8 +1405,8 @@ resources:
     kind: official
     topic: Mutex
     why: The Swift standard Mutex type from the Synchronization module.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-sendable
     title: Sendable
     source: Apple Developer Documentation
@@ -1414,8 +1414,8 @@ resources:
     kind: official
     topic: Sendable
     why: The protocol that marks values safe to share across concurrency domains.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-data-races
     title: Data races
     source: Apple Developer Documentation
@@ -1423,8 +1423,8 @@ resources:
     kind: official
     topic: Thread Sanitizer
     why: What a data race is and how Thread Sanitizer reports one.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-task
     title: Task
     source: Apple Developer Documentation
@@ -1432,8 +1432,8 @@ resources:
     kind: official
     topic: Tasks
     why: Creating, awaiting and cancelling tasks, and how they inherit priority and isolation.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-taskgroup
     title: TaskGroup
     source: Apple Developer Documentation
@@ -1441,8 +1441,8 @@ resources:
     kind: official
     topic: Task groups
     why: Running a dynamic number of child tasks and collecting their results.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-task-cancellation-handler
     title: withTaskCancellationHandler(operation:onCancel:isolation:)
     source: Apple Developer Documentation
@@ -1450,8 +1450,8 @@ resources:
     kind: official
     topic: Cancellation
     why: Running cleanup immediately when a task is cancelled.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-cancellationerror
     title: CancellationError
     source: Apple Developer Documentation
@@ -1459,8 +1459,8 @@ resources:
     kind: official
     topic: Cancellation
     why: The error thrown when a task notices it was cancelled.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-actor
     title: Actor
     source: Apple Developer Documentation
@@ -1468,8 +1468,8 @@ resources:
     kind: official
     topic: Actors
     why: The protocol all actors conform to, and how actor isolation works.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-globalactor
     title: GlobalActor
     source: Apple Developer Documentation
@@ -1477,8 +1477,8 @@ resources:
     kind: official
     topic: Global actors
     why: Actors like MainActor that isolate code across types and functions.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-adopting-swift6
     title: Adopting strict concurrency in Swift 6 apps
     source: Apple Developer Documentation
@@ -1486,8 +1486,8 @@ resources:
     kind: official
     topic: Migrating to Swift 6
     why: Apple's guide to turning on strict checking and fixing the diagnostics.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-build-settings-reference
     title: Build settings reference
     source: Apple Developer Documentation
@@ -1495,8 +1495,8 @@ resources:
     kind: official
     topic: Build settings
     why: Where Default Actor Isolation and Approachable Concurrency are documented.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-concurrency
     title: Concurrency (The Swift Programming Language)
     source: Swift.org
@@ -1504,8 +1504,8 @@ resources:
     kind: official
     topic: Swift Concurrency
     why: The language guide's chapter on async/await, tasks, actors and Sendable.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-migration-guide
     title: Swift 6 Migration Guide
     source: Swift.org
@@ -1513,8 +1513,8 @@ resources:
     kind: official
     topic: Migrating to Swift 6
     why: The Swift project's guide to data-race safety and incremental migration.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-urlsession
     title: URLSession
     source: Apple Developer Documentation
@@ -1522,8 +1522,8 @@ resources:
     kind: official
     topic: URLSession
     why: Creating sessions and tasks, and the async data(for:) API.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-urlrequest
     title: URLRequest
     source: Apple Developer Documentation
@@ -1531,8 +1531,8 @@ resources:
     kind: official
     topic: Requests
     why: Methods, headers, bodies and per-request timeouts.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-httpurlresponse
     title: HTTPURLResponse
     source: Apple Developer Documentation
@@ -1540,8 +1540,8 @@ resources:
     kind: official
     topic: Responses
     why: Status codes and header lookup on an HTTP response.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-urlcomponents
     title: URLComponents
     source: Apple Developer Documentation
@@ -1549,8 +1549,8 @@ resources:
     kind: official
     topic: Building URLs
     why: Building URLs and query items without string concatenation.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-urlsessionconfiguration
     title: URLSessionConfiguration
     source: Apple Developer Documentation
@@ -1558,8 +1558,8 @@ resources:
     kind: official
     topic: Session configuration
     why: Timeouts, connectivity behavior and custom protocol classes.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-urlprotocol
     title: URLProtocol
     source: Apple Developer Documentation
@@ -1567,8 +1567,8 @@ resources:
     kind: official
     topic: Stubbing requests
     why: The class you subclass to intercept requests, for example in tests.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-urlerror
     title: URLError
     source: Apple Developer Documentation
@@ -1576,8 +1576,8 @@ resources:
     kind: official
     topic: Network errors
     why: The error codes URLSession reports, such as timeouts and lost connections.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-jsondecoder
     title: JSONDecoder
     source: Apple Developer Documentation
@@ -1585,8 +1585,8 @@ resources:
     kind: official
     topic: JSON decoding
     why: Decoding strategies for keys, dates and data.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-encoding-custom-types
     title: Encoding and decoding custom types
     source: Apple Developer Documentation
@@ -1594,8 +1594,8 @@ resources:
     kind: official
     topic: Codable
     why: Custom coding keys and manual encoding and decoding.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-decodingerror
     title: DecodingError
     source: Apple Developer Documentation
@@ -1603,8 +1603,8 @@ resources:
     kind: official
     topic: Decoding errors
     why: The cases a decoder throws and the context each one carries.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: security-storing-keys-keychain
     title: Storing keys in the keychain
     source: Apple Developer Documentation
@@ -1612,8 +1612,8 @@ resources:
     kind: official
     topic: Keychain
     why: How to store and retrieve secrets with the keychain item APIs.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: rfc-9110
     title: "RFC 9110: HTTP Semantics"
     source: IETF
@@ -1621,8 +1621,8 @@ resources:
     kind: reference
     topic: HTTP
     why: "The HTTP standard: methods, safe and idempotent requests, status codes and headers such as Retry-After."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: rfc-6750
     title: "RFC 6750: Bearer Token Usage"
     source: IETF
@@ -1630,8 +1630,8 @@ resources:
     kind: reference
     topic: Authentication
     why: How bearer tokens are sent in the Authorization header and how servers report invalid tokens.
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftdata
     title: "SwiftData"
     source: Apple Developer Documentation
@@ -1639,8 +1639,8 @@ resources:
     kind: official
     topic: "SwiftData"
     why: "The SwiftData framework: models, containers, contexts and queries."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftdata-modelcontext
     title: "ModelContext"
     source: Apple Developer Documentation
@@ -1648,8 +1648,8 @@ resources:
     kind: official
     topic: "SwiftData contexts"
     why: "Inserting, fetching, saving and deleting models."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftdata-modelactor
     title: "ModelActor"
     source: Apple Developer Documentation
@@ -1657,8 +1657,8 @@ resources:
     kind: official
     topic: "Background SwiftData work"
     why: "Doing SwiftData work off the main actor with its own context."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftdata-schemamigrationplan
     title: "SchemaMigrationPlan"
     source: Apple Developer Documentation
@@ -1666,8 +1666,8 @@ resources:
     kind: official
     topic: "SwiftData migrations"
     why: "Versioned schemas and the stages that migrate between them."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-predicate
     title: "Predicate"
     source: Apple Developer Documentation
@@ -1675,8 +1675,8 @@ resources:
     kind: official
     topic: "Predicates"
     why: "The #Predicate macro and what expressions it supports."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-userdefaults
     title: "UserDefaults"
     source: Apple Developer Documentation
@@ -1684,8 +1684,8 @@ resources:
     kind: official
     topic: "UserDefaults"
     why: "What belongs in user defaults, registering defaults, and suites."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-encrypting-files
     title: "Encrypting your app's files"
     source: Apple Developer Documentation
@@ -1693,8 +1693,8 @@ resources:
     kind: official
     topic: "File protection"
     why: "How data protection classes keep files encrypted while the device is locked."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: coredata-stack
     title: "Setting up a Core Data stack"
     source: Apple Developer Documentation
@@ -1702,8 +1702,8 @@ resources:
     kind: official
     topic: "Core Data"
     why: "Creating a persistent container and its view context."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: coredata-background
     title: "Using Core Data in the background"
     source: Apple Developer Documentation
@@ -1711,8 +1711,8 @@ resources:
     kind: official
     topic: "Core Data threading"
     why: "Background contexts, perform, and passing object IDs between contexts."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: coredata-staged-migrations
     title: "Staged migrations"
     source: Apple Developer Documentation
@@ -1720,8 +1720,8 @@ resources:
     kind: official
     topic: "Core Data migrations"
     why: "Migrating a store through a sequence of model versions."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: security-keychain-accessibility
     title: "Restricting keychain item accessibility"
     source: Apple Developer Documentation
@@ -1729,8 +1729,8 @@ resources:
     kind: official
     topic: "Keychain accessibility"
     why: "When a keychain item can be read, such as only after first unlock."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: observation
     title: "Observation"
     source: Apple Developer Documentation
@@ -1738,8 +1738,8 @@ resources:
     kind: official
     topic: "Observation"
     why: "The Observation framework: the @Observable macro and how property reads are tracked."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: observation-tracking
     title: "withObservationTracking(_:onChange:)"
     source: Apple Developer Documentation
@@ -1747,8 +1747,8 @@ resources:
     kind: official
     topic: "Observation tracking"
     why: "How a read is tracked and when the change handler runs."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-migrating-to-observable
     title: "Migrating from the Observable Object protocol to the Observable macro"
     source: Apple Developer Documentation
@@ -1756,8 +1756,8 @@ resources:
     kind: official
     topic: "Observable in SwiftUI"
     why: "How @Observable replaces ObservableObject and @Published in SwiftUI."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-environmentvalues
     title: "EnvironmentValues"
     source: Apple Developer Documentation
@@ -1765,8 +1765,8 @@ resources:
     kind: official
     topic: "Environment injection"
     why: "Passing dependencies down a SwiftUI view hierarchy through the environment."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-custom-container
     title: "Creating a custom container view controller"
     source: Apple Developer Documentation
@@ -1774,8 +1774,8 @@ resources:
     kind: official
     topic: "Child view controllers"
     why: "Adding and removing child view controllers correctly."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: packagedescription-target
     title: "Target"
     source: Apple Developer Documentation
@@ -1783,8 +1783,8 @@ resources:
     kind: official
     topic: "Package targets"
     why: "How targets and their dependencies are declared in Package.swift."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: se-0386-package-access
     title: "SE-0386: New access modifier: package"
     source: Swift Evolution
@@ -1792,8 +1792,8 @@ resources:
     kind: reference
     topic: Access control
     why: "The proposal for the package access level: visible across modules in the same package, hidden from clients."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: testing-migrating-from-xctest
     title: "Migrating a test from XCTest"
     source: Apple Developer Documentation
@@ -1801,8 +1801,8 @@ resources:
     kind: official
     topic: "Swift Testing and XCTest"
     why: "How XCTest assertions, setup and expectations map to Swift Testing."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: testing-organizing-tests
     title: "Organizing test functions with suite types"
     source: Apple Developer Documentation
@@ -1810,8 +1810,8 @@ resources:
     kind: official
     topic: "Test suites"
     why: "How @Suite types group tests and share setup."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: testing-parameterized
     title: "Implementing parameterized tests"
     source: Apple Developer Documentation
@@ -1819,8 +1819,8 @@ resources:
     kind: official
     topic: "Parameterized tests"
     why: "Running one test over many arguments with @Test(arguments:)."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: testing-traits
     title: "Traits"
     source: Apple Developer Documentation
@@ -1828,8 +1828,8 @@ resources:
     kind: official
     topic: "Test traits"
     why: "Disabling, tagging, time-limiting and annotating tests with traits."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: testing-async-code
     title: "Testing asynchronous code"
     source: Apple Developer Documentation
@@ -1837,8 +1837,8 @@ resources:
     kind: official
     topic: "Async tests"
     why: "Async test functions and confirmations for events."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xctest
     title: "XCTest"
     source: Apple Developer Documentation
@@ -1846,8 +1846,8 @@ resources:
     kind: official
     topic: "XCTest"
     why: "Test cases, assertions, expectations and performance tests."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcuiautomation
     title: "XCUIAutomation"
     source: Apple Developer Documentation
@@ -1855,8 +1855,8 @@ resources:
     kind: official
     topic: "UI tests"
     why: "Driving an app's interface from UI tests."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-performance-tests
     title: "Writing and running performance tests"
     source: Apple Developer Documentation
@@ -1864,8 +1864,8 @@ resources:
     kind: official
     topic: "Performance tests"
     why: "Measuring code with measure and setting baselines."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-improving-performance
     title: "Improving your app's performance"
     source: Apple Developer Documentation
@@ -1873,8 +1873,8 @@ resources:
     kind: official
     topic: "Profiling"
     why: "Finding and fixing performance problems with Instruments and metrics."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: fowler-test-double
     title: "Test Double"
     source: "Martin Fowler"
@@ -1882,8 +1882,8 @@ resources:
     kind: article
     topic: "Test doubles"
     why: "Meszaros' vocabulary for dummies, stubs, spies, mocks and fakes."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: fowler-test-pyramid
     title: "Test Pyramid"
     source: "Martin Fowler"
@@ -1891,8 +1891,8 @@ resources:
     kind: article
     topic: "Test strategy"
     why: "Why most tests should be fast unit tests and few should drive the UI."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: lldb-gdb-map
     title: "GDB to LLDB command map"
     source: "LLVM"
@@ -1900,8 +1900,8 @@ resources:
     kind: article
     topic: "LLDB"
     why: "LLDB's commands for breakpoints, stepping and inspecting variables."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-declaring-custom-view
     title: "Declaring a custom view"
     source: Apple Developer Documentation
@@ -1909,8 +1909,8 @@ resources:
     kind: official
     topic: "SwiftUI views"
     why: "How a view's body describes its content and how SwiftUI updates it."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-app
     title: "App"
     source: Apple Developer Documentation
@@ -1918,8 +1918,8 @@ resources:
     kind: official
     topic: "SwiftUI apps"
     why: "The App protocol, scenes and the app's entry point."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-managing-ui-state
     title: "Managing user interface state"
     source: Apple Developer Documentation
@@ -1927,8 +1927,8 @@ resources:
     kind: official
     topic: "SwiftUI state"
     why: "Where view state lives and how SwiftUI keeps it."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-configuring-views
     title: "Configuring views"
     source: Apple Developer Documentation
@@ -1936,8 +1936,8 @@ resources:
     kind: official
     topic: "Modifiers"
     why: "How modifiers wrap views and why their order matters."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-viewmodifier
     title: "ViewModifier"
     source: Apple Developer Documentation
@@ -1945,8 +1945,8 @@ resources:
     kind: official
     topic: "Custom modifiers"
     why: "Packaging a set of modifiers into a reusable one."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-previews
     title: "Previews in Xcode"
     source: Apple Developer Documentation
@@ -1954,8 +1954,8 @@ resources:
     kind: official
     topic: "Previews"
     why: "Declaring previews with the #Preview macro."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-viewbuilder
     title: "ViewBuilder"
     source: Apple Developer Documentation
@@ -1963,8 +1963,8 @@ resources:
     kind: official
     topic: "ViewBuilder"
     why: "The result builder that turns view closures into views."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-accessibility-fundamentals
     title: "Accessibility fundamentals"
     source: Apple Developer Documentation
@@ -1972,8 +1972,8 @@ resources:
     kind: official
     topic: "SwiftUI accessibility"
     why: "Labels, traits and grouping for SwiftUI views."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-foreach
     title: "ForEach"
     source: Apple Developer Documentation
@@ -1981,8 +1981,8 @@ resources:
     kind: official
     topic: "Lists and identity"
     why: "Building views from a collection with stable identifiers."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-performant-scrollable-stacks
     title: "Creating performant scrollable stacks"
     source: Apple Developer Documentation
@@ -1990,8 +1990,8 @@ resources:
     kind: official
     topic: "Lazy stacks"
     why: "When to use lazy stacks inside a scroll view."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-grid
     title: "Grid"
     source: Apple Developer Documentation
@@ -1999,8 +1999,8 @@ resources:
     kind: official
     topic: "Grids"
     why: "Two-dimensional layouts with Grid and GridRow."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-laying-out-simple-view
     title: "Laying out a simple view"
     source: Apple Developer Documentation
@@ -2008,8 +2008,8 @@ resources:
     kind: official
     topic: "SwiftUI layout"
     why: "How parents propose sizes and children choose their own."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-layoutpriority
     title: "layoutPriority(_:)"
     source: Apple Developer Documentation
@@ -2017,8 +2017,8 @@ resources:
     kind: official
     topic: "Layout priority"
     why: "How a stack gives space to higher-priority children first."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-composing-custom-layouts
     title: "Composing custom layouts with SwiftUI"
     source: Apple Developer Documentation
@@ -2026,8 +2026,8 @@ resources:
     kind: official
     topic: "Custom layouts"
     why: "Building a custom container with the Layout protocol."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-symbolrenderingmode
     title: "symbolRenderingMode(_:)"
     source: Apple Developer Documentation
@@ -2035,8 +2035,8 @@ resources:
     kind: official
     topic: "SF Symbols"
     why: "Monochrome, hierarchical, palette and multicolor rendering of symbols."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-foregroundstyle
     title: "foregroundStyle(_:)"
     source: Apple Developer Documentation
@@ -2044,8 +2044,8 @@ resources:
     kind: official
     topic: "Styling"
     why: "Setting colors, gradients and hierarchical styles on content."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-navigationstack
     title: "NavigationStack"
     source: Apple Developer Documentation
@@ -2053,8 +2053,8 @@ resources:
     kind: official
     topic: "NavigationStack"
     why: "Value-based navigation with a stack of views."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-navigationpath
     title: "NavigationPath"
     source: Apple Developer Documentation
@@ -2062,8 +2062,8 @@ resources:
     kind: official
     topic: "Navigation paths"
     why: "A type-erased path you can push, pop and save."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-migrating-navigation
     title: "Migrating to new navigation types"
     source: Apple Developer Documentation
@@ -2071,8 +2071,8 @@ resources:
     kind: official
     topic: "Navigation migration"
     why: "Moving from NavigationView and isActive links to NavigationStack."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-sheet-item
     title: "sheet(item:onDismiss:content:)"
     source: Apple Developer Documentation
@@ -2080,8 +2080,8 @@ resources:
     kind: official
     topic: "Sheets"
     why: "Presenting a sheet driven by an optional identifiable item."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-confirmationdialog
     title: "confirmationDialog(_:isPresented:titleVisibility:actions:message:)"
     source: Apple Developer Documentation
@@ -2089,8 +2089,8 @@ resources:
     kind: official
     topic: "Dialogs"
     why: "Confirmation dialogs with actions and roles."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-tabview
     title: "TabView"
     source: Apple Developer Documentation
@@ -2098,8 +2098,8 @@ resources:
     kind: official
     topic: "Tabs"
     why: "Tab-based navigation, including the Tab type and selection."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-navigationsplitview
     title: "NavigationSplitView"
     source: Apple Developer Documentation
@@ -2107,8 +2107,8 @@ resources:
     kind: official
     topic: "Split views"
     why: "Two- and three-column navigation that adapts to iPhone and iPad."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-onopenurl
     title: "onOpenURL(perform:)"
     source: Apple Developer Documentation
@@ -2116,8 +2116,8 @@ resources:
     kind: official
     topic: "Deep links"
     why: "Handling URLs opened into a SwiftUI scene."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-scenestorage
     title: "SceneStorage"
     source: Apple Developer Documentation
@@ -2125,8 +2125,8 @@ resources:
     kind: official
     topic: "State restoration"
     why: "Saving small pieces of per-scene state, such as an encoded navigation path."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-withanimation
     title: "withAnimation(_:_:)"
     source: Apple Developer Documentation
@@ -2134,8 +2134,8 @@ resources:
     kind: official
     topic: "Animation"
     why: "Animating the view changes caused by a state change."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-matchedgeometryeffect
     title: "matchedGeometryEffect(id:in:properties:anchor:isSource:)"
     source: Apple Developer Documentation
@@ -2143,8 +2143,8 @@ resources:
     kind: official
     topic: "Matched geometry"
     why: "Animating a view between two places in the hierarchy."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-state
     title: "State"
     source: Apple Developer Documentation
@@ -2152,8 +2152,8 @@ resources:
     kind: official
     topic: "@State"
     why: "Local value state a view owns, and when its default value is created."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-binding
     title: "Binding"
     source: Apple Developer Documentation
@@ -2161,8 +2161,8 @@ resources:
     kind: official
     topic: "@Binding"
     why: "Two-way references to state owned elsewhere, including Binding(get:set:)."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-bindable
     title: "Bindable"
     source: Apple Developer Documentation
@@ -2170,8 +2170,8 @@ resources:
     kind: official
     topic: "@Bindable"
     why: "Creating bindings to properties of an @Observable model."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-environment
     title: "Environment"
     source: Apple Developer Documentation
@@ -2179,8 +2179,8 @@ resources:
     kind: official
     topic: "@Environment"
     why: "Reading environment values and @Observable models from the environment."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-entry
     title: "Entry()"
     source: Apple Developer Documentation
@@ -2188,8 +2188,8 @@ resources:
     kind: official
     topic: "Custom environment values"
     why: "The @Entry macro for declaring custom environment values."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-stateobject
     title: "StateObject"
     source: Apple Developer Documentation
@@ -2197,8 +2197,8 @@ resources:
     kind: official
     topic: "@StateObject"
     why: "Owning an ObservableObject so it survives view updates."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-observedobject
     title: "ObservedObject"
     source: Apple Developer Documentation
@@ -2206,8 +2206,8 @@ resources:
     kind: official
     topic: "@ObservedObject"
     why: "Observing an ObservableObject owned somewhere else."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: combine-observableobject
     title: "ObservableObject"
     source: Apple Developer Documentation
@@ -2215,8 +2215,8 @@ resources:
     kind: official
     topic: "ObservableObject"
     why: "The Combine protocol behind the older SwiftUI data flow APIs."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-appstorage
     title: "AppStorage"
     source: Apple Developer Documentation
@@ -2224,8 +2224,8 @@ resources:
     kind: official
     topic: "@AppStorage"
     why: "Reading and writing a UserDefaults value from a view."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-onchange
     title: "onChange(of:initial:_:)"
     source: Apple Developer Documentation
@@ -2233,8 +2233,8 @@ resources:
     kind: official
     topic: "Reacting to changes"
     why: "Running an action when a value changes."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-managing-model-data
     title: "Managing model data in your app"
     source: Apple Developer Documentation
@@ -2242,8 +2242,8 @@ resources:
     kind: official
     topic: "Model data"
     why: "Apple's guide to sharing @Observable model data across views."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-task-id
     title: "task(id:name:priority:file:line:_:)"
     source: Apple Developer Documentation
@@ -2251,8 +2251,8 @@ resources:
     kind: official
     topic: "Tasks tied to views"
     why: "Starting async work with a view and restarting it when an identifier changes."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-refreshable
     title: "refreshable(action:)"
     source: Apple Developer Documentation
@@ -2260,8 +2260,8 @@ resources:
     kind: official
     topic: "Pull to refresh"
     why: "Adding a refresh action that runs as an async task."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-contentunavailableview
     title: "ContentUnavailableView"
     source: Apple Developer Documentation
@@ -2269,8 +2269,8 @@ resources:
     kind: official
     topic: "Empty states"
     why: "A standard view for empty and no-results states."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftdata-query
     title: "Query"
     source: Apple Developer Documentation
@@ -2278,8 +2278,8 @@ resources:
     kind: official
     topic: "@Query"
     why: "Fetching SwiftData models into a view with filters and sorting."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-scene-modelcontainer
     title: "modelContainer(_:)"
     source: Apple Developer Documentation
@@ -2287,8 +2287,8 @@ resources:
     kind: official
     topic: "SwiftData containers"
     why: "Attaching a SwiftData container to a scene."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftdata-filtering-sorting
     title: "Filtering and sorting persistent data"
     source: Apple Developer Documentation
@@ -2296,8 +2296,8 @@ resources:
     kind: official
     topic: "SwiftData queries"
     why: "Building dynamic predicates and sort descriptors for queries."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftdata-adding-editing
     title: "Adding and editing persistent data in your app"
     source: Apple Developer Documentation
@@ -2305,8 +2305,8 @@ resources:
     kind: official
     topic: "Editing SwiftData"
     why: "Inserting and editing models from SwiftUI views."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-clock
     title: "Clock"
     source: Apple Developer Documentation
@@ -2314,8 +2314,8 @@ resources:
     kind: official
     topic: "Clocks"
     why: "The protocol for clocks you can inject to control time in tests."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: network-nwpathmonitor
     title: "NWPathMonitor"
     source: Apple Developer Documentation
@@ -2323,8 +2323,8 @@ resources:
     kind: official
     topic: "Connectivity"
     why: "Observing network reachability changes."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-composing-gestures
     title: "Composing SwiftUI gestures"
     source: Apple Developer Documentation
@@ -2332,8 +2332,8 @@ resources:
     kind: official
     topic: "Gesture composition"
     why: "Combining gestures simultaneously, in sequence or exclusively."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-gesturestate
     title: "GestureState"
     source: Apple Developer Documentation
@@ -2341,8 +2341,8 @@ resources:
     kind: official
     topic: "Gesture state"
     why: "State that lives only while a gesture is active and resets afterward."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-magnifygesture
     title: "MagnifyGesture"
     source: Apple Developer Documentation
@@ -2350,8 +2350,8 @@ resources:
     kind: official
     topic: "Pinch gestures"
     why: "The iOS 17 magnification gesture."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-spring
     title: "Spring"
     source: Apple Developer Documentation
@@ -2359,8 +2359,8 @@ resources:
     kind: official
     topic: "Springs"
     why: "Spring parameters, presets and how duration and bounce map to stiffness and damping."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-phaseanimator
     title: "phaseAnimator(_:trigger:content:animation:)"
     source: Apple Developer Documentation
@@ -2368,8 +2368,8 @@ resources:
     kind: official
     topic: "Multi-step animation"
     why: "Animating through a sequence of phases when a trigger changes."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-sensoryfeedback
     title: "sensoryFeedback(_:trigger:condition:)"
     source: Apple Developer Documentation
@@ -2377,8 +2377,8 @@ resources:
     kind: official
     topic: "Haptics"
     why: "Playing haptic and other sensory feedback when a value changes."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-form
     title: "Form"
     source: Apple Developer Documentation
@@ -2386,8 +2386,8 @@ resources:
     kind: official
     topic: "Forms"
     why: "Grouping controls for data entry with platform-appropriate styling."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-focusstate
     title: "FocusState"
     source: Apple Developer Documentation
@@ -2395,8 +2395,8 @@ resources:
     kind: official
     topic: "Focus"
     why: "Reading and moving focus between fields."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-accessibilityelement
     title: "accessibilityElement(children:)"
     source: Apple Developer Documentation
@@ -2404,8 +2404,8 @@ resources:
     kind: official
     topic: "Accessibility grouping"
     why: "Combining or ignoring child views for assistive technologies."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-scaledmetric
     title: "ScaledMetric"
     source: Apple Developer Documentation
@@ -2413,8 +2413,8 @@ resources:
     kind: official
     topic: "Dynamic Type"
     why: "Scaling custom sizes with the user's text size."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-preparing-localization
     title: "Preparing views for localization"
     source: Apple Developer Documentation
@@ -2422,8 +2422,8 @@ resources:
     kind: official
     topic: "SwiftUI localization"
     why: "How Text, LocalizedStringKey and String Catalogs work together."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-inflectionrule
     title: "InflectionRule"
     source: Apple Developer Documentation
@@ -2431,8 +2431,8 @@ resources:
     kind: official
     topic: "Grammar agreement"
     why: "Automatic grammar agreement in localized strings."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: hig-playing-haptics
     title: "Playing haptics"
     source: Human Interface Guidelines
@@ -2440,8 +2440,8 @@ resources:
     kind: official
     topic: "Haptics"
     why: "When haptic feedback helps and when it's noise."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: hig-right-to-left
     title: "Right to left"
     source: Human Interface Guidelines
@@ -2449,8 +2449,8 @@ resources:
     kind: official
     topic: "Right-to-left layout"
     why: "Which elements flip in right-to-left languages and which don't."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-swiftui-performance
     title: "Understanding and improving SwiftUI performance"
     source: Apple Developer Documentation
@@ -2458,8 +2458,8 @@ resources:
     kind: official
     topic: "SwiftUI performance"
     why: "Apple's guide to view updates, dependencies and finding slow bodies."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-layout
     title: "Layout"
     source: Apple Developer Documentation
@@ -2467,8 +2467,8 @@ resources:
     kind: official
     topic: "Custom layouts"
     why: "The Layout protocol: sizeThatFits, placeSubviews and caches."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-layoutvaluekey
     title: "LayoutValueKey"
     source: Apple Developer Documentation
@@ -2476,8 +2476,8 @@ resources:
     kind: official
     topic: "Layout values"
     why: "Passing per-subview values to a custom layout."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-preferencekey
     title: "PreferenceKey"
     source: Apple Developer Documentation
@@ -2485,8 +2485,8 @@ resources:
     kind: official
     topic: "Preferences"
     why: "Passing values from child views up to their ancestors."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-anchorpreference
     title: "anchorPreference(key:value:transform:)"
     source: Apple Developer Documentation
@@ -2494,8 +2494,8 @@ resources:
     kind: official
     topic: "Anchor preferences"
     why: "Reporting a child's geometry so an ancestor can draw relative to it."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-scrollposition
     title: "ScrollPosition"
     source: Apple Developer Documentation
@@ -2503,8 +2503,8 @@ resources:
     kind: official
     topic: "Scroll position"
     why: "The iOS 18 type for reading and setting a scroll view's position."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-scrolltargetbehavior
     title: "scrollTargetBehavior(_:)"
     source: Apple Developer Documentation
@@ -2512,8 +2512,8 @@ resources:
     kind: official
     topic: "Scroll snapping"
     why: "Paging and view-aligned snapping in scroll views."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-containerrelativeframe
     title: "containerRelativeFrame(_:count:span:spacing:alignment:)"
     source: Apple Developer Documentation
@@ -2521,8 +2521,8 @@ resources:
     kind: official
     topic: "Container-relative sizing"
     why: "Sizing views as a fraction of their container, as in carousels."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: os-ossignposter
     title: "OSSignposter"
     source: Apple Developer Documentation
@@ -2530,8 +2530,8 @@ resources:
     kind: official
     topic: "Signposts"
     why: "Marking intervals in your code so they show up in Instruments."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-imagerenderer
     title: "ImageRenderer"
     source: Apple Developer Documentation
@@ -2539,8 +2539,8 @@ resources:
     kind: official
     topic: "Rendering views"
     why: "Rendering a SwiftUI view to an image, for example in tests."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-snapshot-testing
     title: "swift-snapshot-testing"
     source: Point-Free (GitHub)
@@ -2548,8 +2548,8 @@ resources:
     kind: reference
     topic: Snapshot testing
     why: "A widely used open-source snapshot testing library; its README explains setup, recording and strategies."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-uihostingcontroller
     title: "UIHostingController"
     source: Apple Developer Documentation
@@ -2557,8 +2557,8 @@ resources:
     kind: official
     topic: "Hosting SwiftUI"
     why: "Embedding SwiftUI views in a UIKit view controller hierarchy."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-uihostingconfiguration
     title: "UIHostingConfiguration"
     source: Apple Developer Documentation
@@ -2566,8 +2566,8 @@ resources:
     kind: official
     topic: "SwiftUI in cells"
     why: "Using SwiftUI as the content of collection and table view cells."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-uikit-integration
     title: "UIKit integration"
     source: Apple Developer Documentation
@@ -2575,8 +2575,8 @@ resources:
     kind: official
     topic: "Interoperability"
     why: "Apple's overview of mixing SwiftUI and UIKit."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-uiviewrepresentable
     title: "UIViewRepresentable"
     source: Apple Developer Documentation
@@ -2584,8 +2584,8 @@ resources:
     kind: official
     topic: "Wrapping UIKit views"
     why: "Creating, updating and tearing down a UIKit view from SwiftUI."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-uiviewcontrollerrepresentable
     title: "UIViewControllerRepresentable"
     source: Apple Developer Documentation
@@ -2593,8 +2593,8 @@ resources:
     kind: official
     topic: "Wrapping view controllers"
     why: "Presenting UIKit view controllers from SwiftUI."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-uiapplicationdelegateadaptor
     title: "UIApplicationDelegateAdaptor"
     source: Apple Developer Documentation
@@ -2602,8 +2602,8 @@ resources:
     kind: official
     topic: "App delegate in SwiftUI"
     why: "Using a UIKit app delegate in a SwiftUI app."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: photosui-phpickerviewcontroller
     title: "PHPickerViewController"
     source: Apple Developer Documentation
@@ -2611,8 +2611,8 @@ resources:
     kind: official
     topic: "Photo picker"
     why: "The system photo picker and its delegate."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-observation-tracking
     title: "Updating views automatically with observation tracking in UIKit"
     source: Apple Developer Documentation
@@ -2620,8 +2620,8 @@ resources:
     kind: official
     topic: "UIKit observation"
     why: "How UIKit tracks @Observable reads and updates views automatically."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-updateproperties
     title: "updateProperties()"
     source: Apple Developer Documentation
@@ -2629,8 +2629,8 @@ resources:
     kind: official
     topic: "UIKit observation"
     why: "The iOS 26 method UIKit calls to apply observed property changes."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-cloud
     title: "Xcode Cloud"
     source: Apple Developer Documentation
@@ -2638,8 +2638,8 @@ resources:
     kind: official
     topic: "Xcode Cloud"
     why: "Apple's hosted CI/CD service for building, testing and distributing apps."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-distributing-beta-release
     title: "Distributing your app for beta testing and releases"
     source: Apple Developer Documentation
@@ -2647,8 +2647,8 @@ resources:
     kind: official
     topic: "Distribution"
     why: "Archiving, signing and uploading builds for TestFlight and the App Store."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-sharing-signing-certificates
     title: "Sharing your team's signing certificates"
     source: Apple Developer Documentation
@@ -2656,8 +2656,8 @@ resources:
     kind: official
     topic: "Signing in teams"
     why: "How teams share distribution certificates and manage signing identities."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-crash-reports
     title: "Acquiring crash reports and diagnostic logs"
     source: Apple Developer Documentation
@@ -2665,8 +2665,8 @@ resources:
     kind: official
     topic: "Crash reports"
     why: "Where crash reports come from: Organizer, devices, TestFlight and MetricKit."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: asc-api-keys
     title: "Creating API keys for App Store Connect API"
     source: Apple Developer Documentation
@@ -2674,8 +2674,8 @@ resources:
     kind: official
     topic: "App Store Connect API"
     why: "Creating the API keys CI uses to upload builds without a person's account."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: cfbundleshortversionstring
     title: "CFBundleShortVersionString"
     source: Apple Developer Documentation
@@ -2683,8 +2683,8 @@ resources:
     kind: official
     topic: "Versioning"
     why: "The user-visible version number and its format rules."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: cfbundleversion
     title: "CFBundleVersion"
     source: Apple Developer Documentation
@@ -2692,8 +2692,8 @@ resources:
     kind: official
     topic: "Build numbers"
     why: "The build number and the rules each upload must follow."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: metrickit
     title: "MetricKit"
     source: Apple Developer Documentation
@@ -2701,8 +2701,8 @@ resources:
     kind: official
     topic: "MetricKit"
     why: "On-device performance metrics and diagnostics delivered to your app."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: asc-testflight-overview
     title: "TestFlight overview"
     source: "App Store Connect Help"
@@ -2710,8 +2710,8 @@ resources:
     kind: official
     topic: "TestFlight"
     why: "Internal and external testing, groups and beta review."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: asc-phased-release
     title: "Release a version update in phases"
     source: "App Store Connect Help"
@@ -2719,8 +2719,8 @@ resources:
     kind: official
     topic: "Phased release"
     why: "How a phased release rolls out over seven days and when you can pause it."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: apple-app-review
     title: "App Review"
     source: "Apple Developer"
@@ -2728,8 +2728,8 @@ resources:
     kind: official
     topic: "App Review"
     why: "Expedited review, appeals and bug fix submissions."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: app-privacy-details
     title: "App privacy details on the App Store"
     source: "Apple Developer"
@@ -2737,8 +2737,8 @@ resources:
     kind: official
     topic: "App Privacy"
     why: "What the privacy nutrition label asks and how to answer it."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: gha-workflow-syntax
     title: "Workflow syntax for GitHub Actions"
     source: "GitHub Docs"
@@ -2746,8 +2746,8 @@ resources:
     kind: official
     topic: "GitHub Actions"
     why: "The keys of a workflow file: triggers, jobs, steps, matrices and permissions."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: gha-dependency-caching
     title: "Dependency caching reference"
     source: "GitHub Docs"
@@ -2755,8 +2755,8 @@ resources:
     kind: official
     topic: "CI caching"
     why: "How actions/cache keys, restore keys and branch scopes work."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: gha-sign-xcode
     title: "Installing an Apple certificate on macOS runners for Xcode development"
     source: "GitHub Docs"
@@ -2764,8 +2764,8 @@ resources:
     kind: official
     topic: "Signing in CI"
     why: "Importing a signing certificate and profile into a temporary keychain on a runner."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: semver
     title: "Semantic Versioning 2.0.0"
     source: "semver.org"
@@ -2773,8 +2773,8 @@ resources:
     kind: reference
     topic: "Semantic versioning"
     why: "The rules for MAJOR.MINOR.PATCH versions."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: conventional-commits
     title: "Conventional Commits 1.0.0"
     source: "conventionalcommits.org"
@@ -2782,8 +2782,8 @@ resources:
     kind: reference
     topic: "Commit messages"
     why: "A commit message format that tools can turn into version bumps and changelogs."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: cryptokit
     title: "CryptoKit"
     source: Apple Developer Documentation
@@ -2791,8 +2791,8 @@ resources:
     kind: official
     topic: "CryptoKit"
     why: "Hashing, authentication codes, encryption, key agreement and signing with Apple's crypto framework."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: security-secure-enclave
     title: "Protecting keys with the Secure Enclave"
     source: Apple Developer Documentation
@@ -2800,8 +2800,8 @@ resources:
     kind: official
     topic: "Secure Enclave"
     why: "Creating keys that never leave the Secure Enclave, and their limits."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: security-secaccesscontrolcreateflags
     title: "SecAccessControlCreateFlags"
     source: Apple Developer Documentation
@@ -2809,8 +2809,8 @@ resources:
     kind: official
     topic: "Keychain access control"
     why: "Requiring biometrics or the passcode to use a keychain item."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: localauthentication
     title: "LocalAuthentication"
     source: Apple Developer Documentation
@@ -2818,8 +2818,8 @@ resources:
     kind: official
     topic: "Biometrics"
     why: "Face ID, Touch ID and passcode authentication with LAContext."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: ats-nsapptransportsecurity
     title: "NSAppTransportSecurity"
     source: Apple Developer Documentation
@@ -2827,8 +2827,8 @@ resources:
     kind: official
     topic: "App Transport Security"
     why: "ATS defaults and the exceptions an app can declare."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: ats-nspinneddomains
     title: "NSPinnedDomains"
     source: Apple Developer Documentation
@@ -2836,8 +2836,8 @@ resources:
     kind: official
     topic: "Pinning"
     why: "Declaring pinned public keys for domains in Info.plist."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-manual-server-trust
     title: "Performing manual server trust authentication"
     source: Apple Developer Documentation
@@ -2845,8 +2845,8 @@ resources:
     kind: official
     topic: "Server trust"
     why: "Evaluating server trust yourself in a URLSession delegate."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: os-oslogprivacy
     title: "OSLogPrivacy"
     source: Apple Developer Documentation
@@ -2854,8 +2854,8 @@ resources:
     kind: official
     topic: "Log privacy"
     why: "Marking interpolated values public, private or hashed in unified logging."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-uipasteboard
     title: "UIPasteboard"
     source: Apple Developer Documentation
@@ -2863,8 +2863,8 @@ resources:
     kind: official
     topic: "Pasteboard"
     why: "Pasteboard options such as local-only and expiration dates."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swiftui-privacysensitive
     title: "privacySensitive(_:)"
     source: Apple Developer Documentation
@@ -2872,8 +2872,8 @@ resources:
     kind: official
     topic: "Redacting sensitive views"
     why: "Marking views whose content should be hidden in privacy-sensitive contexts."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: webkit-wknavigationdelegate
     title: "WKNavigationDelegate"
     source: Apple Developer Documentation
@@ -2881,8 +2881,8 @@ resources:
     kind: official
     topic: "Web view navigation"
     why: "Deciding which navigations a web view may perform."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: devicecheck-appattest
     title: "DCAppAttestService"
     source: Apple Developer Documentation
@@ -2890,8 +2890,8 @@ resources:
     kind: official
     topic: "App Attest"
     why: "Proving to your server that requests come from a genuine instance of your app."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: devicecheck-establishing-integrity
     title: "Establishing your app's integrity"
     source: Apple Developer Documentation
@@ -2899,8 +2899,8 @@ resources:
     kind: official
     topic: "App integrity"
     why: "How App Attest keys, attestations and assertions fit together."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: owasp-masvs-profiles
     title: "MAS Testing Profiles"
     source: "OWASP"
@@ -2908,8 +2908,8 @@ resources:
     kind: official
     topic: "Security profiles"
     why: "The L1, L2, R and P profiles and which MASVS controls each one includes."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: owasp-threat-modeling
     title: "Threat Modeling Cheat Sheet"
     source: "OWASP"
@@ -2917,8 +2917,8 @@ resources:
     kind: official
     topic: "Threat modeling"
     why: "A practical process for finding and ranking threats."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: apple-security-data-protection-classes
     title: "Data Protection classes"
     source: "Apple Platform Security"
@@ -2926,8 +2926,8 @@ resources:
     kind: official
     topic: "Data Protection"
     why: "What each file protection class means and when its keys are available."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-reducing-launch-time
     title: "Reducing your app's launch time"
     source: Apple Developer Documentation
@@ -2935,8 +2935,8 @@ resources:
     kind: official
     topic: "Launch time"
     why: "What happens during launch and how to make each phase faster."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xctest-launch-metric
     title: "XCTApplicationLaunchMetric"
     source: Apple Developer Documentation
@@ -2944,8 +2944,8 @@ resources:
     kind: official
     topic: "Launch performance tests"
     why: "Measuring launch time in an XCTest performance test."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-watchdog-terminations
     title: "Addressing watchdog terminations"
     source: Apple Developer Documentation
@@ -2953,8 +2953,8 @@ resources:
     kind: official
     topic: "Watchdog"
     why: "Why the system kills apps that block the main thread at launch or on resume."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-jetsam-reports
     title: "Identifying high-memory use with jetsam event reports"
     source: Apple Developer Documentation
@@ -2962,8 +2962,8 @@ resources:
     kind: official
     topic: "Memory limits"
     why: "Reading jetsam reports when the system ends an app for using too much memory."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-reducing-battery-use
     title: "Reducing your app's battery use"
     source: Apple Developer Documentation
@@ -2971,8 +2971,8 @@ resources:
     kind: official
     topic: "Energy"
     why: "Apple's guidance on CPU, networking, location and background work that drains the battery."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-allows-constrained-network
     title: "allowsConstrainedNetworkAccess"
     source: Apple Developer Documentation
@@ -2980,8 +2980,8 @@ resources:
     kind: official
     topic: "Low Data Mode"
     why: "Respecting Low Data Mode in URLSession."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: network-nwpath-isconstrained
     title: "isConstrained"
     source: Apple Developer Documentation
@@ -2989,8 +2989,8 @@ resources:
     kind: official
     topic: "Constrained networks"
     why: "Detecting Low Data Mode on a network path."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: accessibility-performing-audits
     title: "Performing accessibility audits for your app"
     source: Apple Developer Documentation
@@ -2998,8 +2998,8 @@ resources:
     kind: official
     topic: "Accessibility audits"
     why: "Running audits with Accessibility Inspector and in UI tests."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-exporting-localizations
     title: "Exporting localizations"
     source: Apple Developer Documentation
@@ -3007,8 +3007,8 @@ resources:
     kind: official
     topic: "Localization workflow"
     why: "Exporting strings for translators as localization catalogs."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-preparing-interface-localization
     title: "Preparing your interface for localization"
     source: Apple Developer Documentation
@@ -3016,8 +3016,8 @@ resources:
     kind: official
     topic: "Pseudolanguages"
     why: "Testing layouts with pseudolanguages and long strings before translation."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-localizing-package-resources
     title: "Localizing package resources"
     source: Apple Developer Documentation
@@ -3025,8 +3025,8 @@ resources:
     kind: official
     topic: "Localized packages"
     why: "Localizing strings and resources in Swift packages."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: widgetkit-keeping-up-to-date
     title: "Keeping a widget up to date"
     source: Apple Developer Documentation
@@ -3034,8 +3034,8 @@ resources:
     kind: official
     topic: "Widget timelines"
     why: "Timelines, reload policies and the refresh budget widgets work within."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: widgetkit-timelineprovider
     title: "TimelineProvider"
     source: Apple Developer Documentation
@@ -3043,8 +3043,8 @@ resources:
     kind: official
     topic: "Widget timelines"
     why: "Providing placeholder, snapshot and timeline entries for a widget."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: widgetkit-interactivity
     title: "Adding interactivity to widgets and Live Activities"
     source: Apple Developer Documentation
@@ -3052,8 +3052,8 @@ resources:
     kind: official
     topic: "Interactive widgets"
     why: "Buttons and toggles in widgets backed by App Intents."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-app-groups
     title: "Configuring app groups"
     source: Apple Developer Documentation
@@ -3061,8 +3061,8 @@ resources:
     kind: official
     topic: "App Groups"
     why: "Sharing data between an app and its extensions."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: activitykit-live-activities
     title: "Displaying live data with Live Activities"
     source: Apple Developer Documentation
@@ -3070,8 +3070,8 @@ resources:
     kind: official
     topic: "Live Activities"
     why: "Starting, updating and ending Live Activities, and their limits."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: activitykit-push-updates
     title: "Starting and updating Live Activities with ActivityKit push notifications"
     source: Apple Developer Documentation
@@ -3079,8 +3079,8 @@ resources:
     kind: official
     topic: "Live Activity pushes"
     why: "Updating Live Activities from your server with push notifications."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: usernotifications-asking-permission
     title: "Asking permission to use notifications"
     source: Apple Developer Documentation
@@ -3088,8 +3088,8 @@ resources:
     kind: official
     topic: "Notification permission"
     why: "When and how to request authorization, including provisional authorization."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: usernotifications-scheduling-local
     title: "Scheduling a notification locally from your app"
     source: Apple Developer Documentation
@@ -3097,8 +3097,8 @@ resources:
     kind: official
     topic: "Local notifications"
     why: "Content, triggers and requests for local notifications."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: usernotifications-actionable
     title: "Declaring your actionable notification types"
     source: Apple Developer Documentation
@@ -3106,8 +3106,8 @@ resources:
     kind: official
     topic: "Notification actions"
     why: "Categories and actions users can take from a notification."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: appintents-first-intent
     title: "Creating your first app intent"
     source: Apple Developer Documentation
@@ -3115,8 +3115,8 @@ resources:
     kind: official
     topic: "App Intents"
     why: "Defining an intent the system can run from Siri, Shortcuts and Spotlight."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: appintents-app-shortcuts
     title: "App Shortcuts"
     source: Apple Developer Documentation
@@ -3124,8 +3124,8 @@ resources:
     kind: official
     topic: "App Shortcuts"
     why: "Exposing intents as shortcuts that work without setup."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: backgroundtasks-strategies
     title: "Choosing Background Strategies for Your App"
     source: Apple Developer Documentation
@@ -3133,8 +3133,8 @@ resources:
     kind: official
     topic: "Background work"
     why: "Which background mechanism fits which kind of work."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: backgroundtasks-bgtaskscheduler
     title: "BGTaskScheduler"
     source: Apple Developer Documentation
@@ -3142,8 +3142,8 @@ resources:
     kind: official
     topic: "Background tasks"
     why: "Registering and scheduling refresh and processing tasks."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-background-downloads
     title: "Downloading files in the background"
     source: Apple Developer Documentation
@@ -3151,8 +3151,8 @@ resources:
     kind: official
     topic: "Background downloads"
     why: "Background URLSession downloads that continue while the app isn't running."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-string
     title: "String"
     source: Apple Developer Documentation
@@ -3160,8 +3160,8 @@ resources:
     kind: reference
     topic: "Strings"
     why: "Swift strings as collections of Characters, and their index types."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-character
     title: "Character"
     source: Apple Developer Documentation
@@ -3169,8 +3169,8 @@ resources:
     kind: reference
     topic: "Characters"
     why: "Extended grapheme clusters and properties such as asciiValue."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-int-adding-reporting-overflow
     title: "addingReportingOverflow(_:)"
     source: Apple Developer Documentation
@@ -3178,8 +3178,8 @@ resources:
     kind: reference
     topic: "Overflow"
     why: "Detecting integer overflow instead of trapping."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-dictionary-default-subscript
     title: "subscript(_:default:)"
     source: Apple Developer Documentation
@@ -3187,8 +3187,8 @@ resources:
     kind: reference
     topic: "Dictionaries"
     why: "Reading and updating with a default value, as in frequency counts."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-book-advanced-operators
     title: "Advanced Operators (The Swift Programming Language)"
     source: Swift.org
@@ -3196,8 +3196,8 @@ resources:
     kind: official
     topic: "Bitwise and overflow operators"
     why: "XOR and other bitwise operators, and the &+ family of overflow operators."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: storekit-product
     title: "Product"
     source: Apple Developer Documentation
@@ -3205,8 +3205,8 @@ resources:
     kind: official
     topic: "StoreKit 2"
     why: "Loading products and starting purchases with StoreKit 2."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: storekit-transaction-updates
     title: "Transaction.updates"
     source: Apple Developer Documentation
@@ -3214,8 +3214,8 @@ resources:
     kind: official
     topic: "Transactions"
     why: "Listening for transactions that happen outside the purchase flow."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: xcode-storekit-testing
     title: "Setting up StoreKit Testing in Xcode"
     source: Apple Developer Documentation
@@ -3223,8 +3223,8 @@ resources:
     kind: official
     topic: "StoreKit testing"
     why: "Testing purchases locally with a StoreKit configuration file."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: corelocation-requesting-authorization
     title: "Requesting authorization to use location services"
     source: Apple Developer Documentation
@@ -3232,8 +3232,8 @@ resources:
     kind: official
     topic: "Location permission"
     why: "When-in-use and always authorization and the Info.plist keys they need."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: corelocation-liveupdates
     title: "liveUpdates(_:)"
     source: Apple Developer Documentation
@@ -3241,8 +3241,8 @@ resources:
     kind: official
     topic: "Location updates"
     why: "The async sequence of location updates."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: avfoundation-capture-session
     title: "Setting up a capture session"
     source: Apple Developer Documentation
@@ -3250,8 +3250,8 @@ resources:
     kind: official
     topic: "Camera capture"
     why: "Configuring inputs and outputs for camera capture."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: avfoundation-media-playback
     title: "Configuring your app for media playback"
     source: Apple Developer Documentation
@@ -3259,8 +3259,8 @@ resources:
     kind: official
     topic: "Media playback"
     why: "Audio session setup and background playback."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: signinwithapple-implementing
     title: "Implementing User Authentication with Sign in with Apple"
     source: Apple Developer Documentation
@@ -3268,8 +3268,8 @@ resources:
     kind: official
     topic: "Sign in with Apple"
     why: "The full Sign in with Apple flow, including credential state."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: cloudkit-enabling
     title: "Enabling CloudKit in your app"
     source: Apple Developer Documentation
@@ -3277,8 +3277,8 @@ resources:
     kind: official
     topic: "CloudKit"
     why: "Containers, databases and the capabilities CloudKit needs."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: cloudkit-cksyncengine
     title: "CKSyncEngine"
     source: Apple Developer Documentation
@@ -3286,8 +3286,8 @@ resources:
     kind: official
     topic: "CloudKit sync"
     why: "The engine that schedules and runs CloudKit sync for you."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: combine
     title: "Combine"
     source: Apple Developer Documentation
@@ -3295,8 +3295,8 @@ resources:
     kind: official
     topic: "Combine"
     why: "Publishers, subscribers and operators in Apple's reactive framework."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: combine-anycancellable
     title: "AnyCancellable"
     source: Apple Developer Documentation
@@ -3304,8 +3304,8 @@ resources:
     kind: official
     topic: "Combine subscriptions"
     why: "How subscriptions are cancelled and why their lifetime matters."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-isknownuniquelyreferenced
     title: "isKnownUniquelyReferenced(_:)"
     source: Apple Developer Documentation
@@ -3313,8 +3313,8 @@ resources:
     kind: reference
     topic: "Copy-on-write"
     why: "Checking whether a class instance has a single strong reference, the basis of custom copy-on-write."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: uikit-layoutsubviews
     title: "layoutSubviews()"
     source: Apple Developer Documentation
@@ -3322,8 +3322,8 @@ resources:
     kind: reference
     topic: "Layout pass"
     why: "When UIKit lays out subviews and what belongs in this method."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: swift-character-isnumber
     title: "isNumber"
     source: Apple Developer Documentation
@@ -3331,8 +3331,8 @@ resources:
     kind: reference
     topic: "Unicode digits"
     why: "Why Character.isNumber accepts more than ASCII digits."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: se-0176-exclusivity
     title: "SE-0176: Enforce Exclusive Access to Memory"
     source: Swift Evolution
@@ -3340,8 +3340,8 @@ resources:
     kind: reference
     topic: "Exclusivity"
     why: "The rule behind overlapping-access errors and the runtime exclusivity check."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: se-0413-typed-throws
     title: "SE-0413: Typed throws"
     source: Swift Evolution
@@ -3349,8 +3349,8 @@ resources:
     kind: reference
     topic: "Typed throws"
     why: "What typed throws adds and when untyped throws remains the better default."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: se-0352-implicit-open-existentials
     title: "SE-0352: Implicitly Opened Existentials"
     source: Swift Evolution
@@ -3358,8 +3358,8 @@ resources:
     kind: reference
     topic: "Existentials"
     why: "How Swift opens an existential to pass it to a generic function."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: usernotifications-background-updates
     title: "Pushing background updates to your App"
     source: Apple Developer Documentation
@@ -3367,8 +3367,8 @@ resources:
     kind: reference
     topic: "Background push"
     why: "Silent pushes, their priority and why delivery isn't guaranteed."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-urlsessionwebsockettask
     title: "URLSessionWebSocketTask"
     source: Apple Developer Documentation
@@ -3376,8 +3376,8 @@ resources:
     kind: reference
     topic: "Real-time channels"
     why: "WebSocket connections with URLSession."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: foundation-nscache-totalcostlimit
     title: "totalCostLimit"
     source: Apple Developer Documentation
@@ -3385,8 +3385,8 @@ resources:
     kind: reference
     topic: "Cache limits"
     why: "Why NSCache's cost limit isn't strict."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: graphql-spec
     title: "GraphQL Specification"
     source: GraphQL Foundation
@@ -3394,8 +3394,8 @@ resources:
     kind: reference
     topic: GraphQL
     why: "The language and execution rules behind GraphQL APIs, for comparing them with REST."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: nygard-adr
     title: "Documenting Architecture Decisions"
     source: "Michael Nygard"
@@ -3403,8 +3403,8 @@ resources:
     kind: article
     topic: "Decision records"
     why: "The original short format for architecture decision records."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: sre-managing-incidents
     title: "Managing Incidents"
     source: "Google SRE book"
@@ -3412,8 +3412,8 @@ resources:
     kind: article
     topic: "Incidents"
     why: "Incident roles, communication and handoffs during an outage."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: sre-postmortem-culture
     title: "Postmortem Culture: Learning from Failure"
     source: "Google SRE book"
@@ -3421,8 +3421,8 @@ resources:
     kind: article
     topic: "Postmortems"
     why: "Blameless postmortems and following up on action items."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: google-review-standard
     title: "The Standard of Code Review"
     source: "Google eng-practices"
@@ -3430,8 +3430,8 @@ resources:
     kind: article
     topic: "Code review"
     why: "When to approve a change and how to weigh improvement against perfection."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: google-review-comments
     title: "How to write code review comments"
     source: "Google eng-practices"
@@ -3439,8 +3439,8 @@ resources:
     kind: article
     topic: "Review comments"
     why: "Writing comments that are kind, explain why and label their severity."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: google-cl-descriptions
     title: "Writing good CL descriptions"
     source: "Google eng-practices"
@@ -3448,8 +3448,8 @@ resources:
     kind: article
     topic: "PR descriptions"
     why: "What a change description should say so reviewers and future readers understand it."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: git-blame-reference
     title: "git-blame"
     source: "Git documentation"
@@ -3457,8 +3457,8 @@ resources:
     kind: reference
     topic: "Code archaeology"
     why: "Finding which commit last changed each line, including ignoring formatting commits."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: git-log-reference
     title: "git-log"
     source: "Git documentation"
@@ -3466,8 +3466,8 @@ resources:
     kind: reference
     topic: "Code archaeology"
     why: "Searching history with --follow, -S and other filters."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
   - id: git-bisect-reference
     title: "git-bisect"
     source: "Git documentation"
@@ -3475,5 +3475,5 @@ resources:
     kind: reference
     topic: "Finding regressions"
     why: "Binary search through history to find the commit that introduced a bug."
-    status: unverified
-    verifiedAt: null
+    status: verified
+    verifiedAt: 2026-11-04
