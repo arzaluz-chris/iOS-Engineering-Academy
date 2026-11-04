@@ -98,7 +98,7 @@ struct TaskRow: View {
 
 ### Why private, and what the initial value really does
 
-Apple, on the same page: "Declare state as private to prevent setting it in a memberwise initializer, which can conflict with the storage management that SwiftUI provides." To see the conflict, you need one fact about the initial value: the `= false` is only used **the first time** a view with that identity appears. After that, SwiftUI hands the view its stored value, whatever the struct's initializer said.
+Apple, on the same page: "Declare state as private to prevent setting it in a memberwise initializer, which can conflict with the storage management that SwiftUI provides." To see the conflict, you need one fact about the initial value: the `= false` only takes effect **the first time** a view with that identity appears. After that, SwiftUI hands the view its stored value, whatever the struct's initializer said.
 
 Here's that rule as a plain-Swift model. A dictionary keyed by identity plays the role of SwiftUI's storage; `value(at:initial:)` uses the initial value only when nothing is stored yet:
 
@@ -142,7 +142,7 @@ count: 3
 count: 3
 ```
 
-The parent re-created `CounterView` with `start: 10`, and nothing happened. That's the behavior Apple warns about. If `count` weren't private, `CounterView(count: 10)` would compile, look like it sets the count, and be ignored after the first appearance. Making it `private` removes the misleading initializer parameter, so the only way to change the count from outside is a binding, which actually writes the stored value.
+The parent re-created `CounterView` with `start: 10`, and nothing happened. That's the behavior Apple warns about. If `count` weren't private, `CounterView(count: 10)` would compile, look like it sets the count, and be ignored after the first appearance. Making it `private` also makes the memberwise initializer private, so a parent in another file can't call it, and the only way to change the count from outside is a binding, which actually writes the stored value.
 
 If a child really does need a starting value from its parent, either make it a plain `let` input (if the child never changes it) or move the state up to the parent and pass a binding. Lesson 5 covers the third option, resetting state on purpose with `.id(_:)`.
 
@@ -343,7 +343,7 @@ A view that takes `@Binding` needs a binding to be created, including in a previ
 }
 ```
 
-The first preview always shows the toggle on; tapping it does nothing, because writes to a constant binding are ignored. When you want to try the interaction in the canvas, `@Previewable` (iOS 17 and later, per Apple's page) lets you declare real `@State` inside `#Preview` and pass its binding. These blocks are illustrative because the course's iOS check doesn't compile `#Preview`. The same constant works outside previews, too:
+The first preview always shows the toggle on; tapping it does nothing, because writes to a constant binding are ignored. When you want to try the interaction in the canvas, `@Previewable` (iOS 17 and later, per Apple's page) lets you declare real `@State` inside `#Preview` and pass its binding. The block is illustrative because the course's iOS check doesn't compile `#Preview`. The same constant works outside previews, too:
 
 ```swift ios
 import SwiftUI
@@ -391,7 +391,7 @@ struct ToggleRow {
 > `FilterBar(showsCompleted: showsCompleted)` without the `$` is a type error: the initializer wants a `Binding<Bool>`, and you passed a `Bool`. Add the `$`. The opposite mistake, a `@Binding` in a view that only reads it, compiles fine and is just misleading.
 
 > [!error] Storing persistent data in @State
-> A user's saved tasks in `@State` disappear when the view goes away, and with it the window. State is for UI state with the view's lifetime. Model data goes in a model (lesson 2), settings in `@AppStorage`, and anything bigger in persistence (Module 37).
+> A user's saved tasks in `@State` disappear when the view goes away, and all of them when the app quits. State is for UI state with the view's lifetime. Model data goes in a model (lesson 2), settings in `@AppStorage`, and anything bigger in persistence (Module 31, and SwiftData in SwiftUI in Module 37).
 
 ## Exercises
 
