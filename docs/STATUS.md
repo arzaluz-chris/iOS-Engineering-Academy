@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: November 4, 2026 (all 49 modules written; the coding challenges are next).
+Last updated: November 4, 2026 (all 49 modules and all 100 coding challenges written).
 
 ## Done
 
@@ -21,7 +21,7 @@ Last updated: November 4, 2026 (all 49 modules written; the coding challenges ar
 | Lessons | 289 (M1: 3, M2: 5, M3: 5, M4–M18, M20–M25, M28–M41, M43 and M46–M49: 6 each, M19, M27 and M42: 7, M26, M44 and M45: 5); 287 `tested`, 2 `no-code` | more than 100 |
 | Lesson exercises | 1,714 (prediction 347, comprehension 307, solve 290, find-errors 255, fill-in 212, explain 130, design 129, refactor 44) | at least 100 |
 | Review cards | 1,390 | — |
-| Coding challenges | 5, with Swift solutions and tests | at least 100 |
+| Coding challenges | 100 (24 easy, 63 medium, 13 hard), each with a Swift solution and Swift Testing tests (578 tests in 100 suites) | at least 100 |
 | Interview questions | 210 across 14 categories (swift 35, uikit 22, concurrency 20, swiftui 19, architecture 17, system-design 15, security 13, testing 12, networking 11, platform 10, memory 9, performance 9, persistence 9, tooling 9) | a broad bank |
 | Projects | 8 specified with milestones | 8 |
 | Resources | 386; 21 verified, 365 with `status: unverified` (each returned 200 when added) | — |
@@ -30,11 +30,13 @@ Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP
 
 **Interview bank (3 Nov 2026):** questions were chosen from what real iOS interviews ask (interview write-ups, prep guides, articles) and cover every topic in the table of contents of a popular interview-prep book the owner provided. Nothing was copied from any source: every answer was written for this course and checked against primary sources (Swift Evolution, The Swift Programming Language, Apple documentation); Swift code in answers was compiled and run in the container. A private fact-check of that book (errors, outdated claims, broken code) was given to the owner and is not in the repository.
 
+**Coding challenges (4 Nov 2026):** challenges 6–100 were added in five batches (arrays, strings and hashing; stacks, linked lists and intervals; binary search, backtracking and sorting; trees, tries, heaps and graphs; dynamic programming, greedy and practical iOS problems), so the 100 the specification asks for are met. Each has a card in `content/challenges/`, a reference solution in `swift/Sources/Challenges/` and Swift Testing tests in `swift/Tests/ChallengesTests/`; many tests compare the solution with a brute-force version on random inputs. The ids of the first five challenges didn't change. All 578 challenge tests pass in the `swift:6.3` container (about 3 seconds run one at a time) and in CI on macOS.
+
 **Lesson code:** 17 of 19 lessons have `codeStatus: tested`; the other two (m01-l01 and m01-l03) are `no-code`. No lesson is left at `reviewed`. "Tested" means the `swift/Tests/LessonSnippetsTests` target compiles and runs every Swift block in the lesson and in its exercise solutions, and compares the output with what the text claims. Every prediction exercise, in any lesson, is run and its `output` compared exactly; for pseudocode predictions (`lang: pseudo`, Module 2) the Swift translation is what runs. The tests also check the compiler errors (`swift no-compile`), warnings (`swift warning`) and runtime errors (`swift runtime-error`) the lessons quote. What isn't run: blocks marked `swift illustrative` (the `Package.swift` manifest, a package's `@main` template and the declaration of `print` in m03; the `@main` solution in m03-l03-e4), terminal commands, and what's described about the Xcode UI, which was taken from Apple's documentation and couldn't be checked in Xcode from the build environment.
 
 **Tests run in the build environment:** `npm run validate` (no errors), `npm test` (35 tests, all pass), `npm run build` (succeeds), `swift test` in the `swift:6.3` container (Swift 6.3.3, Linux), a visual check in Chromium with no console errors.
 
-**Swift in CI:** the `swift.yml` workflow ("Swift · challenge tests") runs `swift test` on macOS (Xcode 26.6, Swift 6.3.3) on every push that touches `swift/` or `content/lessons/`. It passed for every batch in this increment. The runner doesn't use Xcode 27 / Swift 6.4 yet; the code uses nothing specific to 6.4.
+**Swift in CI:** the `swift.yml` workflow ("Swift · challenge tests") runs `swift test` on macOS (Xcode 26.6, Swift 6.3.3) on every push that touches `swift/` or `content/lessons/`. It passed for every batch in this increment. Its timeout went from 15 to 30 minutes when the 100 challenges were added: the macOS runner already took 5–9 minutes for `swift test`, and the run with all challenges hit 15 and was cancelled without any failure. The runner doesn't use Xcode 27 / Swift 6.4 yet; the code uses nothing specific to 6.4.
 
 **Published:** https://arzaluz-chris.github.io/iOS-Engineering-Academy/
 
@@ -48,15 +50,13 @@ Stages 1 and 2 (M1–M8) are complete, Stage 3 has M9 to M13 (data modeling, OOP
 
 ## Acceptance criteria not yet met
 
-- 100 coding challenges: only 5 exist. (More than 100 lessons and 100 exercises: met, with 289 lessons and 1,714 exercises across all 49 modules. Swift in depth and full UIKit and SwiftUI stages: met, Modules 4–14 and 21–40.)
 - Automated accessibility tests of the site: not implemented.
 - The Xcode UI instructions in Module 3 (menus, shortcuts, *Settings › Components*, the debugger) haven't been checked in a real Xcode, and neither have the Xcode, Instruments and App Store Connect steps that later modules attribute to Apple's documentation.
 
 ## Next step
 
-1. The coding challenges (the owner's instruction, 4 Nov 2026: after all modules): up to the 100 the specification asks for, each with a Swift solution in `swift/Sources/Challenges/`, Swift Testing tests in `swift/Tests/ChallengesTests/` and a card in `content/challenges/`, following the patterns of M15–M20 and the method of M46. None may reuse the worked problems in the lessons.
-2. Check Module 3's Xcode UI instructions in Xcode 27 and, if they match, note it here.
-3. When the links workflow confirms the 365 unverified resources, change their `status` to `verified` with a date.
+1. Check Module 3's Xcode UI instructions in Xcode 27 and, if they match, note it here.
+2. When the links workflow confirms the 365 unverified resources, change their `status` to `verified` with a date.
 
 How a module is produced: one agent per module with a fixed list of lesson ids and titles, following `docs/CONTENT.md`; every code block and prediction must pass `LessonSnippetsTests` before the module is accepted. Each module is then verified on a clean checkout of `main` containing only that module (`npm run validate`, `tsc`, `vitest`, `vite build`, `swift test`) and committed on its own.
 
