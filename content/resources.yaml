@@ -2784,3 +2784,147 @@ resources:
     why: "A commit message format that tools can turn into version bumps and changelogs."
     status: unverified
     verifiedAt: null
+  - id: cryptokit
+    title: "CryptoKit"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/cryptokit
+    kind: official
+    topic: "CryptoKit"
+    why: "Hashing, authentication codes, encryption, key agreement and signing with Apple's crypto framework."
+    status: unverified
+    verifiedAt: null
+  - id: security-secure-enclave
+    title: "Protecting keys with the Secure Enclave"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/security/protecting-keys-with-the-secure-enclave
+    kind: official
+    topic: "Secure Enclave"
+    why: "Creating keys that never leave the Secure Enclave, and their limits."
+    status: unverified
+    verifiedAt: null
+  - id: security-secaccesscontrolcreateflags
+    title: "SecAccessControlCreateFlags"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/security/secaccesscontrolcreateflags
+    kind: official
+    topic: "Keychain access control"
+    why: "Requiring biometrics or the passcode to use a keychain item."
+    status: unverified
+    verifiedAt: null
+  - id: localauthentication
+    title: "LocalAuthentication"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/localauthentication
+    kind: official
+    topic: "Biometrics"
+    why: "Face ID, Touch ID and passcode authentication with LAContext."
+    status: unverified
+    verifiedAt: null
+  - id: ats-nsapptransportsecurity
+    title: "NSAppTransportSecurity"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/bundleresources/information-property-list/nsapptransportsecurity
+    kind: official
+    topic: "App Transport Security"
+    why: "ATS defaults and the exceptions an app can declare."
+    status: unverified
+    verifiedAt: null
+  - id: ats-nspinneddomains
+    title: "NSPinnedDomains"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/bundleresources/information-property-list/nsapptransportsecurity/nspinneddomains
+    kind: official
+    topic: "Pinning"
+    why: "Declaring pinned public keys for domains in Info.plist."
+    status: unverified
+    verifiedAt: null
+  - id: foundation-manual-server-trust
+    title: "Performing manual server trust authentication"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/foundation/performing-manual-server-trust-authentication
+    kind: official
+    topic: "Server trust"
+    why: "Evaluating server trust yourself in a URLSession delegate."
+    status: unverified
+    verifiedAt: null
+  - id: os-oslogprivacy
+    title: "OSLogPrivacy"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/os/oslogprivacy
+    kind: official
+    topic: "Log privacy"
+    why: "Marking interpolated values public, private or hashed in unified logging."
+    status: unverified
+    verifiedAt: null
+  - id: uikit-uipasteboard
+    title: "UIPasteboard"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/uikit/uipasteboard
+    kind: official
+    topic: "Pasteboard"
+    why: "Pasteboard options such as local-only and expiration dates."
+    status: unverified
+    verifiedAt: null
+  - id: swiftui-privacysensitive
+    title: "privacySensitive(_:)"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/swiftui/view/privacysensitive(_:)
+    kind: official
+    topic: "Redacting sensitive views"
+    why: "Marking views whose content should be hidden in privacy-sensitive contexts."
+    status: unverified
+    verifiedAt: null
+  - id: webkit-wknavigationdelegate
+    title: "WKNavigationDelegate"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/webkit/wknavigationdelegate
+    kind: official
+    topic: "Web view navigation"
+    why: "Deciding which navigations a web view may perform."
+    status: unverified
+    verifiedAt: null
+  - id: devicecheck-appattest
+    title: "DCAppAttestService"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/devicecheck/dcappattestservice
+    kind: official
+    topic: "App Attest"
+    why: "Proving to your server that requests come from a genuine instance of your app."
+    status: unverified
+    verifiedAt: null
+  - id: devicecheck-establishing-integrity
+    title: "Establishing your app's integrity"
+    source: Apple Developer Documentation
+    url: https://developer.apple.com/documentation/devicecheck/establishing-your-app-s-integrity
+    kind: official
+    topic: "App integrity"
+    why: "How App Attest keys, attestations and assertions fit together."
+    status: unverified
+    verifiedAt: null
+  - id: owasp-masvs-profiles
+    title: "MAS Testing Profiles"
+    source: "OWASP"
+    url: https://mas.owasp.org/Profiles/
+    kind: official
+    topic: "Security profiles"
+    why: "The L1, L2, R and P profiles and which MASVS controls each one includes."
+    status: unverified
+    verifiedAt: null
+  - id: owasp-threat-modeling
+    title: "Threat Modeling Cheat Sheet"
+    source: "OWASP"
+    url: https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html
+    kind: official
+    topic: "Threat modeling"
+    why: "A practical process for finding and ranking threats."
+    status: unverified
+    verifiedAt: null
+  - id: apple-security-data-protection-classes
+    title: "Data Protection classes"
+    source: "Apple Platform Security"
+    url: https://support.apple.com/guide/security/data-protection-classes-secb010e978a/web
+    kind: official
+    topic: "Data Protection"
+    why: "What each file protection class means and when its keys are available."
+    status: unverified
+    verifiedAt: null
