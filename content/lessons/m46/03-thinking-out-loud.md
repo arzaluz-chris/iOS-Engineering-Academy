@@ -107,12 +107,11 @@ The following conversation is invented to show the technique. It isn't a transcr
 >
 > **Interviewer:** Any concerns with that?
 >
-> **Candidate:** Overflow. The total is about n²/2. With n up to a million that's about 5 × 10¹¹, nowhere near `Int.max` on a 64-bit platform, so it's fine here. If n could be in the billions it would get close. There's an XOR version that can't overflow, but it's harder to read. I'll code the sum version and mention XOR at the end.
+> **Candidate:** Overflow. The total is about n²/2. With n up to a million that's about 5 × 10¹¹, nowhere near `Int.max` on a 64-bit platform, so it's fine here. If n could reach about three billion, n × (n + 1) would overflow before the division. There's an XOR version that can't overflow, but it's harder to read. I'll code the sum version and mention XOR at the end.
 >
 > **Interviewer:** Go ahead.
 
 Notice what the candidate did: restated the problem with the details made explicit, asked about the two things that change the code (empty input and size), named each approach with its cost in one breath, and chose based on a constraint. The candidate never read code aloud.
-
 
 ## The four solutions
 
